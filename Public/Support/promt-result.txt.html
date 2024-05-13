@@ -1,0 +1,80 @@
+Dari apa yang telah kamu jelaskan, sepertinya kamu ingin AJAX kamu untuk mengambil dan menampilkan elemen HTML dari file yang diminta melalui request.php. Namun, AJAX biasanya mengharapkan respon dalam format data tertentu, seperti JSON atau XML, yang memang tidak memungkinkan langsung untuk mengambil elemen HTML.
+
+Namun, kamu masih bisa mencapai apa yang kamu inginkan dengan mengubah sedikit pendekatanmu. Alih-alih mengambil elemen HTML secara langsung, kamu bisa membuat request.php mengembalikan sebuah string yang berisi HTML, dan kemudian menempelkannya ke elemen HTML di halaman index.php menggunakan JavaScript.
+
+Berikut adalah bagaimana kamu bisa mengubah pendekatanmu:
+
+*1. request.php:*
+
+```php
+<?php
+// Ambil nama file dari URL
+$file = $_GET['file'];
+
+// Pastikan file yang diminta ada
+if (file_exists($file)) {
+    // Baca isi file dan kirimkan sebagai respons
+    $htmlContent = file_get_contents($file);
+    echo $htmlContent;
+} else {
+    // Jika file tidak ditemukan, kirimkan pesan error
+    echo "File not found.";
+}
+?>
+```
+
+*2. index.php:*
+
+```javascript
+async function fetchData(url, type) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4) {
+        if (xhr.status == 200) {
+          resolve(xhr.responseText); // Mengembalikan respons sebagai teks
+        } else {
+          reject("Failed to fetch data: " + xhr.status);
+        }
+      }
+    };
+    xhr.open(type, url, true);
+    xhr.send();
+  });
+}
+
+async function main(params = {
+  directory: "../App/index.php?",
+  url: "url=Pelanggan/liveSearch",
+  keyword: "",
+  type: "GET"
+}) {
+  try {
+    params.url = params.directory + params.url;
+    if (params.keyword !== "") params.url += "/" + params.keyword;
+
+    // Ambil respons dari request.php
+    let htmlContent = await fetchData(params.url, params.type);
+
+    // Tempelkan HTML ke dalam elemen yang sesuai
+    document.getElementById("container").innerHTML = htmlContent;
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+main({
+  directory: "Content/Dashboard/index.php",
+  url: "request.php?file=sambutan.php", // Mengganti dengan file yang ingin dimuat
+  type: "GET"
+});
+```
+
+Pastikan kamu memiliki sebuah elemen di index.php dengan id "container" di mana kamu akan menempelkan HTML yang diterima dari AJAX. Misalnya:
+
+```html
+<div id="container"></div>
+```
+
+Dengan pendekatan ini, request.php akan mengembalikan HTML dari file yang diminta, dan kemudian HTML tersebut akan ditampilkan di dalam elemen dengan id "container" di index.php menggunakan JavaScript.

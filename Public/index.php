@@ -1,7 +1,7 @@
 <?php
 if (!session_id()) session_start();
 
-/*
+
 if (!isset($_SESSION["rand-str"]) || $_SESSION["rand-str"] === []) header("location: ../");
 
 $base_url = $_SESSION["base-url"];
@@ -16,7 +16,7 @@ echo "<script>
   let rand_str = '$rand_str';
   console.log(rand_str);
 </script>";
-*/
+
 ?>
 <!DOCTYPE html>
 <html lang="in">
@@ -66,18 +66,20 @@ echo "<script>
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 <script src="Support/resize.js"></script>
+<script src="Support/jQuery-3.7.0.js"></script>
 
 <script>
 
 let data = {};
 
-async function fetchData(url, type = "GET") {
+async function fetchData(  url, type, resultType  ) {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
-          resolve(JSON.parse(xhr.responseText));
+          if (resultType == "contents") resolve(xhr.responseText);
+          else resolve(JSON.parse(xhr.responseText));
         } else {
           reject("Failed to fetch data: " + xhr.status);
         }
@@ -88,25 +90,66 @@ async function fetchData(url, type = "GET") {
   });
 }
 
-async function main(keyword = "") {
+async function main(params = {
+  directory: "../App/index.php?",
+  url: "url=Pelanggan/liveSearch",
+  keyword: "",
+  type: "GET",
+  resultType: "json"
+}) {
   try {
-    let url = "../App/index.php?url=Pelanggan/liveSearch";
+    params.url = params.directory + params.url;
+    if ( params.keyword !== "" && params.keyword !== undefined ) params.url += "/"+ params.keyword;
     
-    if (keyword !== "") url += "/"+ keyword;
-    
-    data = await fetchData(url);
+    data = await fetchData(params.url, params.type, params.resultType);
     
     if (data.status === true) {
       data = data.result;
     }
-    
-    page_active = 1;
-    setPagination();
-    createTable();
+    console.log(data);
     
   } catch (error) {
     console.error(error);
   }
+}
+
+main({
+  directory: "Content/Dashboard/index.html",
+  url: "",
+  type: "GET",
+  resultType: "contents"
+});
+
+/*
+
+multipart/form-data
+
+application/json
+
+application/octet-stream
+
+application/x-www-form-urlencoded
+
+main({
+  directory: "Content/Dashboard/index.php",
+  url: "",
+  type: "POST"
+})
+
+*/
+
+
+
+function call(url = "Content/Dashboard/index.php", type = "POST") {
+  $.ajax({
+    url: url,
+    method: type,
+    dataType: "json",
+    success: function(result) {
+      data = result;
+      console.log(data);
+    }
+  });
 }
 
 
@@ -130,6 +173,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     
   });
+  
+  
 });
 
 </script>
