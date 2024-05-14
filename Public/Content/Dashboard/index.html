@@ -1,4 +1,10 @@
     
+    <div class="content-type">
+      <h4 class="switch-content">Add Costumer</h4>
+      <h4 class="switch-content">Search Costumer</h4>
+    </div>
+    
+    <div class="add-costumer">
     <form action="" methode="POST">
       <table>
         <tr>
@@ -23,4 +29,55 @@
         <button type="sumbit" id="button-add-pelanggan" name="button-add-pelanggan">Submit</button>
       </div>
     </form>
+    </div>
     
+    <div class="search-costumer" style="display: none;">
+      <div class="search-group">
+        <input type="text" class="input-search-costumer" id="search-costumer" name="input-search-costumer" placeholder="Input costumer..   [blank = all]">
+        <button>Search</button>
+      </div>
+    <table class="data-table" border="0.2" style="width: 500px;">
+        
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>Email</th>
+          </tr>
+          <!-- <?php /*createTableData();*/ ?> -->
+          
+          <tr>
+            <td>1</td>
+            <td>Zunn</td>
+            <td>Zunn1TheMagister@cultv.dao
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Ay</td>
+            <td>Ay92PrincessOfIce@cultv.dao
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Zhong</td>
+            <td>Zhong33TheMasterOfGreatSword@cultv.dao
+          </tr>
+        
+      </table>
+      <div class="no-result"></div>
+      
+      <ul class="pages">
+      <!-- <?php /*createPagination();*/ ?> -->
+      
+      
+      <li><a href="#" class="first-page">&laquo&laquo</a></li>
+      <li><a href="#" class="previous">&laquo</a></li>
+      <li><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+      <li><a href="#">4</a></li>
+      <li><a href="#">5</a></li>
+      <li><a href="#" class="next-page">&raquo</a></li>
+      <li><a href="#" class="last-page">&raquo&raquo</a></li>
+      
+    </ul>
+    </div>
+    <div class="no-cpntent" style="display: none;"></div>
