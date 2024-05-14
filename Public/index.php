@@ -1,5 +1,34 @@
 <?php
+
 if (!session_id()) session_start();
+
+/*
+if (isset($_POST)) var_dump($_POST); 
+else echo "Post is undefined";
+if (!session_id()) session_start();
+if (isset($_GET)) var_dump($_GET); 
+else echo "Get is undefined";
+*/
+
+require "Support/function.php";
+
+if (isset($_GET["button-add-pelanggan"])) {
+    $result = addData($_GET, "pelanggan");
+    $_GET["button-add-pelanggan"] = null;
+    $_GET = [];
+    var_dump($result);
+
+    if ($result["affected"] > 0) {
+        print_r($result["last-data"]);
+
+        // script("alert(\"CONGRATS!!\nSucces To Add Data.\");");
+        echo "<script>alert(\"CONGRATS!!\nSucces To Add Data.\");</script>";
+    } else {
+        // script("alert(\"ERROR!!\nUNKOWN ERROR!!!\n\nDuplicate Data.\");");
+        echo "<script>alert(\"ERROR!!\nUNKOWN ERROR!!!\n\nDuplicate Data.\");</script>";
+        
+    }
+} else $_GET["button-add-pelanggan"] = null;
 
 ?>
 <!DOCTYPE html>
@@ -10,6 +39,11 @@ if (!session_id()) session_start();
   
   <link rel="stylesheet" href="Support/style.css">
   <style>
+
+/*** Home ***/
+.home {
+  text-align: center;
+}
 
 /*** Dashboard ***/
 .dashboard {
@@ -57,32 +91,8 @@ if (!session_id()) session_start();
   <header>
     <h2>Dashboard</h2>
   </header>
-  <div class="content dashboard">
-    
-    <form action="" methode="POST">
-      <table>
-        <tr>
-          <td>
-          <label for="nama">Name : </label>
-          </td>
-          <td>
-          <input type="text" class="nama" id="nama" name="nama">
-          </td>
-        </tr>
-        <tr>
-          <td>
-          <label for="no_ho">Phone Num : </label>
-          </td>
-          <td>
-          <input type="text" class="no_hp" id="no_hp" name="no_hp">
-          </td>
-        </tr>
-      </table>
-      <div class="button-group">
-        <button type="button" id="cancel">Cancel</button>
-        <button type="sumbit" id="button-add-pelanggan" name="button-add-pelanggan">Submit</button>
-      </div>
-    </form>
+  <div class="content">
+    <p>HELLO WORLR!</p>
   </div>
   <footer>Copyright 2024</footer>
 </main>
@@ -94,6 +104,7 @@ if (!session_id()) session_start();
 <script>
 
 let data = {};
+let contents = "";
 
 async function fetchData(  url, type, resultType  ) {
   return new Promise((resolve, reject) => {
@@ -124,12 +135,16 @@ async function main(params = {
     params.url = params.directory + params.url;
     if ( params.keyword !== "" && params.keyword !== undefined ) params.url += "/"+ params.keyword;
     
-    data = await fetchData(params.url, params.type, params.resultType);
+    let result = await fetchData(params.url, params.type, params.resultType);
     
-    if (data.status === true) {
-      data = data.result;
+    if (typeof result === "string") {
+      contents = result;
+      
+      main_content.innerHTML = contents;
+    } else if (result.status === true) {
+      data = result.result;
     }
-    console.log(data);
+    console.log(result);
     
   } catch (error) {
     console.error(error);
@@ -164,24 +179,14 @@ main({
 
 
 
-function call(url = "Content/Dashboard/index.php", type = "POST") {
-  $.ajax({
-    url: url,
-    method: type,
-    dataType: "json",
-    success: function(result) {
-      data = result;
-      console.log(data);
-    }
-  });
-}
-
-
+let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
 let nav_links = document.querySelector("nav ul");
 let nav_toggle = document.querySelector("div.menu-toggle");
 nav_toggle.addEventListener("click", function() {
   nav_links.classList.toggle("slide");
 });
+
+let main_content = document.querySelector("main .content");
 
 photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 
@@ -192,11 +197,39 @@ document.addEventListener("DOMContentLoaded", function() {
     if (e.target.tagName === "A" && e.target.closest("nav")) {
       e.preventDefault();
       document.querySelector("main header h2").innerText = e.target.innerText;
+      
+      
+      checkbox.checked = false;
       nav_links.classList.remove("slide");
+      
+      main_content.classList.remove("home");
+      main_content.classList.remove("dashboard");
+      main_content.classList.remove("laporan");
+      main_content.classList.remove("login");
+      main_content.classList.remove("logout");
+      
+      main_content.classList.add(e.target.innerText.toLowerCase());
+      
+      
+      main({
+        directory: `Content/${e.target.innerText}/index.html`,
+        url: "",
+        keyword: "",
+        type: "GET",
+        resultType: "contents"
+      });
     }
     
+    if (e.target === checkbox || e.target === nav_links) {
+      console.log("is");
+    } else {
+      checkbox.checked = false; 
+      nav_links.classList.remove("slide");
+      console.log("not");
+    }
     
   });
+  
   
   
 });
