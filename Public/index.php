@@ -1,22 +1,6 @@
 <?php
 if (!session_id()) session_start();
 
-
-if (!isset($_SESSION["rand-str"]) || $_SESSION["rand-str"] === []) header("location: ../");
-
-$base_url = $_SESSION["base-url"];
-$rand_str = $_SESSION["rand-str"];
-
-$_SESSION["rand-str"] = [];
-$_SESSION["rand-str-absolute"] = $rand_str;
-
-
-echo "<script>
-  let base_url = '$base_url';
-  let rand_str = '$rand_str';
-  console.log(rand_str);
-</script>";
-
 ?>
 <!DOCTYPE html>
 <html lang="in">
@@ -26,6 +10,22 @@ echo "<script>
   
   <link rel="stylesheet" href="Support/style.css">
   <style>
+
+/*** Dashboard ***/
+.dashboard {
+  
+}
+
+.dashboard form table {
+  
+}
+
+.dashboard form .button-group {
+  
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
 
   </style>
 </head>
@@ -55,10 +55,34 @@ echo "<script>
 
 <main>
   <header>
-    <h2>Home</h2>
+    <h2>Dashboard</h2>
   </header>
-  <div class="content home">
-    <p>Halo Admin!. Selamat Datang</p>
+  <div class="content dashboard">
+    
+    <form action="" methode="POST">
+      <table>
+        <tr>
+          <td>
+          <label for="nama">Name : </label>
+          </td>
+          <td>
+          <input type="text" class="nama" id="nama" name="nama">
+          </td>
+        </tr>
+        <tr>
+          <td>
+          <label for="no_ho">Phone Num : </label>
+          </td>
+          <td>
+          <input type="text" class="no_hp" id="no_hp" name="no_hp">
+          </td>
+        </tr>
+      </table>
+      <div class="button-group">
+        <button type="button" id="cancel">Cancel</button>
+        <button type="sumbit" id="button-add-pelanggan" name="button-add-pelanggan">Submit</button>
+      </div>
+    </form>
   </div>
   <footer>Copyright 2024</footer>
 </main>
@@ -66,7 +90,6 @@ echo "<script>
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
 <script src="Support/resize.js"></script>
-<script src="Support/jQuery-3.7.0.js"></script>
 
 <script>
 
@@ -113,13 +136,14 @@ async function main(params = {
   }
 }
 
+/*
 main({
   directory: "Content/Dashboard/index.html",
   url: "",
   type: "GET",
   resultType: "contents"
 });
-
+*/
 /*
 
 multipart/form-data
