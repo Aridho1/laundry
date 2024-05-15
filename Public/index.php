@@ -251,9 +251,11 @@ async function fetchData(  url, type, resultType  ) {
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
+          data = "";
           if (resultType == "contents") resolve(xhr.responseText);
           else resolve(JSON.parse(xhr.responseText));
         } else {
+          data = "";
           reject("Failed to fetch data: " + xhr.status);
         }
       }
@@ -282,6 +284,11 @@ async function main(params = {
       main_content.innerHTML = contents;
     } else if (result.status === true) {
       data = result.result;
+      
+        page_active = 1;
+        setPagination();
+        createTable();
+      
     }
     
   } catch (error) {
@@ -304,8 +311,6 @@ main({
   type: "GET",
   resultType: "json"
 })
-*/
-/*
 
 multipart/form-data
 
@@ -314,13 +319,6 @@ application/json
 application/octet-stream
 
 application/x-www-form-urlencoded
-
-main({
-  directory: "Content/Dashboard/index.php",
-  url: "",
-  type: "POST"
-})
-
 */
 
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
@@ -347,6 +345,9 @@ let data_tabel, data_js;
 //func
 
 function setPagination() {
+  console.log(data);
+  console.log(typeof data);
+  
   //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
   max_data = parseInt(max_data);
   page_active = parseInt(page_active);
@@ -363,6 +364,7 @@ function setPagination() {
   
   if (page_active < 0 || page_active > page_total) {
     executeCreatePagination = false;
+    console.log("reject filter page active");
   
   //jika page_total tidak melebihi max_button
   //tidak ada yang terjadi. (hanya berjalan normal)
@@ -388,13 +390,15 @@ function setPagination() {
   
   //selain itu, maka, emmmmm buat execute false atau error
   //karena gatau lagi masuk ke kondisi apa.
-  } else executeCreatePagination = false;
+  } else executeCreatePagination = false; console.log("tanpa filter");
   
-  
+  console.log("execute pagination is", executeCreatePagination);
   
   //eksekusi func createPagination jika kondisi terpenuhi
+  
   if (executeCreatePagination === true) {
     createPagination();
+    
   } else {
     createPagination({page_is_valid: false});
   }
@@ -417,6 +421,7 @@ function createPagination(params = {
   
   
   console.log(params.page_is_valid);
+  /*
   if (params.page_is_valid === false || data.length === undefined) {
     data_table.style.display = "none";
     document.querySelector("div.no-result").style.display = "flex";
@@ -425,7 +430,7 @@ function createPagination(params = {
     data_table.style.display = "block";
     document.querySelector("div.no-result").style.display = "none";
   }
-  
+  */
   
   
   // buat button berdasarkan data global.
@@ -512,7 +517,8 @@ function createTable(column = ["nama", "no_hp"]) {
     row = `<tr><td>${i+1}</td>${row}</tr>`;
     result += row;
   }
-  
+  console.log(result);
+  console.log(data_table);
   data_table.innerHTML = result;
   
 }
@@ -525,12 +531,11 @@ function createTable(column = ["nama", "no_hp"]) {
 
 
 
-
 document.addEventListener("DOMContentLoaded", function() {
   document.body.addEventListener("click", function(e) {
     
     //event request contents
-    if (e.target.tagName === "A" && e.target.closest("nav")) {
+    if ( e.target.tagName === "A" && e.target.closest("nav") ) {
       e.preventDefault();
       document.querySelector("main header h2").innerText = e.target.innerText;
       
@@ -554,7 +559,8 @@ document.addEventListener("DOMContentLoaded", function() {
         type: "GET",
         resultType: "contents"
       });
-    }
+    } //end event request contents
+    
     
     //event close nav pada navlinks
     if (e.target === checkbox || e.target === nav_links) {
@@ -564,44 +570,80 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     
-    
-    
     //** event dashboard
     //switch content type
-    
     if ( e.target.classList.contains("switch-content") ) {
       let switch_content = e.target.innerText.toLowerCase().replace(" ", "-");
       
-      
       document.querySelector(`.dashboard .${switch_content}`).style.display = "flex";
+      document.querySelector(`.dashboard .${switch_content}`).classList.add("content-active");
       
       document.querySelector(`.dashboard .${switch_content}`).previousElementSibling.style.display = "none";
+      document.querySelector(`.dashboard .${switch_content}`).previousElementSibling.classList.remove("content-active");
+      
       document.querySelector(`.dashboard .${switch_content}`).nextElementSibling.style.display = "none";
+      document.querySelector(`.dashboard .${switch_content}`).nextElementSibling.classList.remove("content-active");
       
       e.target.parentElement.style.display = "flex";
-    }
-    //console.log(e.target);
+      
+      // event binding content search
+      if ( e.target.innerText === "Search Costumer" ) {
+        data_table = document.querySelector(".data-table");
+        // event dashboard 
+        main({
+          directory: "../App/index.php?",
+          url: "url=Pelanggan/liveSearch",
+          keyword: "",
+          type: "GET",
+          resultType: "json"
+        });
+        
+        if (typeof data === "object") {
+          console.log("sangat ok");
+          setPagination();
+          createTable();
+        }
+      } // end event binding content search
+    } // end event switch content
     
-  });
+    //event button pagination
+    if ( main_content.classList.contains("dashboard") ) {
+      console.log(main_content.lastElementChild);
+      if (e.target.tagName === "A" && (e.target.classList.contains("disable") || e.target.classList.contains("active"))) {
+        e.preventDefault();
+      } else if (e.target.tagName === "A" && e.target.classList.contains("smooth")) {
+        document.documentElement.style.scrollBehavior = "smooth";
+          
+        let to_page = e.target.dataset.topage;
+        page_active = to_page;
+              
+        //binding error kondisi.
+        //hanya di binding saat request dari button.
+        if (page_active == 0) {
+          page_active = 1;
+        } else if (page_active > page_total) {
+          page_active = page_total;
+        } else setPagination(); createTable(); 
+      } // end else if
+    } // end event button pagination
+  }); //end event delegation
   
   /*** *** *** Dashboard func *** *** ***/
   
   //**set Configure data
   goto = "content";
-  max_data = 10;
+  max_data = 2;
   max_button = 5;
   page_active = 1;
   first_link_page = 1;
   first_data_number = 1;
   page_total = Math.ceil(data.length / max_data);
   
-  data_table = document.querySelector(".data-table");
-  data;
-  
-  main();
   
   
-});
+  
+}); //end function LoadDOM
+
 
 </script>
 </body>
