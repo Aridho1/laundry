@@ -13,7 +13,8 @@ window.location.href = "http://localhost:8080/Acoding/WebLeague/Project/Laundry/
 define('BASEURL', $base_uri .'App/');
 define('LOCAL', BASEURL .'index.php?url=');
 
-define('DB_HOST', '0.0.0.0:3306');
+// define('DB_HOST', '0.0.0.0:3306');
+define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'laundri_db');

@@ -109,8 +109,9 @@ if (isset($_GET["button-add-pelanggan"])) {
   text-align: center;
 }
 
-.dashboard .search-costumer table {
+.dashboard table {
   width: 500px;
+  margin: auto;
 }
 
 .dashboard .search-costumer tr {
@@ -128,7 +129,7 @@ if (isset($_GET["button-add-pelanggan"])) {
   
 }
 
-.dashboard .search-costumer div.no-result {
+.dashboard div.no-result {
   position: absolute;
   
   top:0;
@@ -141,7 +142,7 @@ if (isset($_GET["button-add-pelanggan"])) {
 }
 
 /* STYLE PAGES */
-.dashboard .search-costumer .pages {
+.dashboard .pages {
   list-style: none;
   
   display: flex;
@@ -152,7 +153,7 @@ if (isset($_GET["button-add-pelanggan"])) {
   padding: 10px 5px;
 }
 
-.dashboard .search-costumer .pages li a {
+.dashboard .pages li a {
   text-decoration: none;
   border: 2px solid black;
   border-radius: 20%;
@@ -166,31 +167,31 @@ if (isset($_GET["button-add-pelanggan"])) {
   scroll-behavior: smooth;
 }
 
-.dashboard .search-costumer .pages li a.first-page,
-.dashboard .search-costumer .pages li a.previous-page,
-.dashboard .search-costumer .pages li a.next-page,
-.dashboard .search-costumer .pages li a.last-page {
+.dashboard .pages li a.first-page,
+.dashboard .pages li a.previous-page,
+.dashboard .pages li a.next-page,
+.dashboard .pages li a.last-page {
   font-size: 0.68em;
 }
 
-.dashboard .search-costumer .previous-page {
+.dashboard .previous-page {
   margin-right: 30px;
 }
 
-.dashboard .search-costumer .next-page {
+.dashboard .next-page {
   margin-left: 30px;
 }
 
-.dashboard .search-costumer a.active {
+.dashboard a.active {
   background-color: #5558ff;
   color: white;
 }
 
-.dashboard .search-costumer a.disabled {
-  pointer-event: none;
+.dashboard a.disabled {
+  pointer-events: none;
 }
 
-.dashboard .search-costumer a.smooth {
+.dashboard a.smooth {
   scroll-behavior: smooth;
 }
 
@@ -334,6 +335,9 @@ photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;
 
 let data_tabel, data_js;
+
+
+
 
 
 //func
@@ -510,6 +514,41 @@ function createTable(column = ["nama", "no_hp"]) {
 }
 
 
+
+
+
+
+
+let select_paket = document.getElementById("list-paket");
+let option_paket = "";
+let inputBerat = document.querySelector("#berat");
+let berat = 0;
+let inputHarga = document.querySelector("#harga");
+let harga = 3000;
+function createHarga(params = [
+    ["Biasa", 3000],
+    ["Cepat", 5000],
+    ["Kilat", 7000]
+]) 
+{
+    let code = ``;
+    for (let i = 0; i < params.length; i++) {
+        code += `<option class="comboB${i}" data-harga="${params[i][1]}" value="${params[i][0]}">${params[i][0]}</option>`;
+    }
+    console.log(code);
+    select_paket.innerHTML = code;
+}
+
+
+
+
+function calcTotal() {
+    //console.log(`harga = ${harga}, berat = ${berat}`)
+    $("#total-harga").val(harga * berat);
+}
+
+
+
 /*** *** *** End Dashboard func *** *** ***/
 
 
@@ -559,18 +598,45 @@ document.addEventListener("DOMContentLoaded", function() {
     //** event dashboard
     //switch content type
     if ( e.target.classList.contains("switch-content") ) {
-      let switch_content = e.target.innerText.toLowerCase().replace(" ", "-");
       
-      document.querySelector(`.dashboard .${switch_content}`).style.display = "flex";
-      document.querySelector(`.dashboard .${switch_content}`).classList.add("content-active");
-      
-      document.querySelector(`.dashboard .${switch_content}`).previousElementSibling.style.display = "none";
-      document.querySelector(`.dashboard .${switch_content}`).previousElementSibling.classList.remove("content-active");
-      
-      document.querySelector(`.dashboard .${switch_content}`).nextElementSibling.style.display = "none";
-      document.querySelector(`.dashboard .${switch_content}`).nextElementSibling.classList.remove("content-active");
-      
-      e.target.parentElement.style.display = "flex";
+      let listContent = [
+        "Add Costumer",
+        "Search Costumer",
+        "Add Order",
+        "Search Order"
+      ];
+
+    for (let i = 0; i < listContent.length; i++) {
+        let switch_content = listContent[i];
+        let switch_class = switch_content.toLowerCase().replace(/ /g, "-"); // Mengganti semua spasi dengan tanda strip
+        console.log('.dashboard .' + switch_class);
+        console.log(document.querySelector('.dashboard .' + switch_class));
+        
+        if (e.target.innerText === listContent[i]) {
+            document.querySelector('.dashboard .' + switch_class)
+                .style.display = "flex";
+            document.querySelector('.dashboard .' + switch_class)
+                .classList.add("content-active");
+        } else {
+            document.querySelector('.dashboard .' + switch_class)
+                .style.display = "none";
+            document.querySelector('.dashboard .' + switch_class)
+                .classList.remove("content-active");
+        }
+      }
+
+      if (e.target.innerText === listContent[2]) {
+          select_paket = document.getElementById("list-paket");
+          option_paket = "";
+          inputBerat = document.querySelector("#berat");
+          berat = 0;
+          inputHarga = document.querySelector("#harga");
+          harga = 3000;
+
+          createHarga();
+
+      }
+    
       
       // event binding content search
       if ( e.target.innerText === "Search Costumer" ) {
@@ -626,6 +692,23 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       } //end event search costumer
     } // end event button pagination
+
+    if ( e.target == document.querySelector( ".dashboard .add-order" ) ) {
+      select_paket.addEventListener("change", function() {
+        harga = select_paket.options[select_paket.selectedIndex].dataset.harga;
+        inputHarga.value = harga;
+        option_paket = select_paket.value;
+        
+        calcTotal();
+      });
+
+      inputBerat.addEventListener("input", function() {
+        berat = inputBerat.value;
+        if (berat == "" || berat <= 0) berat = 0;
+        calcTotal();
+      });
+    }
+
   }); //end event delegation
   
   /*** *** *** Dashboard func *** *** ***/
