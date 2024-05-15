@@ -625,6 +625,22 @@ document.addEventListener("DOMContentLoaded", function() {
           page_active = page_total;
         } else setPagination(); createTable(); 
       } // end else if
+      else if ( e.target === document.querySelector( ".search-group button" ) ) {
+    console.log(e.target.previousElementSibling.value);
+        main({
+          directory: "../App/index.php?",
+          url: "url=Pelanggan/liveSearch",
+          keyword: e.target.previousElementSibling.value,
+          type: "GET",
+          resultType: "json"
+        });
+        
+        if (typeof data === "object") {
+          console.log("sangat ok");
+          setPagination();
+          createTable();
+        }
+      }
     } // end event button pagination
   }); //end event delegation
   
