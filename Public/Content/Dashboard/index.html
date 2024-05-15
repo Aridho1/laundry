@@ -2,6 +2,8 @@
     <div class="content-type">
       <h4 class="switch-content">Add Costumer</h4>
       <h4 class="switch-content">Search Costumer</h4>
+      <h4 class="switch-content">Add Order</h4>
+      <h4 class="switch-content">Search Order</h4>
     </div>
     
     <div class="add-costumer">
@@ -80,4 +82,144 @@
       
     </ul>
     </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="add-order" style="display: none;">
+    <form action="" methode="POST">
+      <table>
+        <tr>
+          <td>
+            <label for="nama">Name : </label>
+          </td>
+          <td>
+            <input type="text" class="nama" id="nama" name="nama" required>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="no_hp">Phone Num : </label>
+          </td>
+          <td>
+            <input type="number" class="no_hp" id="no_hp" name="no_hp" required>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="paket">Package : </label>
+          </td>
+          <td>
+            <!-- <input type="text" class="paket" id="paket" name="paket" required> -->
+            <select>
+              
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="harga">Harga : </label>
+          </td>
+          <td>
+            <input type="number" class="harga" id="harga" name="harga" required>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="berat">Berat : </label>
+          </td>
+          <td>
+            <input type="number" class="berat" id="berat" name="berat" required>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="harga_total">Phone Num : </label>
+          </td>
+          <td>
+            <input type="number" class="harga_total" id="harga_total" name="harga_total" required>
+          </td>
+        </tr>
+        
+      </table>
+      <div class="button-group">
+        <button type="button" id="cancel">Cancel</button>
+        <button type="sumbit" id="button-add-pesanan" name="button-add-pemesanan">Submit</button>
+      </div>
+    </form>
+    </div>
+    
+    <div class="search-order" style="display: none;">
+      <div class="search-group">
+        <input type="text" class="input-search-order" id="search-costumer" name="input-search-order" placeholder="Input date..   [blank = all]">
+        <button>Search</button>
+      </div>
+    <table class="data-table" border="0.2" style="width: 500px;">
+        
+          <tr>
+            <th>No</th>
+            <th>Nama</th>
+            <th>paket</th>
+          </tr>
+          <!-- <?php /*createTableData();*/ ?> -->
+          
+          <tr>
+            <td>1</td>
+            <td>Zunn</td>
+            <td>Biasa
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Ay</td>
+            <td>Cepat</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Zhong</td>
+            <td>Kilat</td>
+          </tr>
+        
+      </table>
+      <div class="no-result"></div>
+      
+      <ul class="pages">
+      <!-- <?php /*createPagination();*/ ?> -->
+      
+      
+      <li><a href="#" class="first-page">&laquo&laquo</a></li>
+      <li><a href="#" class="previous">&laquo</a></li>
+      <li><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+      <li><a href="#">4</a></li>
+      <li><a href="#">5</a></li>
+      <li><a href="#" class="next-page">&raquo</a></li>
+      <li><a href="#" class="last-page">&raquo&raquo</a></li>
+      
+    </ul>
+    </div>
     <div class="no-content" style="display: none;"></div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+

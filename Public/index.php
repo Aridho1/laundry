@@ -91,12 +91,6 @@ if (isset($_GET["button-add-pelanggan"])) {
   justify-content: center;
   align-items: center;
   
-  
-  /*
-  display: grid;
-  grid-template-rows: minmax(30px, 50px) minmax(350px, auto) auto;
-  */
-  
   gap: 15px;
   scroll-behavior: smooth;
   position: relative;
@@ -163,8 +157,8 @@ if (isset($_GET["button-add-pelanggan"])) {
   border: 2px solid black;
   border-radius: 20%;
   
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   
   display: flex;
   justify-content: center;
@@ -345,8 +339,6 @@ let data_tabel, data_js;
 //func
 
 function setPagination() {
-  console.log(data);
-  console.log(typeof data);
   
   //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
   max_data = parseInt(max_data);
@@ -364,7 +356,6 @@ function setPagination() {
   
   if (page_active < 0 || page_active > page_total) {
     executeCreatePagination = false;
-    console.log("reject filter page active");
   
   //jika page_total tidak melebihi max_button
   //tidak ada yang terjadi. (hanya berjalan normal)
@@ -390,10 +381,7 @@ function setPagination() {
   
   //selain itu, maka, emmmmm buat execute false atau error
   //karena gatau lagi masuk ke kondisi apa.
-  } else executeCreatePagination = false; console.log("tanpa filter");
-  
-  console.log("execute pagination is", executeCreatePagination);
-  
+  } else executeCreatePagination = false; 
   //eksekusi func createPagination jika kondisi terpenuhi
   
   if (executeCreatePagination === true) {
@@ -420,7 +408,7 @@ function createPagination(params = {
   page_total = Math.ceil(data.length / max_data);
   
   
-  console.log(params.page_is_valid);
+  
   /*
   if (params.page_is_valid === false || data.length === undefined) {
     data_table.style.display = "none";
@@ -517,8 +505,6 @@ function createTable(column = ["nama", "no_hp"]) {
     row = `<tr><td>${i+1}</td>${row}</tr>`;
     result += row;
   }
-  console.log(result);
-  console.log(data_table);
   data_table.innerHTML = result;
   
 }
@@ -599,7 +585,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         
         if (typeof data === "object") {
-          console.log("sangat ok");
           setPagination();
           createTable();
         }
@@ -608,7 +593,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
     //event button pagination
     if ( main_content.classList.contains("dashboard") ) {
-      console.log(main_content.lastElementChild);
       if (e.target.tagName === "A" && (e.target.classList.contains("disable") || e.target.classList.contains("active"))) {
         e.preventDefault();
       } else if (e.target.tagName === "A" && e.target.classList.contains("smooth")) {
@@ -625,8 +609,9 @@ document.addEventListener("DOMContentLoaded", function() {
           page_active = page_total;
         } else setPagination(); createTable(); 
       } // end else if
+      // event search pelanggan
       else if ( e.target === document.querySelector( ".search-group button" ) ) {
-    console.log(e.target.previousElementSibling.value);
+    
         main({
           directory: "../App/index.php?",
           url: "url=Pelanggan/liveSearch",
@@ -636,11 +621,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         
         if (typeof data === "object") {
-          console.log("sangat ok");
           setPagination();
           createTable();
         }
-      }
+      } //end event search costumer
     } // end event button pagination
   }); //end event delegation
   
