@@ -89,6 +89,7 @@ if (!session_id()) session_start();
   
   margin: 15px auto;
   text-align: center;
+  font-size: 0.8em;
 }
 
 .dashboard #table-costumer,
@@ -102,7 +103,7 @@ if (!session_id()) session_start();
 }
 
 .dashboard tr th {
-  min-width: 100px;
+  min-width: 80px;
 }
 
 .dashboard .search-costumer tr:nth-child(odd),
@@ -352,7 +353,7 @@ let day = new Date();
 
 //func
 
-function setPagination() {
+function setPagination(data = data__costumer, pages = document.querySelector(".pages-search-costumer")) {
   
   //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
   max_data = parseInt(max_data);
@@ -399,25 +400,23 @@ function setPagination() {
   //eksekusi func createPagination jika kondisi terpenuhi
   
   if (executeCreatePagination === true) {
-    createPagination();
-    
+    createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages);
   } else {
-    createPagination({page_is_valid: false});
+    createPagination(data, {page_is_valid: false}, pages);
   }
   
 }
 
-function createPagination(params = {
+function createPagination(data, params = {
   page_is_valid: true,
   primary_button: true,
   primary_button_lvl_2: true
-}) {
+}, pages = document.querySelector(".pages-search-costumer") ) {
   
   //inisiasi result
   let result = "";
   
-  //ambil elemen dengan class pages
-  let pages = document.querySelector(".pages");
+  //timpa elemen dengan class pages
   pages.innerHTML = pages.innerHTML;
   page_total = Math.ceil(data.length / max_data);
   
@@ -463,8 +462,6 @@ function createPagination(params = {
       ${result}
     <li><a href="#${goto}" class="last-page ${checkPageActive(page_total, ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
   }
-  
-  
   //ubah isi elemen dengan class pages menjadi result
   pages.innerHTML = result;
   
@@ -487,8 +484,7 @@ function checkPageActive(binding, return_value = [true, false]) {
 
 
 
-function createTable(column = ["nama", "no_hp", " action"]) {
-  
+function createTable(  data, column = ["nama", "no_hp", "action"], data_table = document.querySelector("#table-costumer")  ) {
   let result = "";
   
   first_data_number = (page_active - 1) * max_data;
@@ -545,7 +541,6 @@ function createHarga(params = [
     for (let i = 0; i < params.length; i++) {
         code += `<option class="comboB${i}" data-harga="${params[i][1]}" value="${params[i][0]}">${params[i][0]}</option>`;
     }
-    console.log(select_paket);
     select_paket.innerHTML = code;
 }
 
@@ -585,7 +580,7 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("logout");
       
       main_content.classList.add(e.target.innerText.toLowerCase());
-      
+      console.log("dashhh");
       
       main({
         directory: `Content/${e.target.innerText}/index.html`,
@@ -593,20 +588,29 @@ document.addEventListener("DOMContentLoaded", function() {
         keyword: "",
         type: "GET",
         resultType: "contents"
-      }, function(response) {
-        // Event dashboard
-        if (e.target.innerText === "Dashboard") {
-          document.querySelector("#date").value = today;
-          select_paket = document.getElementById("list-paket");
-          option_paket = "";
-          inputBerat = document.querySelector("#berat");
-          berat = 0;
-          inputHarga = document.querySelector("#harga");
-          harga = 3000;
-
-          createHarga();
-        } // end event dashboard
+      }, function(result) {
+        if ( typeof result === "string" ) {
+          
+          data__contents = result;
+          main_content.innerHTML = data__contents;
+          
+          //event dashboard
+          if (e.target.innerText === "Dashboard") {
+            document.querySelector("#date").value = today;
+            select_paket = document.getElementById("list-paket");
+            option_paket = "";
+            inputBerat = document.querySelector("#berat");
+            berat = 0;
+            inputHarga = document.querySelector("#harga");
+            harga = 3000;
+  
+            createHarga();
+          //end event dashboard
+          }
+        //jika result bukan string : 
+        } else console.error(result);
       });
+      
 
     } //end event request contents
     
@@ -655,18 +659,36 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(result) {
           if ( result.status === true ) {
             data__costumer = result.result;
-            setPagination();
-            createTable();
+            setPagination(data__costumer);
+            createTable(data__costumer);
           } else console.error(result);
         });
-      } // end event binding content search
-      //event add order
+      // end event binding content search
+      } //event add order
       else if (e.target.innerText === listContent[2]) {
           //hilangkan form. karena harus di akses dengan button order pada search costumer
           document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = 'none';
           document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = 'flex';
           
-      } //end event add order
+      //end event add order
+      } //event search order
+      else if ( e.target.innerText === listContent[3] ) {
+        main({
+          directory: "../App/index.php?",
+          url: "url=Pemesanan/liveSearch",
+          keyword: e.target.previousElementSibling.value,
+          type: "GET",
+          resultType: "json"
+        }, function(result) {
+          if (result.status === true) {
+            data__order = result.result;
+            console.log(data__order);
+            page_active = 1;
+            setPagination(data__order, document.querySelector(".pages-search-order"));
+            createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+          } else console.error(result);
+        });
+      }
     } // end event switch content
     
     //event button pagination
@@ -678,14 +700,20 @@ document.addEventListener("DOMContentLoaded", function() {
           
         let to_page = e.target.dataset.topage;
         page_active = to_page;
-              
+        console.log(e.target.parentElement.parentElement.parentElement);
         //binding error kondisi.
         //hanya di binding saat request dari button.
         if (page_active == 0) {
           page_active = 1;
         } else if (page_active > page_total) {
           page_active = page_total;
-        } else setPagination(); createTable(); 
+        } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-costumer") ) {
+          setPagination(data__costumer); 
+          createTable(data__costumer);
+        } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-order") ) {
+          setPagination(data__order, document.querySelector(".pages-search-order"));
+          createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+        }
       } // end else if
       // event search pelanggan
       else if ( e.target === document.querySelector( ".search-costumer .search-group button" ) ) {
@@ -697,14 +725,17 @@ document.addEventListener("DOMContentLoaded", function() {
           type: "GET",
           resultType: "json"
         }, function(result) {
+          console.log(result.result);
           if ( result.status === true ) {
             data__costumer = result.result;
-            setPagination();
-            createPagination();
-          } console.error(result);
+            page_active = 1;
+            setPagination(data__costumer);
+            createTable(data__costumer);
+          } else console.error(result);
         });
       //end event search costumer
       } else if ( e.target === document.querySelector(".search-order .search-group button") ) {
+        console.log("search order input");
         main({
           directory: "../App/index.php?",
           url: "url=Pemesanan/liveSearch",
@@ -714,6 +745,10 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(result) {
           if (result.status === true) {
             data__order = result.result;
+            console.log(data__order);
+            page_active = 1;
+            setPagination(data__order, document.querySelector(".pages-search-order"));
+            createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
           } else console.error(result);
         });
       //end event search order

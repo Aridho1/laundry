@@ -217,4 +217,9 @@ main .content.dashboard {
   .menu-toggle {
     display: flex;
   }
+  
+  /* Dashboard */
+  .dashboard table {
+    font-size: 0.2em;
+  }
 }
