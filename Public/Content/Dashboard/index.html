@@ -103,7 +103,7 @@
               <label for="nama">Name : </label>
             </td>
             <td>
-              <input type="text" class="nama" name="nama" required>
+              <input type="text" class="nama" name="nama" readonly required>
             </td>
           </tr>
           <tr>
@@ -111,7 +111,7 @@
               <label for="no_hp">Phone Num : </label>
             </td>
             <td>
-              <input type="number" class="no_hp" name="no_hp" required>
+              <input type="number" class="no_hp" name="no_hp" readonly required>
             </td>
           </tr>
           <tr>
@@ -158,6 +158,10 @@
           <button type="sumbit" id="button-add-order" name="button-add-order">Submit</button>
         </div>
       </form>
+      <div class="form-no-permission" style="display: none;">
+        <p>Sorry! You Dont Have <strong>Permission</strong> to Access This Features.</p>
+        <p>You Must <strong>Click</strong> Order button for Table Search Costumer to Access This Feature.</p>
+      </div>
     </div>
 
     <div class="search-order" style="display: none;">

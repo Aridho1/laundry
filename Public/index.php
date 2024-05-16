@@ -141,6 +141,18 @@ if (isset($_GET["button-add-pelanggan"])) {
   display: none;
 }
 
+/*** Dashboard - add order ***/
+.dashboard .add-order .form-no-permission {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  
+  text-align: center;
+  margin: auto;
+}
+
 /* STYLE PAGES */
 .dashboard .pages {
   list-style: none;
@@ -336,7 +348,13 @@ let goto, max_data, max_button, page_active, first_link_page, first_data_number,
 
 let data_tabel, data_js;
 
-
+let listContent = [
+  "Add Costumer",
+  "Search Costumer",
+  "Add Order",
+  "Search Order"
+];
+let switch_class = [];
 
 
 
@@ -477,7 +495,7 @@ function checkPageActive(binding, return_value = [true, false]) {
 
 
 
-function createTable(column = ["nama", "no_hp"]) {
+function createTable(column = ["nama", "no_hp", " action"]) {
   
   let result = "";
   
@@ -501,12 +519,12 @@ function createTable(column = ["nama", "no_hp"]) {
     let row = "";
     
     
-    for(let ii = 0; ii < column.length; ii++) {
-      row += `<td>${data[i][column[ii]]}</td>`;
+    for(let ii = 0; ii < column.length - 1; ii++) {
       
+      row += `<td>${data[i][column[ii]]}</td>`;
     }
     
-    row = `<tr><td>${i+1}</td>${row}</tr>`;
+    row = `<tr><td>${i+1}</td>${row}<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td></tr>`;
     result += row;
   }
   data_table.innerHTML = result;
@@ -535,7 +553,6 @@ function createHarga(params = [
     for (let i = 0; i < params.length; i++) {
         code += `<option class="comboB${i}" data-harga="${params[i][1]}" value="${params[i][0]}">${params[i][0]}</option>`;
     }
-    console.log(code);
     select_paket.innerHTML = code;
 }
 
@@ -543,8 +560,8 @@ function createHarga(params = [
 
 
 function calcTotal() {
-    //console.log(`harga = ${harga}, berat = ${berat}`)
-    $("#total-harga").val(harga * berat);
+    //$("#total-harga").val(harga * berat);
+    document.querySelector("#harga_total").value = harga * berat;
 }
 
 
@@ -598,48 +615,28 @@ document.addEventListener("DOMContentLoaded", function() {
     //** event dashboard
     //switch content type
     if ( e.target.classList.contains("switch-content") ) {
-      
-      let listContent = [
-        "Add Costumer",
-        "Search Costumer",
-        "Add Order",
-        "Search Order"
-      ];
 
     for (let i = 0; i < listContent.length; i++) {
         let switch_content = listContent[i];
-        let switch_class = switch_content.toLowerCase().replace(/ /g, "-"); // Mengganti semua spasi dengan tanda strip
-        console.log('.dashboard .' + switch_class);
-        console.log(document.querySelector('.dashboard .' + switch_class));
+        switch_class[i] = switch_content.toLowerCase().replace(/ /g, "-"); // Mengganti semua spasi dengan tanda strip
+        
         
         if (e.target.innerText === listContent[i]) {
-            document.querySelector('.dashboard .' + switch_class)
+            document.querySelector('.dashboard .' + switch_class[i])
                 .style.display = "flex";
-            document.querySelector('.dashboard .' + switch_class)
+            document.querySelector('.dashboard .' + switch_class[i])
                 .classList.add("content-active");
         } else {
-            document.querySelector('.dashboard .' + switch_class)
+            document.querySelector('.dashboard .' + switch_class[i])
                 .style.display = "none";
-            document.querySelector('.dashboard .' + switch_class)
+            document.querySelector('.dashboard .' + switch_class[i])
                 .classList.remove("content-active");
         }
       }
 
-      if (e.target.innerText === listContent[2]) {
-          select_paket = document.getElementById("list-paket");
-          option_paket = "";
-          inputBerat = document.querySelector("#berat");
-          berat = 0;
-          inputHarga = document.querySelector("#harga");
-          harga = 3000;
-
-          createHarga();
-
-      }
-    
       
       // event binding content search
-      if ( e.target.innerText === "Search Costumer" ) {
+      if ( e.target.innerText === listContent[1] ) {
         data_table = document.querySelector(".data-table");
         // event dashboard 
         main({
@@ -655,6 +652,22 @@ document.addEventListener("DOMContentLoaded", function() {
           createTable();
         }
       } // end event binding content search
+      //event add order
+      else if (e.target.innerText === listContent[2]) {
+          select_paket = document.getElementById("list-paket");
+          option_paket = "";
+          inputBerat = document.querySelector("#berat");
+          berat = 0;
+          inputHarga = document.querySelector("#harga");
+          harga = 3000;
+
+          createHarga();
+          
+          //hilangkan form. karena harus di akses dengan button order pada search costumer
+          document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = 'none';
+          document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = 'flex';
+          
+      } //end event add order
     } // end event switch content
     
     //event button pagination
@@ -692,23 +705,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       } //end event search costumer
     } // end event button pagination
-
-    if ( e.target == document.querySelector( ".dashboard .add-order" ) ) {
-      select_paket.addEventListener("change", function() {
-        harga = select_paket.options[select_paket.selectedIndex].dataset.harga;
-        inputHarga.value = harga;
-        option_paket = select_paket.value;
-        
-        calcTotal();
-      });
-
-      inputBerat.addEventListener("input", function() {
-        berat = inputBerat.value;
-        if (berat == "" || berat <= 0) berat = 0;
-        calcTotal();
-      });
-    }
-
   }); //end event delegation
   
   /*** *** *** Dashboard func *** *** ***/
@@ -723,9 +719,58 @@ document.addEventListener("DOMContentLoaded", function() {
   page_total = Math.ceil(data.length / max_data);
   
   
+  //delegation lv 2 => main => input
+  document.querySelector("main").addEventListener("input", function(e) {
+    
+    //change harga
+    if ( e.target.tagName == "SELECT" && e.target.closest(".add-order") ) {
+      harga = select_paket.options[select_paket.selectedIndex].dataset.harga;
+      inputHarga.value = harga;
+      option_paket = select_paket.value;
+      
+      calcTotal();
+      
+    //end change harga
+    //change berat
+    } else if ( e.target === document.querySelector("#berat") ) {
+      berat = inputBerat.value;
+      if (berat == "" || berat <= 0) berat = 0;
+      calcTotal();
+    //end change berat
+    }
+    
+  }); 
   
+  // delegation lv 2 => main => click
+  document.querySelector("main").addEventListener("click", function(e) {
+    //event to-order
+    if ( e.target.classList.contains("to-order") ) {
+      document.querySelector('.dashboard .add-order')
+                .style.display = "flex";
+            document.querySelector('.dashboard .add-order')
+                .classList.add("content-active");
+                
+                document.querySelector('.dashboard .search-costumer')
+                .style.display = "none";
+            document.querySelector('.dashboard .search-costumer')
+                .classList.remove("content-active");
+      
+      //change display
+      document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = "block";
+      document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = "none";
+      
+      
+      //isi input berdasarkan baris table pasa button yang di klik
+      document.querySelector(".dashboard .add-order .nama").value = data[e.target.dataset.data_loop]["id"];
+      document.querySelector(".dashboard .add-order .no_hp").value = data[e.target.dataset.data_loop]["no_hp"];
+      
+      
+    } //end event button to-order
+  }); //end delegation lv 2
   
 }); //end function LoadDOM
+
+
 
 
 </script>
