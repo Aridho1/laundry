@@ -2,9 +2,10 @@
 
 if (!session_id()) session_start();
 
-//  $db = new mysqli("0.0.0.0:3306", "root", "", "laundri_db");
-$db = new mysqli("localhost", "root", "", "laundri_db");
-$base_url = "../Public/index.php";
+
+$db = new mysqli("0.0.0.0:3306", "root", "", "laundri_db");
+//$db = new mysqli("localhost", "root", "", "laundri_db");
+$base_url = "../../Public/index.php";
 
 echo "<script>
   let base_url = '$base_url';
@@ -92,7 +93,8 @@ function addData($request, $type ="pesan") {
               ";
     mysqli_query($db, $query);
     
-
+    
+        
     return $result;
   
   // jika type adalah pelanggan, request ke tabel pelanggan

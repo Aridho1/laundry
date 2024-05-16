@@ -34,7 +34,8 @@ if (!session_id()) session_start();
 
 
 /*** Dasboard - add ***/
-.dasboard .add-costumer {
+.dasboard .add-costumer,
+.dasboard .add-order {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,50 +54,59 @@ if (!session_id()) session_start();
 }
 
 /*** Dashboard - search ***/
-.dashboard .search-costumer {
+.dashboard .search-costumer,
+.dashboard .search-order {
   background-color: #ddd;
   border-radius: 12px;
   padding: 30px 10px;
   min-height: 100px;
   
-  
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  
+  /*
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 100px 1fr 80px 80px;
+  place-items: end; 
+  */
   
   gap: 15px;
   scroll-behavior: smooth;
   position: relative;
 }
 
-.dashboard .search-costumer > * {
+.dashboard .search-costumer > *,
+.dashboard .search-order > * {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.dashboard .search-costumer .data-table {
+.dashboard .search-costumer .data-table,
+.dashboard .search-order .data-table {
   display: block;
   
   margin: 15px auto;
   text-align: center;
 }
 
-.dashboard table {
-  width: 500px;
+.dashboard #table-costumer,
+.dashboard #table-order {
+  width: 100%;
   margin: auto;
 }
 
-.dashboard .search-costumer tr {
+.dashboard tr {
   min-height: 50px;
 }
 
-.dashboard .search-costumer tr th {
+.dashboard tr th {
   min-width: 100px;
 }
 
-.dashboard .search-costumer tr:nth-child(odd) {
+.dashboard .search-costumer tr:nth-child(odd),
+.dashboard .search-order tr:nth-child(odd) {
   background-color: #ccc;
   padding: 5px 8px;
   border-bottom: 0.7px solid black;
@@ -224,6 +234,9 @@ if (!session_id()) session_start();
 <script>
 
 let data = {};
+let data__costumer = {};
+let data__order = {};
+let data__contents = "";
 let contents = "";
 
 async function fetchData(  url, type, resultType  ) {
@@ -258,7 +271,7 @@ async function main(params = {
     if (params.keyword !== "" && params.keyword !== undefined) params.url += "/" + params.keyword;
     
     let result = await fetchData(params.url, params.type, params.resultType);
-    
+    /*
     if (typeof result === "string") {
       contents = result;
       main_content.innerHTML = contents;
@@ -268,6 +281,7 @@ async function main(params = {
       setPagination();
       createTable();
     }
+    */
 
     // Check if a callback is provided and call it
     if (callback && typeof callback === "function") {
@@ -638,12 +652,13 @@ document.addEventListener("DOMContentLoaded", function() {
           keyword: "",
           type: "GET",
           resultType: "json"
+        }, function(result) {
+          if ( result.status === true ) {
+            data__costumer = result.result;
+            setPagination();
+            createTable();
+          } else console.error(result);
         });
-        
-        if (typeof data === "object") {
-          setPagination();
-          createTable();
-        }
       } // end event binding content search
       //event add order
       else if (e.target.innerText === listContent[2]) {
@@ -673,7 +688,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else setPagination(); createTable(); 
       } // end else if
       // event search pelanggan
-      else if ( e.target === document.querySelector( ".search-group button" ) ) {
+      else if ( e.target === document.querySelector( ".search-costumer .search-group button" ) ) {
     
         main({
           directory: "../App/index.php?",
@@ -681,13 +696,28 @@ document.addEventListener("DOMContentLoaded", function() {
           keyword: e.target.previousElementSibling.value,
           type: "GET",
           resultType: "json"
+        }, function(result) {
+          if ( result.status === true ) {
+            data__costumer = result.result;
+            setPagination();
+            createPagination();
+          } console.error(result);
         });
-        
-        if (typeof data === "object") {
-          setPagination();
-          createTable();
-        }
-      } //end event search costumer
+      //end event search costumer
+      } else if ( e.target === document.querySelector(".search-order .search-group button") ) {
+        main({
+          directory: "../App/index.php?",
+          url: "url=Pemesanan/liveSearch",
+          keyword: e.target.previousElementSibling.value,
+          type: "GET",
+          resultType: "json"
+        }, function(result) {
+          if (result.status === true) {
+            data__order = result.result;
+          } else console.error(result);
+        });
+      //end event search order
+      }
     } // end event button pagination
   }); //end event delegation
   
