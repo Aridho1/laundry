@@ -2,8 +2,8 @@
 
 if (!session_id()) session_start();
 
- $db = new mysqli("0.0.0.0:3306", "root", "", "laundri_db");
-//$db = new mysqli("localhost", "root", "", "laundri_db");
+//  $db = new mysqli("0.0.0.0:3306", "root", "", "laundri_db");
+$db = new mysqli("localhost", "root", "", "laundri_db");
 $base_url = "../Public/index.php";
 
 echo "<script>
@@ -87,9 +87,9 @@ function addData($request, $type ="pesan") {
     
     
     $query = "UPDATE total_pemesanan SET
-               angka = $total_pelanggan_db
-             WHERE id = $id
-             ";
+                angka = $total_pelanggan_db
+              WHERE id = $id
+              ";
     mysqli_query($db, $query);
     
 

@@ -2,48 +2,6 @@
 
 if (!session_id()) session_start();
 
-
-if (isset($_POST)) var_dump($_POST); 
-else echo "Post is undefined";
-if (!session_id()) session_start();
-if (isset($_GET)) var_dump($_GET); 
-else echo "Get is undefined";
-
-
-require "Support/function.php";
-
-if (isset($_GET["button-add-pelanggan"])) {
-    $result = addData($_GET, "pelanggan");
-    $_GET["button-add-pelanggan"] = null;
-    $_GET = [];
-
-    if ($result["affected"] > 0) {
-        print_r($result["last-data"]);
-        
-        echo "<script>alert(\"CONGRATS!!\nSucces To Add Data.\");</script>";
-    } else {
-        echo "<script>alert(\"ERROR!!\nUNKOWN ERROR!!!\n\nDuplicate Data.\");</script>";
-        
-    }
-  
-} else $_GET["button-add-pelanggan"] = null;
-
-if (isset($_GET["button-add-order"])) {
-    $result = addData($_GET, "pemesanan");
-    $_GET["button-add-order"] = null;
-    $_GET = [];
-
-    if ($result["affected"] > 0) {
-        print_r($result["last-data"]);
-        
-        echo "<script>alert(\"CONGRATS!!\nSucces To Add Data.\");</script>";
-    } else {
-        echo "<script>alert(\"ERROR!!\nUNKOWN ERROR!!!\n\nDuplicate Data.\");</script>";
-        
-    }
-    
-} else $_GET["button-add-order"] = null;
-
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -294,30 +252,33 @@ async function main(params = {
   keyword: "",
   type: "GET",
   resultType: "json"
-}) {
+}, callback = null) {
   try {
     params.url = params.directory + params.url;
-    if ( params.keyword !== "" && params.keyword !== undefined ) params.url += "/"+ params.keyword;
+    if (params.keyword !== "" && params.keyword !== undefined) params.url += "/" + params.keyword;
     
     let result = await fetchData(params.url, params.type, params.resultType);
     
     if (typeof result === "string") {
       contents = result;
-      
       main_content.innerHTML = contents;
     } else if (result.status === true) {
       data = result.result;
-      
-        page_active = 1;
-        setPagination();
-        createTable();
-      
+      page_active = 1;
+      setPagination();
+      createTable();
+    }
+
+    // Check if a callback is provided and call it
+    if (callback && typeof callback === "function") {
+      callback(result);
     }
     
   } catch (error) {
     console.error(error);
   }
 }
+
 
 /*
 main({
@@ -372,7 +333,8 @@ let listContent = [
 ];
 let switch_class = [];
 
-
+const today = new Date().toISOString().split('T')[0];
+let day = new Date();
 
 //func
 
@@ -569,6 +531,7 @@ function createHarga(params = [
     for (let i = 0; i < params.length; i++) {
         code += `<option class="comboB${i}" data-harga="${params[i][1]}" value="${params[i][0]}">${params[i][0]}</option>`;
     }
+    console.log(select_paket);
     select_paket.innerHTML = code;
 }
 
@@ -616,7 +579,21 @@ document.addEventListener("DOMContentLoaded", function() {
         keyword: "",
         type: "GET",
         resultType: "contents"
+      }, function(response) {
+        // Event dashboard
+        if (e.target.innerText === "Dashboard") {
+          document.querySelector("#date").value = today;
+          select_paket = document.getElementById("list-paket");
+          option_paket = "";
+          inputBerat = document.querySelector("#berat");
+          berat = 0;
+          inputHarga = document.querySelector("#harga");
+          harga = 3000;
+
+          createHarga();
+        } // end event dashboard
       });
+
     } //end event request contents
     
     
@@ -670,15 +647,6 @@ document.addEventListener("DOMContentLoaded", function() {
       } // end event binding content search
       //event add order
       else if (e.target.innerText === listContent[2]) {
-          select_paket = document.getElementById("list-paket");
-          option_paket = "";
-          inputBerat = document.querySelector("#berat");
-          berat = 0;
-          inputHarga = document.querySelector("#harga");
-          harga = 3000;
-
-          createHarga();
-          
           //hilangkan form. karena harus di akses dengan button order pada search costumer
           document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = 'none';
           document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = 'flex';
@@ -754,7 +722,6 @@ document.addEventListener("DOMContentLoaded", function() {
       calcTotal();
     //end change berat
     }
-    
   }); 
   
   // delegation lv 2 => main => click
@@ -762,15 +729,15 @@ document.addEventListener("DOMContentLoaded", function() {
     //event to-order
     if ( e.target.classList.contains("to-order") ) {
       document.querySelector('.dashboard .add-order')
-                .style.display = "flex";
-            document.querySelector('.dashboard .add-order')
-                .classList.add("content-active");
-                
-                document.querySelector('.dashboard .search-costumer')
-                .style.display = "none";
-            document.querySelector('.dashboard .search-costumer')
-                .classList.remove("content-active");
-      
+        .style.display = "flex";
+      document.querySelector('.dashboard .add-order')
+        .classList.add("content-active");
+          
+      document.querySelector('.dashboard .search-costumer')
+        .style.display = "none";
+      document.querySelector('.dashboard .search-costumer')
+        .classList.remove("content-active");
+
       //change display
       document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = "block";
       document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = "none";

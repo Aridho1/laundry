@@ -6,7 +6,7 @@
     </div>
 
     <div class="add-costumer">
-      <form action="" methode="POST">
+      <form action="Support/form.php" methode="POST">
         <table>
           <tr>
             <td>
@@ -96,14 +96,14 @@
 
 
     <div class="add-order" style="display: none;">
-      <form action="" methode="POST">
+      <form action="Support/form.php" methode="POST">
         <table>
           <tr>
             <td>
               <label for="date">Date : </label>
             </td>
             <td>
-              <input type="date" class="date" name="date" required>
+              <input type="date" id="date" class="date" name="date" required>
             </td>
           </tr>
           <tr>
@@ -124,7 +124,7 @@
           </tr>
           <tr>
             <td>
-              <label for="paket">Package : </label>
+              <label for="list-paket">Package : </label>
             </td>
             <td>
               <!-- <input type="text" class="paket" id="paket" name="paket" required> -->
@@ -148,7 +148,7 @@
               <label for="berat">Berat : </label>
             </td>
             <td>
-              <input type="number" class="berat" id="berat" name="berat" required>
+              <input type="number" class="berat" id="berat" name="berat" value="0" required>
             </td>
           </tr>
           <tr>
@@ -156,7 +156,7 @@
               <label for="harga_total">Harga Total : </label>
             </td>
             <td>
-              <input type="number" class="harga_total" id="harga_total" name="harga_total" readonly required>
+              <input type="number" class="harga_total" id="harga_total" name="harga_total" value="0" readonly required>
             </td>
           </tr>
 
