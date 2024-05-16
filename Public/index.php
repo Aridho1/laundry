@@ -2,13 +2,13 @@
 
 if (!session_id()) session_start();
 
-/*
+
 if (isset($_POST)) var_dump($_POST); 
 else echo "Post is undefined";
 if (!session_id()) session_start();
 if (isset($_GET)) var_dump($_GET); 
 else echo "Get is undefined";
-*/
+
 
 require "Support/function.php";
 
@@ -16,7 +16,6 @@ if (isset($_GET["button-add-pelanggan"])) {
     $result = addData($_GET, "pelanggan");
     $_GET["button-add-pelanggan"] = null;
     $_GET = [];
-    var_dump($result);
 
     if ($result["affected"] > 0) {
         print_r($result["last-data"]);
@@ -26,7 +25,24 @@ if (isset($_GET["button-add-pelanggan"])) {
         echo "<script>alert(\"ERROR!!\nUNKOWN ERROR!!!\n\nDuplicate Data.\");</script>";
         
     }
+  
 } else $_GET["button-add-pelanggan"] = null;
+
+if (isset($_GET["button-add-order"])) {
+    $result = addData($_GET, "pemesanan");
+    $_GET["button-add-order"] = null;
+    $_GET = [];
+
+    if ($result["affected"] > 0) {
+        print_r($result["last-data"]);
+        
+        echo "<script>alert(\"CONGRATS!!\nSucces To Add Data.\");</script>";
+    } else {
+        echo "<script>alert(\"ERROR!!\nUNKOWN ERROR!!!\n\nDuplicate Data.\");</script>";
+        
+    }
+    
+} else $_GET["button-add-order"] = null;
 
 ?>
 <!DOCTYPE html>
@@ -761,7 +777,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       //isi input berdasarkan baris table pasa button yang di klik
-      document.querySelector(".dashboard .add-order .nama").value = data[e.target.dataset.data_loop]["id"];
+      document.querySelector(".dashboard .add-order .nama").value = data[e.target.dataset.data_loop]["nama"];
       document.querySelector(".dashboard .add-order .no_hp").value = data[e.target.dataset.data_loop]["no_hp"];
       
       

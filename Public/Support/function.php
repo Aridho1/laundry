@@ -33,42 +33,46 @@ function addData($request, $type ="pesan") {
   ];
 
   // jika type nya pesan, request ke tabel pemesanan
-  if ($type == "pesan") {
-    $total_pelanggan = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM pemesanan ORDER BY id DESC LIMIT 1;
-    "))["id"];
-    $total_pelanggan += 1;
+  if ($type == "pemesanan") {
+    $total_pelanggan_db = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM total_pemesanan LIMIT 1;
+    "))["angka"];
+    $total_pelanggan = $total_pelanggan_db + 1;
     $total_pelanggan = sprintf("%04d", $total_pelanggan);
 
     $kode = generateRandomHash(6) . $total_pelanggan;
+    $tanggal = htmlspecialchars($request["date"]);
     $nama = htmlspecialchars($request["nama"]);
-    $telepon = htmlspecialchars($request["telepon"]);
+    $no_hp = htmlspecialchars($request["no_hp"]);
     $paket = htmlspecialchars($request["paket"]);
     $harga = htmlspecialchars($request["harga"]);
     $berat = htmlspecialchars($request["berat"]);
-    $total_harga = htmlspecialchars($request["total-harga"]);
+    $total_harga = htmlspecialchars($request["harga_total"]);
+    $status = "Progress";
 
     $query = "INSERT INTO pemesanan (
-            id,
             kode_pemesanan, 
+            tanggal,
             nama, 
-            telepon, 
+            no_hp, 
             paket, 
             harga, 
             berat, 
-            total_harga
+            total_harga,
+            status
             )
             VALUES (
-              '',
               '$kode', 
+              '$tanggal',
               '$nama', 
-              '$telepon', 
+              '$no_hp', 
               '$paket', 
               '$harga', 
               '$berat', 
-              '$total_harga'
+              '$total_harga',
+              '$status'
             )";
     
-    mysqli_query($db, $query);
+    mysqli_query($db,$query);
     
     
     
@@ -78,6 +82,16 @@ function addData($request, $type ="pesan") {
       "last-data" => mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM pemesanan ORDER BY id DESC LIMIT 1;
       "))
     ];
+    $total_pelanggan_db += 1;
+    $id = 1;
+    
+    
+    $query = "UPDATE total_pemesanan SET
+               angka = $total_pelanggan_db
+             WHERE id = $id
+             ";
+    mysqli_query($db, $query);
+    
 
     return $result;
   

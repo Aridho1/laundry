@@ -100,6 +100,14 @@
         <table>
           <tr>
             <td>
+              <label for="date">Date : </label>
+            </td>
+            <td>
+              <input type="date" class="date" name="date" required>
+            </td>
+          </tr>
+          <tr>
+            <td>
               <label for="nama">Name : </label>
             </td>
             <td>
@@ -155,7 +163,7 @@
         </table>
         <div class="button-group">
           <button type="button" id="cancel">Cancel</button>
-          <button type="sumbit" id="button-add-order" name="button-add-order">Submit</button>
+          <button type="sumbit" id="button-add-order" name="button-add-order" value="order">Submit</button>
         </div>
       </form>
       <div class="form-no-permission" style="display: none;">
@@ -166,7 +174,7 @@
 
     <div class="search-order" style="display: none;">
       <div class="search-group">
-        <input type="text" class="input-search-order" id="search-costumer" name="input-search-order"
+        <input type="text" class="input-search-order" id="search-order" name="input-search-order"
           placeholder="Input date..   [blank = all]">
         <button>Search</button>
       </div>
