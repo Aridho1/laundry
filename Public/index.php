@@ -423,7 +423,7 @@ function createPagination(  data, params = {
   let first_data_number = set___undefined(set_page.first_data_number, 1);
   
   let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
-  
+  console.log("page active adalah", page_active)
   //inisiasi result
   let result = "";
   
@@ -452,29 +452,29 @@ function createPagination(  data, params = {
   end_for += first_link_page;
   for (let i = first_link_page; i < end_for; i++) {
     
-    result += `<li><a href="#${goto}" class="${checkPageActive(i, ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
+    result += `<li><a href="#${goto}" class="${checkPageActive([i, page_active], ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
     
   }
   
   //jika primary_button_lvl_2 adalah true, buat button previous dan next yang membungkus button yang sudah dibuat 
   if (params.primary_button_lvl_2 === true) {
-    result = `<li><a href="#${goto}" class="previous-page ${checkPageActive(1, ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
+    result = `<li><a href="#${goto}" class="previous-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
       ${result}
-    <li><a href="#${goto}" class="next-page ${checkPageActive(page_total, ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
+    <li><a href="#${goto}" class="next-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
   }
   
   //sama.
   if (params.primary_button === true) {
-    result = `<li><a href="#${goto}" class="first-page ${checkPageActive(1, ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
+    result = `<li><a href="#${goto}" class="first-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
       ${result}
-    <li><a href="#${goto}" class="last-page ${checkPageActive(page_total, ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
+    <li><a href="#${goto}" class="last-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
   }
   //ubah isi elemen dengan class pages menjadi result
   pages.innerHTML = result;
   
 }
 
-function checkPageActive(binding, return_value = [true, false]) {
+function checkPageActive([binding1, binding2], return_value = [true, false]) {
   /*
   return 
     (binding === page_active)
@@ -482,7 +482,7 @@ function checkPageActive(binding, return_value = [true, false]) {
     : return_value[1];
   */
   
-  if (binding === page_active) {
+  if (binding1 === binding2) {
     return return_value[0];
   
   //
@@ -509,6 +509,7 @@ function createTable(  data, data_table, set_page, column  ) {
   let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
   
   let result = "";
+  console.log(page_active);
   
   first_data_number = (page_active - 1) * max_data;
   
@@ -554,7 +555,7 @@ function create_table_and_pagination(
     page_active, 
     first_link_page, 
     first_data_number,
-    page_total
+    page_total,
   } 
 ) {
   
@@ -599,21 +600,19 @@ function create_table_and_pagination(
   */
   
   set_page.goto = set___undefined(set_page.goto, document.querySelector(".content"));
-    
+    console.log(set_page.goto);
   set_page.max_data = set___undefined(set_page.max_data, 10);
   
   set_page.max_button = set___undefined(set_page.max_button, 5);
-  
+
   set_page.page_active = set___undefined(set_page.page_active, 1);
   
   set_page.first_link_page = set___undefined(set_page.first_link_page, 1);
   
   set_page.first_data_number = set___undefined(set_page.first_data_number, 1);
   
-  set_page.page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
-  
-  
-  //exec
+  let total_page = Math.ceil(data.length / set_page.max_data);
+  set_page.page_total = total_page;
   
   setPagination(data, pages, set_page);
   createTable(data, data_table, set_page, column);
