@@ -353,14 +353,10 @@ let day = new Date();
 
 //func
 
-function setPagination(data = data__costumer, pages = document.querySelector(".pages-search-costumer")) {
+function setPagination(  data, pages, set_page = {}  ) {
   
   //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
-  max_data = parseInt(max_data);
-  page_active = parseInt(page_active);
-  first_link_page = parseInt(first_link_page);
-  first_data_number = parseInt(first_data_number);
-  page_total = parseInt(page_total);
+  set_page.page_active = parseInt(set_page.page_active);
   
   let executeCreatePagination = true;
   
@@ -369,30 +365,30 @@ function setPagination(data = data__costumer, pages = document.querySelector(".p
   
   //gagalkan ekesuki jika : 
   
-  if (page_active < 0 || page_active > page_total) {
+  if (set_page.page_active < 0 || set_page.page_active > set_page.page_total) {
     executeCreatePagination = false;
   
   //jika page_total tidak melebihi max_button
   //tidak ada yang terjadi. (hanya berjalan normal)
-  } else if (page_total <= max_button) {
-    first_link_page = 1;
+  } else if (set_page.page_total <= set_page.max_button) {
+    set_page.first_link_page = 1;
   
   //sampai sini, berarti page_total lebih dari max_button.
   //jika page_active nya tidak berada ditengah atau lebih dari itu. (tengah itu 3, karena buttonnya 5)
   //tidak ada yang terjadi. (hanya berjalan normal)
-  } else if (page_active <= Math.floor(max_button / 2)) {
-    first_link_page = 1;
+  } else if (set_page.page_active <= Math.floor(set_page.max_button / 2)) {
+    set_page.first_link_page = 1;
   
   //sampai sini, berarti page_active nya lebih dari setengah max_button.
   //jika page_activenya belum berada di page hampir terakhir atau terkahir, 
   //maka button page_active harus berada di tengah.
-  } else if (page_total - page_active >= Math.floor(max_button / 2)) {
-    first_link_page = page_active - Math.floor(max_button / 2);
+  } else if (set_page.page_total - set_page.page_active >= Math.floor(set_page.max_button / 2)) {
+    set_page.first_link_page = set_page.page_active - Math.floor(set_page.max_button / 2);
     
   //sampai sini, berarti page_active nya berada di hampir paling terkahir, atau bahkan terkahir.
   //maka button awal alias first_link_page : 
-  } else if (page_total - page_active >= 0) {
-    first_link_page = page_total - max_button + 1;
+  } else if (set_page.page_total - set_page.page_active >= 0) {
+    set_page.first_link_page = set_page.page_total - set_page.max_button + 1;
   
   //selain itu, maka, emmmmm buat execute false atau error
   //karena gatau lagi masuk ke kondisi apa.
@@ -400,25 +396,36 @@ function setPagination(data = data__costumer, pages = document.querySelector(".p
   //eksekusi func createPagination jika kondisi terpenuhi
   
   if (executeCreatePagination === true) {
-    createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages);
+    createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages, set_page);
   } else {
-    createPagination(data, {page_is_valid: false}, pages);
+    createPagination(data, {page_is_valid: false}, pages, set_page);
   }
   
 }
 
-function createPagination(data, params = {
+function createPagination(  data, params = {
   page_is_valid: true,
   primary_button: true,
   primary_button_lvl_2: true
-}, pages = document.querySelector(".pages-search-costumer") ) {
+}, pages, set_page  ) {
+  
+  /* Configure */
+  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
+    
+  let max_data = set___undefined(set_page.max_data, 10);
+  
+  let max_button = set___undefined(set_page.max_button, 5);
+  
+  let page_active = set___undefined(set_page.page_active, 1);
+  
+  let first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  let first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
   
   //inisiasi result
   let result = "";
-  
-  //timpa elemen dengan class pages
-  pages.innerHTML = pages.innerHTML;
-  page_total = Math.ceil(data.length / max_data);
   
   
   
@@ -484,7 +491,23 @@ function checkPageActive(binding, return_value = [true, false]) {
 
 
 
-function createTable(  data, column = ["nama", "no_hp", "action"], data_table = document.querySelector("#table-costumer")  ) {
+function createTable(  data, data_table, set_page, column  ) {
+  
+  /* Configure */
+  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
+    
+  let max_data = set___undefined(set_page.max_data, 10);
+  
+  let max_button = set___undefined(set_page.max_button, 5);
+  
+  let page_active = set___undefined(set_page.page_active, 1);
+  
+  let first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  let first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
+  
   let result = "";
   
   first_data_number = (page_active - 1) * max_data;
@@ -519,9 +542,88 @@ function createTable(  data, column = ["nama", "no_hp", "action"], data_table = 
   
 }
 
+/*
+let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;*/
 
+function create_table_and_pagination(  
+  type = 1, 
+  set_page = {
+    goto, 
+    max_data, 
+    max_button, 
+    page_active, 
+    first_link_page, 
+    first_data_number,
+    page_total
+  } 
+) {
+  
+  /* Configure */
+  
+  let data;
+  let pages;
+  data_table;
+  let column;
+  if (type === 1) { 
+    data = data__costumer;
+    pages = document.querySelector(".pages-search-costumer");
+    data_table = document.querySelector("#table-costumer");
+    column = ["nama", "no_hp", "action"];
+    
+  } else if (type === 2) {
+    data = data__order;
+    pages = document.querySelector(".pages-search-order");
+    data_table = document.querySelector("#table-order");
+    column = ["tanggal", "kode_pemesanan", "status", "action"];
+  }
+  
+  /*
+  if (set_page.goto === undefined) set_page.goto = document.querySelector(".content");
+  if (set_page.max_data === undefined) set_page.max_data = 10;
+  if (set_page.max_button === undefined) set_page.max_button = 5;
+  */
+  /*
+  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
+    
+  let max_data = set___undefined(set_page.max_data, 10);
+  
+  let max_button = set___undefined(set_page.max_button, 5);
+  
+  let page_active = set___undefined(set_page.page_active, 1);
+  
+  let first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  let first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  let page_total = set___undefined(set_page.page_total, 1);
+  */
+  
+  set_page.goto = set___undefined(set_page.goto, document.querySelector(".content"));
+    
+  set_page.max_data = set___undefined(set_page.max_data, 10);
+  
+  set_page.max_button = set___undefined(set_page.max_button, 5);
+  
+  set_page.page_active = set___undefined(set_page.page_active, 1);
+  
+  set_page.first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  set_page.first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  set_page.page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
+  
+  
+  //exec
+  
+  setPagination(data, pages, set_page);
+  createTable(data, data_table, set_page, column);
+}
 
-
+function set___undefined(param, default_value) {
+  if (param === undefined) {
+    return default_value;
+  } else return param;
+}
 
 
 
@@ -580,7 +682,6 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("logout");
       
       main_content.classList.add(e.target.innerText.toLowerCase());
-      console.log("dashhh");
       
       main({
         directory: `Content/${e.target.innerText}/index.html`,
@@ -659,8 +760,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(result) {
           if ( result.status === true ) {
             data__costumer = result.result;
-            setPagination(data__costumer);
-            createTable(data__costumer);
+            create_table_and_pagination()
           } else console.error(result);
         });
       // end event binding content search
@@ -682,10 +782,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(result) {
           if (result.status === true) {
             data__order = result.result;
-            console.log(data__order);
             page_active = 1;
-            setPagination(data__order, document.querySelector(".pages-search-order"));
-            createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+            create_table_and_pagination(2);
           } else console.error(result);
         });
       }
@@ -700,7 +798,7 @@ document.addEventListener("DOMContentLoaded", function() {
           
         let to_page = e.target.dataset.topage;
         page_active = to_page;
-        console.log(e.target.parentElement.parentElement.parentElement);
+        console.log(page_active);
         //binding error kondisi.
         //hanya di binding saat request dari button.
         if (page_active == 0) {
@@ -708,11 +806,13 @@ document.addEventListener("DOMContentLoaded", function() {
         } else if (page_active > page_total) {
           page_active = page_total;
         } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-costumer") ) {
-          setPagination(data__costumer); 
-          createTable(data__costumer);
+          create_table_and_pagination(1, {
+            page_active: page_active
+          })
         } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-order") ) {
-          setPagination(data__order, document.querySelector(".pages-search-order"));
-          createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+          create_table_and_pagination(2, {
+            page_active: page_active
+          });
         }
       } // end else if
       // event search pelanggan
@@ -725,17 +825,14 @@ document.addEventListener("DOMContentLoaded", function() {
           type: "GET",
           resultType: "json"
         }, function(result) {
-          console.log(result.result);
           if ( result.status === true ) {
             data__costumer = result.result;
             page_active = 1;
-            setPagination(data__costumer);
-            createTable(data__costumer);
+            create_table_and_pagination(1);
           } else console.error(result);
         });
       //end event search costumer
       } else if ( e.target === document.querySelector(".search-order .search-group button") ) {
-        console.log("search order input");
         main({
           directory: "../App/index.php?",
           url: "url=Pemesanan/liveSearch",
@@ -745,10 +842,8 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(result) {
           if (result.status === true) {
             data__order = result.result;
-            console.log(data__order);
             page_active = 1;
-            setPagination(data__order, document.querySelector(".pages-search-order"));
-            createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+            create_table_and_pagination(2);
           } else console.error(result);
         });
       //end event search order
@@ -759,8 +854,9 @@ document.addEventListener("DOMContentLoaded", function() {
   /*** *** *** Dashboard func *** *** ***/
   
   //**set Configure data
+  
   goto = "content";
-  max_data = 2;
+  max_data = 10;
   max_button = 5;
   page_active = 1;
   first_link_page = 1;

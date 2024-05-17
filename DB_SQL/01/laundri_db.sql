@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 16 Bulan Mei 2024 pada 03.37
+-- Waktu pembuatan: 17 Bulan Mei 2024 pada 02.03
 -- Versi server: 11.3.2-MariaDB
 -- Versi PHP: 8.3.6
 
@@ -90,7 +90,38 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (12, 'vcSxFL0007', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
 (13, 'ohUvRX0008', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
 (14, 'sqdYxf0009', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'Progress'),
-(15, 'NWqzDM0009', '2024-05-16', 'Ahmad', '6200000000005', 'Biasa', '3000', '6', '18000', 'Progress');
+(15, 'NWqzDM0009', '2024-05-16', 'Ahmad', '6200000000005', 'Biasa', '3000', '6', '18000', 'Progress'),
+(16, 'hfCqbK0009', '2024-05-16', 'Juni', '6200000000006', 'Biasa', '3000', '1', '3000', 'Progress'),
+(17, 'YOdEpE0017', '2024-05-16', 'Juni', '6200000000006', 'Biasa', '3000', '1', '3000', 'Progress'),
+(18, 'SUHgvv0018', '2024-05-16', 'Oci', '6200000000007', 'Kilat', '3000', '9', '', 'Progress'),
+(19, 'vibesd0019', '2024-05-16', 'Akbar', '6200000000008', 'Kilat', '7000', '1', '7000', 'Progress'),
+(20, 'BbSNeZ0020', '2024-05-16', 'Faazaa', '6200000000009', 'Cepat', '5000', '10', '50000', 'Progress'),
+(21, 'pMdgPd0021', '2024-05-16', 'Yasir', '6200000000002', 'Biasa', '3000', '1', '3000', 'Progress'),
+(22, 'YWiCmw0022', '2024-05-16', 'Juni', '6200000000006', 'Biasa', '3000', '7', '21000', 'Progress'),
+(23, 'xOzUgx0023', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '1', '7000', 'Progress'),
+(24, 'PRgXgE0024', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '3', '9000', 'Progress'),
+(25, 'DEzsvJ0025', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '4', '12000', 'Progress'),
+(26, 'BukFBW0026', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '5', '15000', 'Progress'),
+(27, 'nWcNuF0027', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '7', '21000', 'Progress'),
+(28, 'fbvpyQ0028', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '8', '24000', 'Progress'),
+(29, 'eKsIMr0029', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '8', '24000', 'Progress'),
+(30, 'RxOqnE0030', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
+(31, 'cokIHS0031', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
+(32, 'JiIrkD0032', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
+(33, 'BFyQUb0033', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
+(34, 'avzFgk0034', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
+(35, 'CSDloH0035', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
+(36, 'YGTEeR0036', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'Progress'),
+(37, 'EyZsja0037', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '11', '33000', 'Progress'),
+(38, 'akNuBq0038', '2024-05-16', 'Rossy', '6200000000003', 'Biasa', '3000', '12', '36000', 'Progress'),
+(39, 'xfQAIN0039', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
+(40, 'FlNVJP0040', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
+(41, 'ZbjeSS0041', '2024-05-16', 'Yasir', '6200000000002', 'Biasa', '3000', '5', '15000', 'Progress'),
+(42, 'vFcdfR0042', '2024-05-16', 'Oci', '6200000000007', 'Kilat', '7000', '5', '35000', 'Progress'),
+(43, 'vKRrNz0043', '2024-05-16', 'Akbar', '6200000000008', 'Cepat', '5000', '5', '25000', 'Progress'),
+(44, 'nEAMit0044', '2024-05-16', 'Juni', '6200000000006', 'Kilat', '7000', '2', '14000', 'Progress'),
+(45, 'YbuZir0045', '2024-05-16', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
+(46, 'eIUKkD0046', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'Progress');
 
 -- --------------------------------------------------------
 
@@ -108,7 +139,7 @@ CREATE TABLE `total_pemesanan` (
 --
 
 INSERT INTO `total_pemesanan` (`id`, `angka`) VALUES
-(1, 8);
+(1, 46);
 
 --
 -- Indexes for dumped tables
@@ -146,7 +177,7 @@ ALTER TABLE `pelanggan`
 -- AUTO_INCREMENT untuk tabel `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT untuk tabel `total_pemesanan`
