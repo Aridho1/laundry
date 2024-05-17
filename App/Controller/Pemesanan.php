@@ -40,4 +40,21 @@ class Pemesanan {
     
     echo json_encode($result);
   }
+
+
+  public function change_status($id) {
+    $status = "Selesai";
+    $query = "UPDATE {$this->table} SET status = :status WHERE id = :id";
+    $this->db->query($query);
+
+    $this->db->bind('status', $status);
+    $this->db->bind('id', $id);
+    $this->db->execute();
+    if ($this->db->rowCount() > 0) {
+      $result = ["status" => true, "result" => "SUCCESS"];
+    } else if ($this->db->rowCount() > 0) {
+      $result = ["status" => false, "result" => "Failed"];
+    }
+    echo json_encode($result);
+  }
 }

@@ -116,14 +116,19 @@ if (!session_id()) session_start();
 
 .dashboard div.no-result {
   position: absolute;
-  
-  top:0;
+  margin: 100px 0 0 0;
+  padding: 0 40px;
+  /* top:0;
   right:0;
   bottom: 0;
-  left: 0;
+  left: 0; */
   
-  background-color: violet;
   display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  row-gap: 20px;
 }
 
 /*** Dashboard - add order ***/
@@ -402,7 +407,7 @@ function setPagination(data = data__costumer, pages = document.querySelector(".p
   if (executeCreatePagination === true) {
     createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages);
   } else {
-    createPagination(data, {page_is_valid: false}, pages);
+    createPagination(data, {page_is_valid: false, primary_button: false, primary_button_lvl_2: false}, pages);
   }
   
 }
@@ -422,16 +427,14 @@ function createPagination(data, params = {
   
   
   
-  /*
+  
   if (params.page_is_valid === false || data.length === undefined) {
     data_table.style.display = "none";
-    document.querySelector("div.no-result").style.display = "flex";
     return false;
   } else {
     data_table.style.display = "block";
-    document.querySelector("div.no-result").style.display = "none";
   }
-  */
+  
   
   
   // buat button berdasarkan data global.
@@ -484,9 +487,19 @@ function checkPageActive(binding, return_value = [true, false]) {
 
 
 
-function createTable(  data, column = ["nama", "no_hp", "action"], data_table = document.querySelector("#table-costumer")  ) {
+function createTable(  data, column = ["nama", "no_hp", "action"], data_table = document.querySelector("#table-costumer"), result__no_result = document.querySelector(".costumer-no-result")  ) {
   let result = "";
   
+  if ( data.length == undefined || data.length < 1 || typeof data !== "object" || typeof data == "string") {
+    result__no_result.previousElementSibling.style.display = "none";
+    result__no_result.style.display = "flex";
+    result__no_result.nextElementSibling.style.display = "none";
+  } else {
+    result__no_result.previousElementSibling.style.display = "flex";
+    result__no_result.style.display = "none";
+    result__no_result.nextElementSibling.style.display = "flex";
+  }
+
   first_data_number = (page_active - 1) * max_data;
   
   
@@ -507,13 +520,16 @@ function createTable(  data, column = ["nama", "no_hp", "action"], data_table = 
     let row = "";
     
     
-    for(let ii = 0; ii < column.length - 1; ii++) {
-      
-      row += `<td>${data[i][column[ii]]}</td>`;
+    for(let ii = 0; ii < column.length; ii++) {
+      if ( column[ii] == "action" ) row += `<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td>`;
+      else row += `<td>${data[i][column[ii]]}</td>`;
     }
+
+    row = row.replace("<td>Progress", `<td class="td-status-progress" data-change_status_by_id="${data[i]['id']}">Progress`);
     
-    row = `<tr><td>${i+1}</td>${row}<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td></tr>`;
+    row = `<tr><td>${i+1}</td>${row}</tr>`;
     result += row;
+    console.log(result);
   }
   data_table.innerHTML = result;
   
@@ -657,7 +673,8 @@ document.addEventListener("DOMContentLoaded", function() {
           type: "GET",
           resultType: "json"
         }, function(result) {
-          if ( result.status === true ) {
+          if ( typeof result.status === "boolean" ) {
+            page_active = 1;
             data__costumer = result.result;
             setPagination(data__costumer);
             createTable(data__costumer);
@@ -680,12 +697,11 @@ document.addEventListener("DOMContentLoaded", function() {
           type: "GET",
           resultType: "json"
         }, function(result) {
-          if (result.status === true) {
+          if ( typeof result.status === "boolean" ) {
             data__order = result.result;
-            console.log(data__order);
             page_active = 1;
             setPagination(data__order, document.querySelector(".pages-search-order"));
-            createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+            createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
           } else console.error(result);
         });
       }
@@ -712,7 +728,7 @@ document.addEventListener("DOMContentLoaded", function() {
           createTable(data__costumer);
         } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-order") ) {
           setPagination(data__order, document.querySelector(".pages-search-order"));
-          createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+          createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
         }
       } // end else if
       // event search pelanggan
@@ -725,8 +741,7 @@ document.addEventListener("DOMContentLoaded", function() {
           type: "GET",
           resultType: "json"
         }, function(result) {
-          console.log(result.result);
-          if ( result.status === true ) {
+          if ( typeof result.status === "boolean" ) {
             data__costumer = result.result;
             page_active = 1;
             setPagination(data__costumer);
@@ -743,12 +758,12 @@ document.addEventListener("DOMContentLoaded", function() {
           type: "GET",
           resultType: "json"
         }, function(result) {
-          if (result.status === true) {
+          if ( typeof result.status === "boolean" ) {
             data__order = result.result;
             console.log(data__order);
             page_active = 1;
             setPagination(data__order, document.querySelector(".pages-search-order"));
-            createTable(data__order, ["tanggal", "kode_pemesanan", "status", "action"], document.querySelector("#table-order"));
+            createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
           } else console.error(result);
         });
       //end event search order
@@ -760,7 +775,7 @@ document.addEventListener("DOMContentLoaded", function() {
   
   //**set Configure data
   goto = "content";
-  max_data = 2;
+  max_data = 10;
   max_button = 5;
   page_active = 1;
   first_link_page = 1;
@@ -809,12 +824,33 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       //isi input berdasarkan baris table pasa button yang di klik
-      document.querySelector(".dashboard .add-order .nama").value = data[e.target.dataset.data_loop]["nama"];
-      document.querySelector(".dashboard .add-order .no_hp").value = data[e.target.dataset.data_loop]["no_hp"];
+      document.querySelector(".dashboard .add-order .nama").value = data__costumer[e.target.dataset.data_loop]["nama"];
+      document.querySelector(".dashboard .add-order .no_hp").value = data__costumer[e.target.dataset.data_loop]["no_hp"];
       
       
     } //end event button to-order
-  }); //end delegation lv 2
+  }); 
+  
+  document.querySelector("main").addEventListener("dblclick", function (e) {
+    if ( e.target.classList.contains("td-status-progress") ) {
+      console.log(e.target);
+      let confirm_event = confirm("R U SURE TO CHANGE STATUS BY ID : " + e.target.dataset.change_status_by_id);
+      if (confirm_event) {
+        main({
+          directory: "../App/index.php?",
+          url: "url=Pemesanan/change_status",
+          keyword: e.target.dataset.change_status_by_id,
+          type: "GET",
+          resultType: "json"
+        }, function(result) {
+            if ( result.status == true ) {
+              alert("SUCCESS TO CHANGE STATUS")
+            } else console.log(result);
+        });
+      }
+    }
+  });
+  //end delegation lv 2
   
 }); //end function LoadDOM
 

@@ -38,7 +38,7 @@
           placeholder="Input costumer..   [blank = all]">
         <button>Search</button>
       </div>
-      <table class="data-table" border="0.2" style="" id="table-costumer">
+      <table class="data-table" border="0.2" id="table-costumer">
 
         <tr>
           <th>No</th>
@@ -64,7 +64,10 @@
         </tr>
 
       </table>
-      <div class="no-result"></div>
+      <div class="no-result costumer-no-result">
+        <p>NO RESULT!</p>
+        <p>PLEASE RETRY SEARCH FOR ANOTHER KEYWORD.</p>
+      </div>
 
       <ul class="pages pages-search-costumer">
         <!-- <?php /*createPagination();*/ ?> -->
@@ -97,7 +100,7 @@
 
     <div class="add-order" style="display: none;">
       <form action="Support/form.php" methode="POST">
-        <table >
+        <table>
           <tr>
             <td>
               <label for="date">Date : </label>
@@ -204,7 +207,10 @@
         </tr>
 
       </table>
-      <div class="no-result"></div>
+      <div class="no-result order-no-result">
+        <p>NO RESULT!</p>
+        <p>PLEASE RETRY SEARCH FOR ANOTHER KEYWORD.</p>
+      </div>
 
       <ul class="pages pages-search-order">
         <!-- <?php /*createPagination();*/ ?> -->
