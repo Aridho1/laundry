@@ -164,6 +164,7 @@
           </tr>
 
         </table>
+        
         <div class="button-group">
           <button type="button" id="cancel">Cancel</button>
           <button type="sumbit" id="button-add-order" name="button-add-order" value="order">Submit</button>
@@ -176,11 +177,24 @@
     </div>
 
     <div class="search-order" style="display: none;">
-      <div class="search-group">
+      <!--
+      <div class="search-group"style="display: none;">
         <input type="text" class="input-search-order" id="search-order" name="input-search-order"
           placeholder="Input date..   [blank = all]">
         <button>Search</button>
+        <div class="search-order-by">
+          <select data-previous_search_order="">
+            <option>date</option>
+            <option>status</option>
+          </select>
+          <input type="checkbox" id="search-order-sort-by">
+          <label for="search-order-sort-by "></label>
+          <div class="search-group">
+            
+          </div>
+        </div>
       </div>
+      -->
       <table class="data-table" border="0.2" id="table-order">
 
         <tr>

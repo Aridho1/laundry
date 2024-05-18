@@ -242,10 +242,21 @@ if (!session_id()) session_start();
 let data__ = {};
 data__ = {
   costumer: {
-    all: {}, search: {}
+    all: {}, search: {
+      keyword: "",
+      result: {}
+    }
   },
   order: {
-    all: {}, search: {}
+    all: {}, search: {
+      keyword: "",
+      result: {}
+    }, 
+    status: {
+      progress: {},
+      complete: {},
+      takeout: {}
+    }
   },
   contents: {
     home: "", dashboard: "", laporan: "", login: ""
@@ -257,6 +268,8 @@ let data__costumer = {};
 let data__order = {};
 let data__contents = "";
 let contents = "";
+
+let data_table = "";
 
 async function fetchData(  url, type, resultType  ) {
   return new Promise((resolve, reject) => {
@@ -676,7 +689,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       // event binding content search
       if ( e.target.innerText === listContent[1] ) {
-        data_table = document.querySelector(".data-table");
+        data_table = document.querySelector("#table-costumer");
         // event dashboard 
         main({
           directory: "../App/index.php?",
@@ -702,6 +715,7 @@ document.addEventListener("DOMContentLoaded", function() {
       //end event add order
       } //event search order
       else if ( e.target.innerText === listContent[3] ) {
+        data_table = document.querySelector("#table-order");
         main({
           directory: "../App/index.php?",
           url: "url=Pemesanan/liveSearch",
@@ -862,9 +876,125 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   //end delegation lv 2
   
+  
+  // Event fill var data
+  fillData("all");
+  
 }); //end function LoadDOM
 
+function fillData(  type, keywords = [null, null], add_param = null ) {
+  let [column, keyword] = keywords;
+  
+  
+  if (type == "costumer_all" || type == "order_all") {
+    
+    let data__type = type.split("_")[0];
+    
+    main({
+      directory: "../App/index.php?",
+      url: `url=${(data__type == "costumer") ? "Pelanggan" : "Pemesanan"}/liveSearch`,
+      keyword: "",
+      type: "GET",
+      resultType: "json"
+    }, function(result) {
+      if (typeof result.status === "boolean") {
+        data__[data__type]["all"] = result.result;
+      } else console.log(result);
+    });
+  } 
+  
+  else if ((type == "costumer_search" || type == "order_search") && column != null && keyword != null) {
+    let data__type = type.split("_")[0];
+    
+    if (data__.order.all.length > 1) {
+      let result = data__[data__type]["all"].filter(arr => arr[column] === keyword);
+      
+      if (typeof result == "object" && result.length > 0) {
+        data__[data__type]["search"]["keyword"] = keyword;
+        data__[data__type]["search"]["result"] = result;
+        console.log(result);
+        
+      } else console.error(`Tidak ada '${keyword}' dalam kolom '${column}' pada object '${data__type}'`);
+      
+    // jika bukan array
+    } else console.error(`data__ -> ${data__type} -> all bukan sebuah array`);
+    
+  }
+  
+  else if (type == "order_status") {
+    time = (add_param == "__request_wait__") ? 5000 : 0;
+    
+    setTimeout(() => {
+    
+    if (data__.order.all.length > 1) {
+      data__.order.status.progress = data__.order.all.filter(arr => arr.status === "Progress");
+      data__.order.status.complete = data__.order.all.filter(arr => arr.status === "Selesai");
+      data__.order.status.takeout = data__.order.all.filter(arr => arr.status === "Telah Di Ambil");
+      
+    // jika bukan array
+    } else console.error(`data__ -> order -> all bukan sebuah array`);
+    }, time);
+  }
+  
+  
+  
+  else if (type == "contents") {
+    let list__menu = [
+      "Home",
+      "Dashboard"
+    ];
+    
+    for ( 
+      const [i, m] of list__menu.entries() //entries: memasukan suatu nilai kedalam array 
+    ) {
+     main({
+        directory: `Content/${m}/index.html`,
+        url: "",
+        keyword: "",
+        type: "GET",
+        resultType: "contents"
+      }, function(result) {
+        data__["contents"][m.toLowerCase()] = result;
+      });
+    }
+  }
+  
+  if (type == "all") {
+    fillData(  "costumer_all"  );
+    fillData(  "order_all"  );
+    fillData(  "order_status", [null, null], "__request_wait__"  );
+    fillData(  "contents"  );
+  }
+}
 
+/*
+let progress = ["empty"];
+let selesai = [];
+
+setTimeout(() => {
+  console.log("timeout");
+  
+  progress = data__["order"]["all"].filter((arr) => arr["status"] === "Progress");
+  selesai = data__["order"]["all"].filter((arr) => arr.status === "Selesai");
+  
+  console.log(data__["order"]["all"]);
+  
+  
+  //[progress, selesai] = data__.order.all.filter(() => );
+  
+  [progress, selesai] = data__.order.all.filter((arr, arr2) => {
+    /*if (arr.status === "Progress") {
+      return ["x", arr];
+    } else if (arr.status === "Selesai") {
+      return [arr, "x"];
+    }
+  });
+  
+  console.log(progress);
+  console.log(selesai);
+  
+}, 3000);
+*/
 
 
 </script>
