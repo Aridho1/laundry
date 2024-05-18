@@ -239,6 +239,19 @@ if (!session_id()) session_start();
 
 <script>
 
+let data__ = {};
+data__ = {
+  costumer: {
+    all: {}, search: {}
+  },
+  order: {
+    all: {}, search: {}
+  },
+  contents: {
+    home: "", dashboard: "", laporan: "", login: ""
+  }
+};
+
 let data = {};
 let data__costumer = {};
 let data__order = {};
@@ -529,7 +542,7 @@ function createTable(  data, column = ["nama", "no_hp", "action"], data_table = 
     
     row = `<tr><td>${i+1}</td>${row}</tr>`;
     result += row;
-    console.log(result);
+    
   }
   data_table.innerHTML = result;
   
@@ -596,7 +609,6 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("logout");
       
       main_content.classList.add(e.target.innerText.toLowerCase());
-      console.log("dashhh");
       
       main({
         directory: `Content/${e.target.innerText}/index.html`,
@@ -716,7 +728,7 @@ document.addEventListener("DOMContentLoaded", function() {
           
         let to_page = e.target.dataset.topage;
         page_active = to_page;
-        console.log(e.target.parentElement.parentElement.parentElement);
+        
         //binding error kondisi.
         //hanya di binding saat request dari button.
         if (page_active == 0) {
@@ -750,7 +762,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       //end event search costumer
       } else if ( e.target === document.querySelector(".search-order .search-group button") ) {
-        console.log("search order input");
         main({
           directory: "../App/index.php?",
           url: "url=Pemesanan/liveSearch",
@@ -760,7 +771,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }, function(result) {
           if ( typeof result.status === "boolean" ) {
             data__order = result.result;
-            console.log(data__order);
             page_active = 1;
             setPagination(data__order, document.querySelector(".pages-search-order"));
             createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
@@ -833,7 +843,7 @@ document.addEventListener("DOMContentLoaded", function() {
   
   document.querySelector("main").addEventListener("dblclick", function (e) {
     if ( e.target.classList.contains("td-status-progress") ) {
-      console.log(e.target);
+      
       let confirm_event = confirm("R U SURE TO CHANGE STATUS BY ID : " + e.target.dataset.change_status_by_id);
       if (confirm_event) {
         main({
