@@ -303,19 +303,8 @@ async function main(params = {
     if (params.keyword !== "" && params.keyword !== undefined) params.url += "/" + params.keyword;
     
     let result = await fetchData(params.url, params.type, params.resultType);
-    /*
-    if (typeof result === "string") {
-      contents = result;
-      main_content.innerHTML = contents;
-    } else if (result.status === true) {
-      data = result.result;
-      page_active = 1;
-      setPagination();
-      createTable();
-    }
-    */
 
-    // Check if a callback is provided and call it
+    
     if (callback && typeof callback === "function") {
       callback(result);
     }
@@ -385,7 +374,8 @@ let day = new Date();
 //func
 
 function setPagination(data = data__costumer, pages = document.querySelector(".pages-search-costumer")) {
-  
+  if (data === data__.costumer.all) console.log("paginagion by costumer");
+  else if (data === data__order.all) console.log("paginagion by order");
   //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
   max_data = parseInt(max_data);
   page_active = parseInt(page_active);
@@ -446,7 +436,7 @@ function createPagination(data, params = {
   
   //inisiasi result
   let result = "";
-  
+  console.log("page active :", page_active);
   //timpa elemen dengan class pages
   pages.innerHTML = pages.innerHTML;
   page_total = Math.ceil(data.length / max_data);
@@ -619,129 +609,96 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("dashboard");
       main_content.classList.remove("laporan");
       main_content.classList.remove("login");
-      main_content.classList.remove("logout");
       
       main_content.classList.add(e.target.innerText.toLowerCase());
+      main_content.innerHTML = data__["contents"][e.target.innerText.toLowerCase()];
       
-      main({
-        directory: `Content/${e.target.innerText}/index.html`,
-        url: "",
-        keyword: "",
-        type: "GET",
-        resultType: "contents"
-      }, function(result) {
-        if ( typeof result === "string" ) {
-          
-          data__contents = result;
-          main_content.innerHTML = data__contents;
-          
-          //event dashboard
-          if (e.target.innerText === "Dashboard") {
-            document.querySelector("#date").value = today;
-            select_paket = document.getElementById("list-paket");
-            option_paket = "";
-            inputBerat = document.querySelector("#berat");
-            berat = 0;
-            inputHarga = document.querySelector("#harga");
-            harga = 3000;
-  
-            createHarga();
-          //end event dashboard
-          }
-        //jika result bukan string : 
-        } else console.error(result);
-      });
-      
-
-    } //end event request contents
-    
+      //event dashboard
+      if (e.target.innerText === "Dashboard") {
+        document.querySelector("#date").value = today;
+        select_paket = document.getElementById("list-paket");
+        option_paket = "";
+        inputBerat = document.querySelector("#berat");
+        berat = 0;
+        inputHarga = document.querySelector("#harga");
+        harga = 3000;
+        createHarga();
+        
+        data_table = document.querySelector("#table-costumer");
+        setPagination(data__.costumer.all);
+        createTable(data__.costumer.all);
+        
+        setPagination(data__.order.all, document.querySelector(".pages-search-order"));
+        createTable(data__.order.all, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
+        
+      //end event dashboard
+      }
+    //end event request contents
+    }
     
     //event close nav pada navlinks
-    if (e.target === checkbox || e.target === nav_links) {
-    } else {
+    if (e.target !== checkbox && e.target !== nav_links) {
       checkbox.checked = false; 
       nav_links.classList.remove("slide");
     }
     
-    
     //** event dashboard
     //switch content type
-    if ( e.target.classList.contains("switch-content") ) {
-
-    for (let i = 0; i < listContent.length; i++) {
+    if ( 
+      e.target.classList
+        .contains("switch-content") 
+    ) {
+    
+      for (let i = 0; i < listContent.length; i++) {
         let switch_content = listContent[i];
         switch_class[i] = switch_content.toLowerCase().replace(/ /g, "-"); // Mengganti semua spasi dengan tanda strip
         
         
         if (e.target.innerText === listContent[i]) {
-            document.querySelector('.dashboard .' + switch_class[i])
-                .style.display = "flex";
-            document.querySelector('.dashboard .' + switch_class[i])
-                .classList.add("content-active");
+          document.querySelector('.dashboard .' + switch_class[i]).style.display = "flex";
+          document.querySelector('.dashboard .' + switch_class[i]).classList.add("content-active");
         } else {
-            document.querySelector('.dashboard .' + switch_class[i])
-                .style.display = "none";
-            document.querySelector('.dashboard .' + switch_class[i])
-                .classList.remove("content-active");
+          document.querySelector('.dashboard .' + switch_class[i]).style.display = "none";
+          document.querySelector('.dashboard .' + switch_class[i]).classList.remove("content-active");
         }
       }
-
       
-      // event binding content search
-      if ( e.target.innerText === listContent[1] ) {
-        data_table = document.querySelector("#table-costumer");
-        // event dashboard 
-        main({
-          directory: "../App/index.php?",
-          url: "url=Pelanggan/liveSearch",
-          keyword: "",
-          type: "GET",
-          resultType: "json"
-        }, function(result) {
-          if ( typeof result.status === "boolean" ) {
-            page_active = 1;
-            data__costumer = result.result;
-            setPagination(data__costumer);
-            createTable(data__costumer);
-          } else console.error(result);
-        });
-      // end event binding content search
-      } //event add order
-      else if (e.target.innerText === listContent[2]) {
-          //hilangkan form. karena harus di akses dengan button order pada search costumer
-          document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = 'none';
-          document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = 'flex';
-          
+      //event add order
+      if (e.target.innerText === listContent[2]) {
+        //hilangkan form. karena harus di akses dengan button order pada search costumer
+        document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = 'none';
+        document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = 'flex';
       //end event add order
-      } //event search order
-      else if ( e.target.innerText === listContent[3] ) {
-        data_table = document.querySelector("#table-order");
-        main({
-          directory: "../App/index.php?",
-          url: "url=Pemesanan/liveSearch",
-          keyword: e.target.previousElementSibling.value,
-          type: "GET",
-          resultType: "json"
-        }, function(result) {
-          if ( typeof result.status === "boolean" ) {
-            data__order = result.result;
-            page_active = 1;
-            setPagination(data__order, document.querySelector(".pages-search-order"));
-            createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
-          } else console.error(result);
-        });
       }
-    } // end event switch content
+    // end event switch content
+    }
     
     //event button pagination
-    if ( main_content.classList.contains("dashboard") ) {
-      if (e.target.tagName === "A" && (e.target.classList.contains("disable") || e.target.classList.contains("active"))) {
+    if ( 
+      main_content.classList
+        .contains("dashboard") 
+    ) {
+      
+      //event saat main content adalah dashboard
+      if ( 
+        e.target.tagName === "A" && 
+        (e.target.classList.contains("disable") || 
+          e.target.classList.contains("active")) 
+      ) {
         e.preventDefault();
-      } else if (e.target.tagName === "A" && e.target.classList.contains("smooth")) {
-        document.documentElement.style.scrollBehavior = "smooth";
-          
+      
+      //event pagination smooth
+      } else if ( 
+        e.target.tagName === "A" && 
+        e.target.classList.contains("smooth") 
+      ) {
+      
+        document.documentElement.style
+          .scrollBehavior = "smooth";
+        
         let to_page = e.target.dataset.topage;
         page_active = to_page;
+        console.log(e.target.parentElement.parentElement);
         
         //binding error kondisi.
         //hanya di binding saat request dari button.
@@ -749,51 +706,90 @@ document.addEventListener("DOMContentLoaded", function() {
           page_active = 1;
         } else if (page_active > page_total) {
           page_active = page_total;
-        } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-costumer") ) {
-          setPagination(data__costumer); 
-          createTable(data__costumer);
-        } else if ( e.target.parentElement.parentElement.parentElement.classList.contains("search-order") ) {
-          setPagination(data__order, document.querySelector(".pages-search-order"));
-          createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
+        
+        //event pembuatan tabel berdasarkan topage
+        } else if ( 
+          e.target.parentElement.parentElement
+            .parentElement.classList
+            .contains("pages-search-costumer") 
+        ) {
+          console.log(" page costumer");
+          setPagination(data__.costumer.all); 
+          createTable(data__.costumer.all);
+        } else if ( 
+          e.target.parentElement.parentElement
+            .parentElement.classList
+            .contains("pages-search-order") 
+        ) {
+          console.log(" page order");
+          setPagination(
+            data__order.all, 
+            document.querySelector(
+              ".pages-search-order"
+            )
+          );
+          createTable(
+            data__.order.all, 
+            ["tanggal", "kode_pemesanan", "status"], 
+            document.querySelector("#table-order"), 
+            document.querySelector(".order-no-result")
+          );
+        //end pembuatan tabel berdasarkan topage
         }
-      } // end else if
-      // event search pelanggan
-      else if ( e.target === document.querySelector( ".search-costumer .search-group button" ) ) {
-    
-        main({
-          directory: "../App/index.php?",
-          url: "url=Pelanggan/liveSearch",
-          keyword: e.target.previousElementSibling.value,
-          type: "GET",
-          resultType: "json"
-        }, function(result) {
-          if ( typeof result.status === "boolean" ) {
-            data__costumer = result.result;
-            page_active = 1;
-            setPagination(data__costumer);
-            createTable(data__costumer);
-          } else console.error(result);
-        });
+      // end event paginagion smooth
+      }
+      
+      // event search costumer
+      else if ( 
+        e.target === document.querySelector( 
+          ".search-costumer .search-group button" 
+        ) 
+      ) {
+      
+        fillData( 
+          "costumer_search", 
+          ["nama", e.target.previousElementSibling.value] 
+        );
+        page_active = 1;
+        setPagination(
+          data__.costumer.search.result
+        );
+        createTable(
+          data__.costumer.search.result
+        );
+     
       //end event search costumer
-      } else if ( e.target === document.querySelector(".search-order .search-group button") ) {
-        main({
-          directory: "../App/index.php?",
-          url: "url=Pemesanan/liveSearch",
-          keyword: e.target.previousElementSibling.value,
-          type: "GET",
-          resultType: "json"
-        }, function(result) {
-          if ( typeof result.status === "boolean" ) {
-            data__order = result.result;
-            page_active = 1;
-            setPagination(data__order, document.querySelector(".pages-search-order"));
-            createTable(data__order, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
-          } else console.error(result);
-        });
+      } 
+      
+      //event search order
+      else if ( 
+        e.target === document.querySelector(
+          ".search-order .search-group button"
+        ) 
+      ) {
+      
+        fillData(  
+          "order_search", 
+          ["nama", e.target.previousElementSibling.value]  
+        );
+        page_active = 1;
+        setPagination(
+          data__order, 
+          document.querySelector(".pages-search-order")
+        );
+        createTable(
+          data__order, 
+          ["tanggal", "kode_pemesanan", "status"], 
+          document.querySelector("#table-order"), 
+          document.querySelector(".order-no-result")
+        );
+     
       //end event search order
       }
-    } // end event button pagination
-  }); //end event delegation
+    // end event main content adalah dashboard
+    }
+  //end event delegation
+  });
   
   /*** *** *** Dashboard func *** *** ***/
   
@@ -808,19 +804,26 @@ document.addEventListener("DOMContentLoaded", function() {
   
   
   //delegation lv 2 => main => input
-  document.querySelector("main").addEventListener("input", function(e) {
+  document.querySelector("main")
+    .addEventListener("input", 
+  function(e) {
     
     //change harga
-    if ( e.target.tagName == "SELECT" && e.target.closest(".add-order") ) {
+    if ( 
+      e.target.tagName == "SELECT" && 
+      e.target.closest(".add-order") 
+    ) {
       harga = select_paket.options[select_paket.selectedIndex].dataset.harga;
       inputHarga.value = harga;
       option_paket = select_paket.value;
-      
       calcTotal();
       
     //end change harga
+    }
     //change berat
-    } else if ( e.target === document.querySelector("#berat") ) {
+    else if ( 
+      e.target === document.querySelector("#berat") 
+    ) {
       berat = inputBerat.value;
       if (berat == "" || berat <= 0) berat = 0;
       calcTotal();
@@ -829,9 +832,15 @@ document.addEventListener("DOMContentLoaded", function() {
   }); 
   
   // delegation lv 2 => main => click
-  document.querySelector("main").addEventListener("click", function(e) {
+  document.querySelector("main")
+    .addEventListener("click", 
+  function(e) {
+  
     //event to-order
-    if ( e.target.classList.contains("to-order") ) {
+    if ( 
+      e.target.classList.contains("to-order") 
+    ) {
+    
       document.querySelector('.dashboard .add-order')
         .style.display = "flex";
       document.querySelector('.dashboard .add-order')
@@ -841,24 +850,46 @@ document.addEventListener("DOMContentLoaded", function() {
         .style.display = "none";
       document.querySelector('.dashboard .search-costumer')
         .classList.remove("content-active");
-
+      
       //change display
-      document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = "block";
-      document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = "none";
+      document.querySelector(
+        `.dashboard .${switch_class[2]} form`
+      ).style.display = "block";
+      document.querySelector(
+        `.dashboard .${switch_class[2]} ` + 
+        `.form-no-permission`
+      ).style.display = "none";
       
-      
-      //isi input berdasarkan baris table pasa button yang di klik
-      document.querySelector(".dashboard .add-order .nama").value = data__costumer[e.target.dataset.data_loop]["nama"];
-      document.querySelector(".dashboard .add-order .no_hp").value = data__costumer[e.target.dataset.data_loop]["no_hp"];
-      
-      
-    } //end event button to-order
+      //isi input berdasarkan baris table pada button yang di klik
+      document.querySelector(
+        ".dashboard .add-order .nama"
+      ).value = 
+        data__["costumer"]["all"][e.target
+          .dataset.data_loop]["nama"];
+      document.querySelector(
+        ".dashboard .add-order .no_hp"
+      ).value = 
+        data__["costumer"]["all"][e.target
+          .dataset.data_loop]["no_hp"];
+    //end event button to-order
+    }
   }); 
   
-  document.querySelector("main").addEventListener("dblclick", function (e) {
-    if ( e.target.classList.contains("td-status-progress") ) {
+  document.querySelector("main")
+    .addEventListener("dblclick", 
+  function (e) {
+    
+    //evenet pada class status progress
+    if ( 
+      e.target.classList
+      .contains("td-status-progress") 
+    ) {
       
-      let confirm_event = confirm("R U SURE TO CHANGE STATUS BY ID : " + e.target.dataset.change_status_by_id);
+      let confirm_event = 
+        confirm("R U SURE TO CHANGE STATUS BY ID : " + 
+          e.target.dataset.change_status_by_id);
+      
+      //event confirm
       if (confirm_event) {
         main({
           directory: "../App/index.php?",
@@ -871,20 +902,27 @@ document.addEventListener("DOMContentLoaded", function() {
               alert("SUCCESS TO CHANGE STATUS")
             } else console.log(result);
         });
+      //end event confirm
       }
+    //end event class status progress
     }
   });
   //end delegation lv 2
   
   
   // Event fill var data
-  fillData("all");
+ fillData("all");
   
 }); //end function LoadDOM
 
-function fillData(  type, keywords = [null, null], add_param = null ) {
+
+function fillData(  
+  type, 
+  keywords = [null, null], 
+  add_param = null 
+) {
+
   let [column, keyword] = keywords;
-  
   
   if (type == "costumer_all" || type == "order_all") {
     
@@ -892,7 +930,9 @@ function fillData(  type, keywords = [null, null], add_param = null ) {
     
     main({
       directory: "../App/index.php?",
-      url: `url=${(data__type == "costumer") ? "Pelanggan" : "Pemesanan"}/liveSearch`,
+      url: `url=${
+        (data__type == "costumer") ? "Pelanggan" : "Pemesanan" 
+      }/liveSearch`,
       keyword: "",
       type: "GET",
       resultType: "json"
@@ -903,13 +943,26 @@ function fillData(  type, keywords = [null, null], add_param = null ) {
     });
   } 
   
-  else if ((type == "costumer_search" || type == "order_search") && column != null && keyword != null) {
+  else if (
+    (
+      type == "costumer_search" || 
+      type == "order_search"
+    ) && 
+    column != null && 
+    keyword != null
+  ) {
+  
     let data__type = type.split("_")[0];
     
     if (data__.order.all.length > 1) {
-      let result = data__[data__type]["all"].filter(arr => arr[column] === keyword);
+      let result = data__[data__type]["all"]
+        .filter(arr => arr[column] === keyword);
       
-      if (typeof result == "object" && result.length > 0) {
+      if (
+        typeof result == "object" && 
+        result.length > 0
+      ) {
+      
         data__[data__type]["search"]["keyword"] = keyword;
         data__[data__type]["search"]["result"] = result;
         console.log(result);
@@ -918,21 +971,21 @@ function fillData(  type, keywords = [null, null], add_param = null ) {
       
     // jika bukan array
     } else console.error(`data__ -> ${data__type} -> all bukan sebuah array`);
-    
   }
   
   else if (type == "order_status") {
     time = (add_param == "__request_wait__") ? 5000 : 0;
     
     setTimeout(() => {
-    
-    if (data__.order.all.length > 1) {
-      data__.order.status.progress = data__.order.all.filter(arr => arr.status === "Progress");
-      data__.order.status.complete = data__.order.all.filter(arr => arr.status === "Selesai");
-      data__.order.status.takeout = data__.order.all.filter(arr => arr.status === "Telah Di Ambil");
-      
-    // jika bukan array
-    } else console.error(`data__ -> order -> all bukan sebuah array`);
+      if (data__.order.all.length > 1) {
+        data__.order.status.progress = data__.order.all
+          .filter(arr => arr.status === "Progress");
+        data__.order.status.complete = data__.order.all
+          .filter(arr => arr.status === "Selesai");
+        data__.order.status.takeout = data__.order.all
+          .filter(arr => arr.status === "Telah Di Ambil");
+      // jika bukan array
+      } else console.error(`data__ -> order -> all bukan sebuah array`);
     }, time);
   }
   
@@ -945,7 +998,8 @@ function fillData(  type, keywords = [null, null], add_param = null ) {
     ];
     
     for ( 
-      const [i, m] of list__menu.entries() //entries: memasukan suatu nilai kedalam array 
+      const [i, m] of list__menu.entries() 
+      //entries: memasukan suatu nilai kedalam array 
     ) {
      main({
         directory: `Content/${m}/index.html`,
@@ -959,10 +1013,16 @@ function fillData(  type, keywords = [null, null], add_param = null ) {
     }
   }
   
+  
+  
   if (type == "all") {
     fillData(  "costumer_all"  );
     fillData(  "order_all"  );
-    fillData(  "order_status", [null, null], "__request_wait__"  );
+    fillData(  
+      "order_status", 
+      [null, null], 
+      "__request_wait__"  
+    );
     fillData(  "contents"  );
   }
 }
