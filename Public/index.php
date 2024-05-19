@@ -373,84 +373,92 @@ let day = new Date();
 
 //func
 
-function setPagination(data = data__costumer, pages = document.querySelector(".pages-search-costumer")) {
-  if (data === data__.costumer.all) console.log("paginagion by costumer");
-  else if (data === data__order.all) console.log("paginagion by order");
-  //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
-  max_data = parseInt(max_data);
-  page_active = parseInt(page_active);
-  first_link_page = parseInt(first_link_page);
-  first_data_number = parseInt(first_data_number);
-  page_total = parseInt(page_total);
+function setPagination(  data, pages, set_page = {}  ) {
   
-  let executeCreatePagination = true;
+  //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
+  set_page.page_active = parseInt(set_page.page_active);
+  
+  let page_is_valid = true;
   
   //**set Rules --filter beberapa logika.
   //max_data = 5. normalnya, ada 5 button.
   
   //gagalkan ekesuki jika : 
   
-  if (page_active < 0 || page_active > page_total) {
-    executeCreatePagination = false;
+  if (set_page.page_active < 0 || set_page.page_active > set_page.page_total) {
+    page_is_valid = false;
   
   //jika page_total tidak melebihi max_button
   //tidak ada yang terjadi. (hanya berjalan normal)
-  } else if (page_total <= max_button) {
-    first_link_page = 1;
+  } else if (set_page.page_total <= set_page.max_button) {
+    set_page.first_link_page = 1;
   
   //sampai sini, berarti page_total lebih dari max_button.
   //jika page_active nya tidak berada ditengah atau lebih dari itu. (tengah itu 3, karena buttonnya 5)
   //tidak ada yang terjadi. (hanya berjalan normal)
-  } else if (page_active <= Math.floor(max_button / 2)) {
-    first_link_page = 1;
+  } else if (set_page.page_active <= Math.floor(set_page.max_button / 2)) {
+    set_page.first_link_page = 1;
   
   //sampai sini, berarti page_active nya lebih dari setengah max_button.
   //jika page_activenya belum berada di page hampir terakhir atau terkahir, 
   //maka button page_active harus berada di tengah.
-  } else if (page_total - page_active >= Math.floor(max_button / 2)) {
-    first_link_page = page_active - Math.floor(max_button / 2);
+  } else if (set_page.page_total - set_page.page_active >= Math.floor(set_page.max_button / 2)) {
+    set_page.first_link_page = set_page.page_active - Math.floor(set_page.max_button / 2);
     
   //sampai sini, berarti page_active nya berada di hampir paling terkahir, atau bahkan terkahir.
   //maka button awal alias first_link_page : 
-  } else if (page_total - page_active >= 0) {
-    first_link_page = page_total - max_button + 1;
+  } else if (set_page.page_total - set_page.page_active >= 0) {
+    set_page.first_link_page = set_page.page_total - set_page.max_button + 1;
   
   //selain itu, maka, emmmmm buat execute false atau error
   //karena gatau lagi masuk ke kondisi apa.
-  } else executeCreatePagination = false; 
+  } else page_is_valid = false; 
   //eksekusi func createPagination jika kondisi terpenuhi
   
-  if (executeCreatePagination === true) {
-    createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages);
+  if (page_is_valid === true) {
+    createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages, set_page);
   } else {
-    createPagination(data, {page_is_valid: false, primary_button: false, primary_button_lvl_2: false}, pages);
+    createPagination(data, {page_is_valid: false}, pages, set_page);
   }
   
 }
 
-function createPagination(data, params = {
+function createPagination(  data, params = {
   page_is_valid: true,
   primary_button: true,
   primary_button_lvl_2: true
-}, pages = document.querySelector(".pages-search-costumer") ) {
+}, pages, set_page  ) {
   
+  /* Configure */
+  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
+    
+  let max_data = set___undefined(set_page.max_data, 10);
+  
+  let max_button = set___undefined(set_page.max_button, 5);
+  
+  let page_active = set___undefined(set_page.page_active, 1);
+  
+  let first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  let first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
+
   //inisiasi result
   let result = "";
-  console.log("page active :", page_active);
-  //timpa elemen dengan class pages
-  pages.innerHTML = pages.innerHTML;
-  page_total = Math.ceil(data.length / max_data);
   
   
   
-  
+  /*
   if (params.page_is_valid === false || data.length === undefined) {
     data_table.style.display = "none";
+    document.querySelector("div.no-result").style.display = "flex";
     return false;
   } else {
     data_table.style.display = "block";
+    document.querySelector("div.no-result").style.display = "none";
   }
-  
+  */
   
   
   // buat button berdasarkan data global.
@@ -464,29 +472,29 @@ function createPagination(data, params = {
   end_for += first_link_page;
   for (let i = first_link_page; i < end_for; i++) {
     
-    result += `<li><a href="#${goto}" class="${checkPageActive(i, ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
+    result += `<li><a href="#${goto}" class="${checkPageActive([i, page_active], ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
     
   }
   
   //jika primary_button_lvl_2 adalah true, buat button previous dan next yang membungkus button yang sudah dibuat 
   if (params.primary_button_lvl_2 === true) {
-    result = `<li><a href="#${goto}" class="previous-page ${checkPageActive(1, ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
+    result = `<li><a href="#${goto}" class="previous-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
       ${result}
-    <li><a href="#${goto}" class="next-page ${checkPageActive(page_total, ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
+    <li><a href="#${goto}" class="next-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
   }
   
   //sama.
   if (params.primary_button === true) {
-    result = `<li><a href="#${goto}" class="first-page ${checkPageActive(1, ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
+    result = `<li><a href="#${goto}" class="first-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
       ${result}
-    <li><a href="#${goto}" class="last-page ${checkPageActive(page_total, ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
+    <li><a href="#${goto}" class="last-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
   }
   //ubah isi elemen dengan class pages menjadi result
   pages.innerHTML = result;
   
 }
 
-function checkPageActive(binding, return_value = [true, false]) {
+function checkPageActive([binding1, binding2], return_value = [true, false]) {
   /*
   return 
     (binding === page_active)
@@ -494,28 +502,36 @@ function checkPageActive(binding, return_value = [true, false]) {
     : return_value[1];
   */
   
-  if (binding === page_active) {
+  if (binding1 === binding2) {
     return return_value[0];
   
   //
-  } else return return_value [1];
+  } else {
+      return return_value [1];
+  }
 }
 
 
 
-function createTable(  data, column = ["nama", "no_hp", "action"], data_table = document.querySelector("#table-costumer"), result__no_result = document.querySelector(".costumer-no-result")  ) {
+function createTable(  data, data_table, set_page, column  ) {
+  
+  /* Configure */
+  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
+    
+  let max_data = set___undefined(set_page.max_data, 10);
+  
+  let max_button = set___undefined(set_page.max_button, 5);
+  
+  let page_active = set___undefined(set_page.page_active, 1);
+  
+  let first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  let first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
+  
   let result = "";
   
-  if ( data.length == undefined || data.length < 1 || typeof data !== "object" || typeof data == "string") {
-    result__no_result.previousElementSibling.style.display = "none";
-    result__no_result.style.display = "flex";
-    result__no_result.nextElementSibling.style.display = "none";
-  } else {
-    result__no_result.previousElementSibling.style.display = "flex";
-    result__no_result.style.display = "none";
-    result__no_result.nextElementSibling.style.display = "flex";
-  }
-
   first_data_number = (page_active - 1) * max_data;
   
   
@@ -536,19 +552,360 @@ function createTable(  data, column = ["nama", "no_hp", "action"], data_table = 
     let row = "";
     
     
-    for(let ii = 0; ii < column.length; ii++) {
-      if ( column[ii] == "action" ) row += `<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td>`;
-      else row += `<td>${data[i][column[ii]]}</td>`;
+    for(let ii = 0; ii < column.length - 1; ii++) {
+      
+      row += `<td>${data[i][column[ii]]}</td>`;
     }
-
-    row = row.replace("<td>Progress", `<td class="td-status-progress" data-change_status_by_id="${data[i]['id']}">Progress`);
     
-    row = `<tr><td>${i+1}</td>${row}</tr>`;
+    row = `<tr><td>${i+1}</td>${row}<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td></tr>`;
     result += row;
-    
   }
   data_table.innerHTML = result;
   
+}
+
+/*
+let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;*/
+// params = {
+//   page_is_valid: true,
+//   primary_button: true,
+  // primary_button_lvl_2: true
+/*
+function create_table_and_pagination(  
+  type,
+  data,
+  a__page_active = null,
+  set_page = {
+    goto, 
+    max_data, 
+    max_button, 
+    page_active, 
+    first_link_page, 
+    first_data_number,
+    page_total,
+
+    page_is_valid,
+    primary_button,
+    primary_button_lvl_2,
+  },
+  is_ = [is_create_table = true, is_create_pagination = true ]
+) {
+  
+  // Configure
+  let data;
+  let pages;
+  let data_table;
+  let column;
+  let div_no_result;
+  if (type === 1) { 
+    data = data__costumer;
+    pages = document.querySelector(".pages-search-costumer");
+    data_table = document.querySelector("#table-costumer");
+    column = ["nama", "no_hp", "action"];
+    div_no_result = document.querySelector(".costumer-no-result");
+    
+  } else if (type === 2) {
+    data = data__order;
+    pages = document.querySelector(".pages-search-order");
+    data_table = document.querySelector("#table-order");
+    column = ["tanggal", "kode_pemesanan", "status", "action"];
+    div_no_result = document.querySelector(".order-no-result");
+  }
+  
+  //config set rule of pagination
+  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
+  let max_data = set___undefined(set_page.max_data, 10);
+  
+  let max_button = set___undefined(set_page.max_button, 5);
+
+  let page_active = set___undefined(set_page.page_active, 1);
+  
+  let first_link_page = set___undefined(set_page.first_link_page, 1);
+  
+  let first_data_number = set___undefined(set_page.first_data_number, 1);
+  
+  let total_page = Math.ceil(data.length / set_page.max_data);
+  let page_total = total_page;
+  
+  // setPagination(data, pages, set_page);
+  // createTable(data, data_table, set_page, column);
+
+
+  //config create pagination
+  let page_is_valid = set___undefined(set_page.page_is_valid, true);
+  let primary_button = set___undefined(set_page.primary_button, true);
+  let primary_button_lvl_2 = set___undefined(set_page.primary_button_lvl_2, true);
+  let result = "";
+
+  
+
+  // create pagination 
+  if ( is_create_pagination === true ) {
+    //set config
+    page_active = parseInt(page_active);
+    
+    //**set Rules --filter beberapa logika.
+    //max_data = 5. normalnya, ada 5 button.
+    
+    //gagalkan ekesuki jika : 
+    
+    if (page_active < 0 || page_active > page_total) {
+      page_is_valid = false;
+    
+    //jika page_total tidak melebihi max_button
+    //tidak ada yang terjadi. (hanya berjalan normal)
+    } else if (page_total <= max_button) {
+      first_link_page = 1;
+    
+    //sampai sini, berarti page_total lebih dari max_button.
+    //jika page_active nya tidak berada ditengah atau lebih dari itu. (tengah itu 3, karena buttonnya 5)
+    //tidak ada yang terjadi. (hanya berjalan normal)
+    } else if (page_active <= Math.floor(max_button / 2)) {
+      first_link_page = 1;
+    
+    //sampai sini, berarti page_active nya lebih dari setengah max_button.
+    //jika page_activenya belum berada di page hampir terakhir atau terkahir, 
+    //maka button page_active harus berada di tengah.
+    } else if (page_total - page_active >= Math.floor(max_button / 2)) {
+      first_link_page = page_active - Math.floor(max_button / 2);
+      
+    //sampai sini, berarti page_active nya berada di hampir paling terkahir, atau bahkan terkahir.
+    //maka button awal alias first_link_page : 
+    } else if (page_total - page_active >= 0) {
+      first_link_page = page_total - max_button + 1;
+    
+    //selain itu, maka, emmmmm buat execute false atau error
+    //karena gatau lagi masuk ke kondisi apa.
+    } else page_is_valid = false; 
+
+
+    // create pagination
+    //inisiasi result
+    result = "";
+    
+    if (page_is_valid === false || data.length === undefined || data.length == 0) {
+      data_table.style.display = "none";
+      div_no_result.style.display = "flex";
+      return false;
+    } else {
+      data_table.style.display = "block";
+      div_no_result.display = "none";
+    }
+    
+    
+    // buat button berdasarkan data global.
+    
+    let end_for = max_button;
+    
+    //binding, jika page_total < max_button : 
+    if (page_total < max_button) end_for = page_total;
+    
+    //buat button angka
+    end_for += first_link_page;
+    for (let i = first_link_page; i < end_for; i++) {
+      
+      result += `<li><a href="#${goto}" class="${checkPageActive([i, page_active], ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
+      
+    }
+    
+    //jika primary_button_lvl_2 adalah true, buat button previous dan next yang membungkus button yang sudah dibuat 
+    if (primary_button_lvl_2 === true) {
+      result = `<li><a href="#${goto}" class="previous-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
+        ${result}
+      <li><a href="#${goto}" class="next-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
+    }
+    
+    //sama.
+    if (primary_button === true) {
+      result = `<li><a href="#${goto}" class="first-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
+        ${result}
+      <li><a href="#${goto}" class="last-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
+    }
+    //ubah isi elemen dengan class pages menjadi result
+    pages.innerHTML = result;
+
+  } // end create pagination
+  if ( is_create_table === true ) {
+    result = "";
+    first_data_number = (page_active - 1) * max_data;
+    
+    //untuk header / thead
+    for (let i = 0; i < column.length; i++) {
+      result += `<th>${column[i].toUpperCase()}</th>`;
+    }
+    
+    result = `<tr><th>NO</th>${result}</tr>`;
+    
+    //binding jika total data tidak sebanyak kelipatan dari max_data
+    let end_for = max_data * page_active;
+    
+    if (data.length < max_data * page_active) end_for = data.length;
+    
+    //tbody
+    for (let i = first_data_number; i < end_for; i++) {
+      let row = "";
+      
+      
+      for(let ii = 0; ii < column.length - 1; ii++) {
+        
+        row += `<td>${data[i][column[ii]]}</td>`;
+      }
+      
+      row = `<tr><td>${i+1}</td>${row}<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td></tr>`;
+      result += row;
+    }
+    data_table.innerHTML = result;
+  } // end create table
+
+}
+*/
+function create_table_and_pagination(
+  type,
+  data,
+  a__page_active = null,
+  set_page = {
+    goto: "",
+    max_data: 10,
+    max_button: 5,
+    page_active: 1,
+    first_link_page: 1,
+    first_data_number: 1,
+    page_total: 0,
+    page_is_valid: true,
+    primary_button: true,
+    primary_button_lvl_2: true,
+  },
+  is_create_table = true,
+  is_create_pagination = true
+) {
+
+  // Konfigurasi
+  let pages, data_table, column, div_no_result;
+
+  if (type === 1) {
+    //data = data__costumer;
+    pages = document
+      .querySelector(".pages-search-costumer");
+    data_table = document
+      .querySelector("#table-costumer");
+    column = ["nama", "no_hp", "action"];
+    div_no_result = document
+      .querySelector(".costumer-no-result");
+  } else if (type === 2) {
+    //data = data__order;
+    pages = document
+      .querySelector(".pages-search-order");
+    data_table = document
+      .querySelector("#table-order");
+    column = ["tanggal", "kode_pemesanan", "status"];
+    div_no_result = document
+      .querySelector(".order-no-result");
+  }
+
+  // Konfigurasi pagination
+  let {
+    goto,
+    max_data,
+    max_button,
+    page_active,
+    first_link_page,
+    first_data_number,
+    page_total,
+    page_is_valid,
+    primary_button,
+    primary_button_lvl_2,
+  } = set_page;
+  
+  if (a__page_active !== null) page_active = a__page_active;
+  console.log(page_active);
+
+  // Jumlah total halaman
+  page_total = Math.ceil(data.length / max_data);
+
+  // Membuat pagination
+  if (is_create_pagination) {
+    // Penanganan kesalahan
+    if (page_active < 1 || page_active > page_total || data.length === 0) {
+      data_table.style.display = "none";
+      div_no_result.style.display = "flex";
+      return false;
+    } else {
+      data_table.style.display = "block";
+      div_no_result.display = "none";
+    }
+
+    let result = "";
+    let end_for = Math.min(max_button + first_link_page, page_total + 1);
+    
+    for (let i = first_link_page; i < end_for; i++) {
+      result += `<li><a href="#${goto}" class="${ (i == page_active) ? "active disable" : "smooth" }" data-topage="${i}">${i}</a></li>`;
+    }
+
+    if (primary_button_lvl_2) {
+      result =
+        `<li><a href="#${goto}" class="previous-page ${checkPageActive(
+          [1, page_active],
+          ["disable", "smooth"]
+        )}" data-topage="${page_active - 1}">&laquo</a></li>` +
+        result +
+        `<li><a href="#${goto}" class="next-page ${checkPageActive(
+          [page_total, page_active],
+          ["disable", "smooth"]
+        )}" data-topage="${page_active + 1}">&raquo</a></li>`;
+    }
+
+    if (primary_button) {
+      result =
+        `<li><a href="#${goto}" class="first-page ${checkPageActive(
+          [1, page_active],
+          ["disable", "smooth"]
+        )}" data-topage="1">&laquo&laquo</a></li>` +
+        result +
+        `<li><a href="#${goto}" class="last-page ${checkPageActive(
+          [page_total, page_active],
+          ["disable", "smooth"]
+        )}" data-topage="${page_total}">&raquo&raquo</a></li>`;
+    }
+
+    pages.innerHTML = result;
+  }
+
+  // Membuat tabel
+  if (is_create_table) {
+    let result = "";
+    first_data_number = (page_active - 1) * max_data;
+    console.log("cr tabel : page act", page_active);
+
+    for (let i = 0; i < column.length; i++) {
+      result += `<th>${column[i].toUpperCase()}</th>`;
+    }
+    result = `<tr><th>NO</th>${result}</tr>`;
+
+    let end_for = Math.min(max_data * page_active, data.length);
+
+    for (let i = first_data_number; i < end_for; i++) {
+      let row = "";
+      for (let ii = 0; ii < column.length; ii++) {
+        if (column[ii] == "action") {
+          row += `<td><button data-costumer_id="${
+            data[i]["id"]
+          }" class="to-order">Order</button></td>`;
+        } else row += `<td>${data[i][column[ii]]}</td>`;
+        
+      }
+      row = `<tr><td>${i + 1}</td>${row}</tr>`;
+      result += row;
+    }
+    data_table.innerHTML = result;
+  }
+}
+
+
+
+function set___undefined(param, default_value) {
+  if (param === undefined) {
+    return default_value;
+  } else return param;
 }
 
 
@@ -597,10 +954,13 @@ document.addEventListener("DOMContentLoaded", function() {
   document.body.addEventListener("click", function(e) {
     
     //event request contents
-    if ( e.target.tagName === "A" && e.target.closest("nav") ) {
+    if ( 
+      e.target.tagName === "A" && 
+      e.target.closest("nav") 
+    ) {
       e.preventDefault();
-      document.querySelector("main header h2").innerText = e.target.innerText;
-      
+      document.querySelector("main header h2")
+        .innerText = e.target.innerText;
       
       checkbox.checked = false;
       nav_links.classList.remove("slide");
@@ -610,8 +970,11 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("laporan");
       main_content.classList.remove("login");
       
-      main_content.classList.add(e.target.innerText.toLowerCase());
-      main_content.innerHTML = data__["contents"][e.target.innerText.toLowerCase()];
+      main_content.classList
+        .add(e.target.innerText.toLowerCase());
+      main_content.innerHTML = 
+        data__["contents"][e
+          .target.innerText.toLowerCase()];
       
       //event dashboard
       if (e.target.innerText === "Dashboard") {
@@ -624,12 +987,15 @@ document.addEventListener("DOMContentLoaded", function() {
         harga = 3000;
         createHarga();
         
-        data_table = document.querySelector("#table-costumer");
-        setPagination(data__.costumer.all);
-        createTable(data__.costumer.all);
+        //data_table = document.querySelector("#table-costumer");
+        //setPagination(data__.costumer.all);
+        //createTable(data__.costumer.all);
         
-        setPagination(data__.order.all, document.querySelector(".pages-search-order"));
-        createTable(data__.order.all, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
+        //setPagination(data__.order.all, document.querySelector(".pages-search-order"));
+        //createTable(data__.order.all, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
+        
+        create_table_and_pagination(1, data__.costumer.all);
+        create_table_and_pagination(2, data__.order.all);
         
       //end event dashboard
       }
@@ -637,7 +1003,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     //event close nav pada navlinks
-    if (e.target !== checkbox && e.target !== nav_links) {
+    if (
+      e.target !== checkbox && 
+      e.target !== nav_links 
+    ) {
       checkbox.checked = false; 
       nav_links.classList.remove("slide");
     }
@@ -651,23 +1020,38 @@ document.addEventListener("DOMContentLoaded", function() {
     
       for (let i = 0; i < listContent.length; i++) {
         let switch_content = listContent[i];
-        switch_class[i] = switch_content.toLowerCase().replace(/ /g, "-"); // Mengganti semua spasi dengan tanda strip
+        switch_class[i] = switch_content
+          .toLowerCase().replace(/ /g, "-"); 
+          // Mengganti semua spasi dengan tanda strip
         
         
         if (e.target.innerText === listContent[i]) {
-          document.querySelector('.dashboard .' + switch_class[i]).style.display = "flex";
-          document.querySelector('.dashboard .' + switch_class[i]).classList.add("content-active");
+          document.querySelector(
+            '.dashboard .' + switch_class[i] 
+          ).classList.add("content-active");
         } else {
-          document.querySelector('.dashboard .' + switch_class[i]).style.display = "none";
-          document.querySelector('.dashboard .' + switch_class[i]).classList.remove("content-active");
+          document.querySelector(
+            '.dashboard .' + switch_class[i] 
+          ).classList.remove("content-active");
         }
-      }
+        
+        document.querySelector(
+          `.dashboard .${switch_class[i]}`
+        ).style.display = 
+          (e.target.innerText === listContent[i]) 
+          ? "flex"
+          : "none";
+      } //end for
       
       //event add order
       if (e.target.innerText === listContent[2]) {
         //hilangkan form. karena harus di akses dengan button order pada search costumer
-        document.querySelector(`.dashboard .${switch_class[2]} form`).style.display = 'none';
-        document.querySelector(`.dashboard .${switch_class[2]} .form-no-permission`).style.display = 'flex';
+        document.querySelector(
+          `.dashboard .${switch_class[2]} form`
+        ).style.display = 'none';
+        document.querySelector(
+          `.dashboard .${switch_class[2]} .form-no-permission`
+        ).style.display = 'flex';
       //end event add order
       }
     // end event switch content
@@ -698,30 +1082,39 @@ document.addEventListener("DOMContentLoaded", function() {
         
         let to_page = e.target.dataset.topage;
         page_active = to_page;
-        console.log(e.target.parentElement.parentElement);
         
+        console.log(" active ::", page_active);
         //binding error kondisi.
         //hanya di binding saat request dari button.
         if (page_active == 0) {
           page_active = 1;
+          console.error("filter page 0");
         } else if (page_active > page_total) {
           page_active = page_total;
+          console.error("filter page total");
         
         //event pembuatan tabel berdasarkan topage
         } else if ( 
-          e.target.parentElement.parentElement
+          e.target.parentElement
             .parentElement.classList
             .contains("pages-search-costumer") 
         ) {
-          console.log(" page costumer");
+          /*
           setPagination(data__.costumer.all); 
           createTable(data__.costumer.all);
+          */
+          create_table_and_pagination(
+            1, 
+            data__.costumer.all,
+            page_active
+          );
         } else if ( 
-          e.target.parentElement.parentElement
+          e.target.parentElement
             .parentElement.classList
             .contains("pages-search-order") 
         ) {
           console.log(" page order");
+          /*
           setPagination(
             data__order.all, 
             document.querySelector(
@@ -734,8 +1127,14 @@ document.addEventListener("DOMContentLoaded", function() {
             document.querySelector("#table-order"), 
             document.querySelector(".order-no-result")
           );
+          */
+          create_table_and_pagination(
+            1,
+            data__.order.all,
+            page_active
+          );
         //end pembuatan tabel berdasarkan topage
-        }
+        } else console.error("no filter topage");
       // end event paginagion smooth
       }
       
@@ -751,10 +1150,16 @@ document.addEventListener("DOMContentLoaded", function() {
           ["nama", e.target.previousElementSibling.value] 
         );
         page_active = 1;
+        /*
         setPagination(
           data__.costumer.search.result
         );
         createTable(
+          data__.costumer.search.result
+        );
+        */
+        create_table_and_pagination(
+          1,
           data__.costumer.search.result
         );
      
@@ -773,6 +1178,7 @@ document.addEventListener("DOMContentLoaded", function() {
           ["nama", e.target.previousElementSibling.value]  
         );
         page_active = 1;
+        /*
         setPagination(
           data__order, 
           document.querySelector(".pages-search-order")
@@ -782,6 +1188,11 @@ document.addEventListener("DOMContentLoaded", function() {
           ["tanggal", "kode_pemesanan", "status"], 
           document.querySelector("#table-order"), 
           document.querySelector(".order-no-result")
+        );
+        */
+        create_table_and_pagination(
+          1,
+          data__.order.search.result
         );
      
       //end event search order
@@ -865,12 +1276,12 @@ document.addEventListener("DOMContentLoaded", function() {
         ".dashboard .add-order .nama"
       ).value = 
         data__["costumer"]["all"][e.target
-          .dataset.data_loop]["nama"];
+          .dataset.costumer_id]["nama"];
       document.querySelector(
         ".dashboard .add-order .no_hp"
       ).value = 
         data__["costumer"]["all"][e.target
-          .dataset.data_loop]["no_hp"];
+          .dataset.costumer_id]["no_hp"];
     //end event button to-order
     }
   }); 
@@ -955,8 +1366,14 @@ function fillData(
     let data__type = type.split("_")[0];
     
     if (data__.order.all.length > 1) {
+      /*
       let result = data__[data__type]["all"]
         .filter(arr => arr[column] === keyword);
+      */
+      
+      let result = data__[data__type]["all"]
+        .filter(arr => arr[column].toLowerCase()
+          .includes(keyword.toLowerCase()));
       
       if (
         typeof result == "object" && 
