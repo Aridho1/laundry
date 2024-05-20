@@ -219,7 +219,7 @@ if (!session_id()) session_start();
 /*** Dashboard - change data ***/
 .dashboard .change-data {
   position: fixed;
-  z-index: -2;
+  z-index: 6;
   top: 0;
   left: 0;
   width: 100vw;
@@ -227,7 +227,7 @@ if (!session_id()) session_start();
 
   background-color: #5558ff;
 
-  display: none;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -1032,16 +1032,48 @@ function set___undefined(param, default_value) {
 
 
 
+let input = {
+  /*
+  costumer: {
+    name: document.querySelector("#input-add-costumer-name"),
+    phone_num:  document.querySelector("#input-add-costumer-phone-num"),
+    btn_cancel: document.querySelector("#input-add-costumer-button-group").firstElementChild,
+    btn: document.querySelector("#input-add-costumer-button-group").firstElementChild.nextElementSibling
+  },
+  order: {
+    date: document.querySelector("#input-add-order-date"),
+    name: document.querySelector("#input-add-order-name"),
+    phone_num:  document.querySelector("#input-add-order-phone-num"),
+    package:  document.querySelector("#input-add-order-package"),
+    price:  document.querySelector("#input-add-order-price"),
+    weight:  document.querySelector("#input-add-order-weight"),
+    total:  document.querySelector("#input-add-order-total"),
+    btn_cancel: document.querySelector("#input-add-order-button-group").firstElementChild,
+    btn: document.querySelector("#input-add-order-button-group").firstElementChild.nextElementSibling
+  },
+  edit_order: {
+    date: document.querySelector("#input-change-order-date"),
+    name: document.querySelector("#input-change-order-name"),
+    phone_num:  document.querySelector("#input-change-order-phone-num"),
+    package:  document.querySelector("#input-change-order-package"),
+    price:  document.querySelector("#input-change-order-price"),
+    weight:  document.querySelector("#input-change-order-weight"),
+    total:  document.querySelector("#input-change-order-total"),
+    btn_cancel: document.querySelector("#input-change-order-button-group").firstElementChild,
+    btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling
+  }
+  */
+};
 
 
-let select_paket = document.getElementById("list-paket");
-let option_paket = "";
-let inputBerat = document.querySelector("#berat");
-let berat = 0;
-let inputHarga = document.querySelector("#harga");
-let harga = 3000;
-function createHarga(
-  select_paket = document.getElementById("list-paket"),
+// let select_paket = document.getElementById("list-paket");
+// let option_paket = "";
+// let inputBerat = document.querySelector("#berat");
+// let berat = 0;
+// let inputHarga = document.querySelector("#harga");
+// let harga = 3000;
+function createHargaPackage(
+  package = input.order.package,
   params = [
     ["Biasa", 3000],
     ["Cepat", 5000],
@@ -1050,9 +1082,22 @@ function createHarga(
 {
     let code = ``;
     for (let i = 0; i < params.length; i++) {
-        code += `<option class="comboB${i}" data-harga="${params[i][1]}" value="${params[i][0]}">${params[i][0]}</option>`;
+        code += `<option class="comboB${
+          i
+        }" data-harga="${
+          params[i][1]
+        }" value="${
+          params[i][0]
+        }">${
+          params[i][0]
+        }</option>`;
     }
-    select_paket.innerHTML = code;
+    package.innerHTML = code;
+    console.log(package);
+}
+
+function calcTotal( type = "order" ) {
+  input[type].total.value = input[type].price.value * input[type].weight.value;
 }
 
 let button_search_order_by_date = [
@@ -1060,23 +1105,6 @@ let button_search_order_by_date = [
 ];
 
 let search_group_order = [];
-
-let input_change = {
-  date: "",
-  name: "",
-  no_hp: "",
-  package: "",
-  harga: "",
-  wight: "",
-  total: "",
-  btn_cancel: "",
-  btn_edit: ""
-};
-
-
-function calcTotal(input_harga_total = document.querySelector("#harga_total")) {
-  input_harga_total.value = harga * berat;
-}
 
 
 
@@ -1115,15 +1143,54 @@ document.addEventListener("DOMContentLoaded", function() {
       
       //event dashboard
       if (e.target.innerText === "Dashboard") {
-        document.querySelector("#date").value = today;
-        select_paket = document.getElementById("list-paket");
-        option_paket = "";
-        inputBerat = document.querySelector("#berat");
-        berat = 0;
-        inputHarga = document.querySelector("#harga");
-        harga = 3000;
-        createHarga();
+        // document.querySelector("#date").value = today;
+        // select_paket = document.getElementById("list-paket");
+        // option_paket = "";
+        // inputBerat = document.querySelector("#berat");
+        // berat = 0;
+        // inputHarga = document.querySelector("#harga");
+        // harga = 3000;
+        //createHarga();
+
+        // event deklarasi var input
+        input = {
+          
+          costumer: {
+            name: document.querySelector("#input-add-costumer-name"),
+            phone_num:  document.querySelector("#input-add-costumer-phone-num"),
+            btn_cancel: document.querySelector("#input-add-costumer-button-group").firstElementChild,
+            btn: document.querySelector("#input-add-costumer-button-group").firstElementChild.nextElementSibling
+          },
+          order: {
+            date: document.querySelector("#input-add-order-date"),
+            name: document.querySelector("#input-add-order-name"),
+            phone_num:  document.querySelector("#input-add-order-phone-num"),
+            package:  document.querySelector("#input-add-order-package"),
+            price:  document.querySelector("#input-add-order-price"),
+            weight:  document.querySelector("#input-add-order-weight"),
+            total:  document.querySelector("#input-add-order-total"),
+            btn_cancel: document.querySelector("#input-add-order-button-group").firstElementChild,
+            btn: document.querySelector("#input-add-order-button-group").firstElementChild.nextElementSibling
+          },
+          edit_order: {
+            date: document.querySelector("#input-change-order-date"),
+            name: document.querySelector("#input-change-order-name"),
+            phone_num:  document.querySelector("#input-change-order-phone-num"),
+            package:  document.querySelector("#input-change-order-package"),
+            price:  document.querySelector("#input-change-order-price"),
+            weight:  document.querySelector("#input-change-order-weight"),
+            total:  document.querySelector("#input-change-order-total"),
+            btn_cancel: document.querySelector("#input-change-order-button-group").firstElementChild,
+            btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling
+          }
+          
+        };
         
+        createHargaPackage(input.order.package);
+        createHargaPackage(input.edit_order.package);
+
+
+
         search_group_order.push(
           document.querySelector(
             ".search-order .search-group"
@@ -1152,19 +1219,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
         button_search_order_by_date[1].parentElement.display = "none";
 
-        input_change = {
-          date: document.querySelector("#change_date"),
-          name: document.querySelector("#change_nama"),
-          no_hp: document.querySelector("#change_no_hp"),
-          package: document.querySelector("#change_list-paket"),
-          harga: document.querySelector("#change_harga"),
-          wight: document.querySelector("#change_berat"),
-          total: document.querySelector("#change_harga_total"),
-          btn_cancel: document.querySelector(".change-data .button-group").firstElementChild,
-          btn_edit: document.querySelector(".change-data .button-group").firstElementChild.nextElementSibling
-        };
-
-        createHarga(input_change.package);
         
         //data_table = document.querySelector("#table-costumer");
         //setPagination(data__.costumer.all);
@@ -1403,24 +1457,34 @@ document.addEventListener("DOMContentLoaded", function() {
   function(e) {
     
     //change harga
-    if ( 
-      e.target.tagName == "SELECT" && 
-      e.target.closest(".add-order") 
-    ) {
-      harga = select_paket.options[select_paket.selectedIndex].dataset.harga;
-      inputHarga.value = harga;
-      option_paket = select_paket.value;
-      calcTotal();
+    if ( e.target.tagName == "SELECT" ) {
+      let type;
+
+      if ( e.target.closest(".add-order") ) type = "order";
+      else if ( e.target.closest(".change-data") ) type = "edit_order";
+
+      input[type].price.value = input[type].package.options[input[type].package.selectedIndex].dataset.harga;
+      calcTotal(type);
       
     //end change harga
     }
-    //change berat
+    //change berat for add order
     else if ( 
-      e.target === document.querySelector("#berat") 
+      e.target === input.order.weight 
     ) {
-      berat = inputBerat.value;
-      if (berat == "" || berat <= 0) berat = 0;
+      console.log(input.order.weight);
+      // if (weight.value == "" || weight.value <= 0) weight.value = 0;
       calcTotal();
+    //end change berat
+    }
+
+    //change berat for change data
+    else if ( 
+      e.target === input.edit_order.weight 
+    ) {
+      console.log(input.edit_order.weight);
+      // if (weight.value == "" || weight.value <= 0) weight.value = 0;
+      calcTotal("edit_order");
     //end change berat
     }
 
@@ -1906,6 +1970,8 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
   
   return result;
 };
+
+console.log(document.querySelector("#input-add-order-package"));
 
 </script>
 </body>

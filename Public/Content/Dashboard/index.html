@@ -10,24 +10,24 @@
         <table>
           <tr>
             <td>
-              <label for="nama">Name : </label>
+              <label for="input-add-costumer-name">Name : </label>
             </td>
             <td>
-              <input type="text" class="nama" id="nama" name="nama" required>
+              <input type="text" class="nama" id="input-add-costumer-name" name="nama" required>
             </td>
           </tr>
           <tr>
             <td>
-              <label for="no_hp">Phone Num : </label>
+              <label for="input-add-costumer-phone-num">Phone Num : </label>
             </td>
             <td>
-              <input type="number" class="no_hp" id="no_hp" name="no_hp" required>
+              <input type="number" class="no_hp" id="input-add-costumer-phone-num" name="no_hp" required>
             </td>
           </tr>
         </table>
-        <div class="button-group">
-          <button type="button" id="cancel">Cancel</button>
-          <button type="sumbit" id="button-add-pelanggan" name="button-add-pelanggan">Submit</button>
+        <div class="button-group" id="input-add-costumer-button-group">
+          <button type="button" id="input-add-costumer-cancel">Cancel</button>
+          <button type="sumbit" id="input-add-costumer-submit" name="button-add-pelanggan">Submit</button>
         </div>
       </form>
     </div>
@@ -103,35 +103,35 @@
         <table>
           <tr>
             <td>
-              <label for="date">Date : </label>
+              <label for="input-add-order-date">Date : </label>
             </td>
             <td>
-              <input type="date" id="date" class="date" name="date" required>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label for="nama">Name : </label>
-            </td>
-            <td>
-              <input type="text" class="nama" name="nama" readonly required>
+              <input type="date" id="input-add-order-date" class="date" name="date" required>
             </td>
           </tr>
           <tr>
             <td>
-              <label for="no_hp">Phone Num : </label>
+              <label for="input-add-order-name">Name : </label>
             </td>
             <td>
-              <input type="number" class="no_hp" name="no_hp" readonly required>
+              <input type="text" id="input-add-order-name" class="nama" name="nama" readonly required>
             </td>
           </tr>
           <tr>
             <td>
-              <label for="list-paket">Package : </label>
+              <label for="input-add-order-phone-num">Phone Num : </label>
+            </td>
+            <td>
+              <input type="number" id="input-add-order-phone-num" class="no_hp" name="no_hp" readonly required>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="input-add-order-package">Package : </label>
             </td>
             <td>
               <!-- <input type="text" class="paket" id="paket" name="paket" required> -->
-              <select class="form-control" id="list-paket" name="paket">
+              <select class="form-control" id="input-add-order-package" name="paket">
                 <option class="comboB1">Biasa</option>
                 <option class="comboB2">Cepat</option>
                 <option class="comboB2">Kilat</option>
@@ -140,34 +140,35 @@
           </tr>
           <tr>
             <td>
-              <label for="harga">Harga : </label>
+              <label for="input-add-order-price">Harga : </label>
             </td>
             <td>
-              <input type="number" class="harga" id="harga" name="harga" readonly value="3000">
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <label for="berat">Berat : </label>
-            </td>
-            <td>
-              <input type="number" class="berat" id="berat" name="berat" value="0" required>
+              <input type="number" class="harga" id="input-add-order-price" name="harga" readonly value="3000">
             </td>
           </tr>
           <tr>
             <td>
-              <label for="harga_total">Harga Total : </label>
+              <label for="input-add-order-weight">Berat : </label>
             </td>
             <td>
-              <input type="number" class="harga_total" id="harga_total" name="harga_total" value="0" readonly required>
+              <input type="number" class="berat" id="input-add-order-weight" name="berat" value="0" required>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="input-add-order-total">Harga Total : </label>
+            </td>
+            <td>
+              <input type="number" class="harga_total" id="input-add-order-total" name="harga_total" value="0" readonly
+                required>
             </td>
           </tr>
 
         </table>
 
-        <div class="button-group">
-          <button type="button" id="cancel">Cancel</button>
-          <button type="sumbit" id="button-add-order" name="button-add-order" value="order">Submit</button>
+        <div class="button-group" id="input-add-order-button-group">
+          <button type="button" id="input-add-order-cancel">Cancel</button>
+          <button type="sumbit" id="input-add-order-submit" name="button-add-order" value="order">Submit</button>
         </div>
       </form>
       <div class="form-no-permission" style="display: none;">
@@ -283,68 +284,66 @@
           <table>
             <tr>
               <td>
-                <label for="change_date">Date : </label>
+                <label for="input-change-order-date">Date : </label>
               </td>
               <td>
-                <input type="date" id="change_date" class="date" name="date" required>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="change_nama">Name : </label>
-              </td>
-              <td>
-                <input type="text" id="change_nama" class="nama" name="nama" required>
+                <input type="date" id="input-change-order-date" class="date" name="date" required>
               </td>
             </tr>
             <tr>
               <td>
-                <label for="change_no_hp">Phone Num : </label>
+                <label for="input-change-order-name">Name : </label>
               </td>
               <td>
-                <input type="number" id="change_no_hp" class="no_hp" name="no_hp" required>
+                <input type="text" id="input-change-order-name" class="nama" name="nama" required>
               </td>
             </tr>
             <tr>
               <td>
-                <label for="change_list-paket">Package : </label>
+                <label for="input-change-order-phone-num">Phone Num : </label>
               </td>
               <td>
-                <select class="form-control" id="change_list-paket" name="paket">
+                <input type="number" id="input-change-order-phone-num" class="no_hp" name="no_hp" required>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="input-change-order-package">Package : </label>
+              </td>
+              <td>
+                <select class="form-control" id="input-change-order-package" name="paket">
                   <option class="comboB1">Biasa</option>
-                  <option class="comboB2">Cepat</option>
-                  <option class="comboB2">Kilat</option>
                 </select>
               </td>
             </tr>
             <tr>
               <td>
-                <label for="change_harga">Harga : </label>
+                <label for="input-change-order-price">Harga : </label>
               </td>
               <td>
-                <input type="number" class="harga" id="change_harga" name="harga" value="3000">
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label for="change_berat">Berat : </label>
-              </td>
-              <td>
-                <input type="number" class="berat" id="change_berat" name="berat" value="0" required>
+                <input type="number" class="harga" id="input-change-order-price" name="harga" readonly value="3000">
               </td>
             </tr>
             <tr>
               <td>
-                <label for="change_harga_total">Harga Total : </label>
+                <label for="input-change-order-weight">Berat : </label>
               </td>
               <td>
-                <input type="number" class="harga_total" id="change_harga_total" name="harga_total" value="0" readonly
-                  required>
+                <input type="number" class="berat" id="input-change-order-weight" name="berat" value="0" required>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="input-change-order-total">Harga Total : </label>
+              </td>
+              <td>
+                <input type="number" class="harga_total" id="input-change-order-total" name="harga_total" value="0"
+                  readonly required>
               </td>
             </tr>
           </table>
 
-          <div class="button-group">
+          <div class="button-group" id="input-change-order-button-group">
             <button>Cancel</button>
             <button>Edit</button>
           </div>
