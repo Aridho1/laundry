@@ -42,8 +42,8 @@ class Pemesanan {
   }
 
 
-  public function change_status($id) {
-    $status = "Selesai";
+  public function change_status($id, $change_to = "Selesai") {
+    $status = $change_to;
     $query = "UPDATE {$this->table} SET status = :status WHERE id = :id";
     $this->db->query($query);
 

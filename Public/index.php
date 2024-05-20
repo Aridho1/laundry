@@ -103,7 +103,8 @@ if (!session_id()) session_start();
 }
 
 .dashboard tr th {
-  min-width: 80px;
+  /*min-width: 80px;*/
+  padding: 5px;
 }
 
 .dashboard .search-costumer tr:nth-child(odd),
@@ -141,6 +142,24 @@ if (!session_id()) session_start();
   
   text-align: center;
   margin: auto;
+}
+
+/*** Dashboard -- search-order search-group ***/
+.dashboard .search-order .search-group {
+  diaplay: flex;
+  justify-content: space-evenly;
+  align-items: start;
+  flex-wrap: wrap;
+  /*background-color: violet;*/
+}
+
+.dashboard .search-order .search-group .search-group-order {
+  width: 30%;
+  /*border: 1px solid black;*/
+}
+
+.dashboard .search-order .search-group .search-group-order.6 {
+  display: flex;
 }
 
 /* STYLE PAGES */
@@ -196,6 +215,8 @@ if (!session_id()) session_start();
 .dashboard a.smooth {
   scroll-behavior: smooth;
 }
+
+
 
   </style>
 </head>
@@ -260,8 +281,20 @@ data__ = {
   },
   contents: {
     home: "", dashboard: "", laporan: "", login: ""
+  },
+  pages: {
+    costumer: {
+      active: 1
+    }, 
+    order: {
+      active: 1
+    }
   }
 };
+
+/*
+let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;
+*/
 
 let data = {};
 let data__costumer = {};
@@ -358,6 +391,8 @@ photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 
 let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;
 
+
+
 let data_tabel, data_js;
 
 let listContent = [
@@ -370,6 +405,8 @@ let switch_class = [];
 
 const today = new Date().toISOString().split('T')[0];
 let day = new Date();
+
+
 
 //func
 
@@ -767,7 +804,7 @@ function create_table_and_pagination(
     goto: "",
     max_data: 10,
     max_button: 5,
-    page_active: 1,
+    //page_active: 1,
     first_link_page: 1,
     first_data_number: 1,
     page_total: 0,
@@ -780,7 +817,9 @@ function create_table_and_pagination(
 ) {
 
   // Konfigurasi
-  let pages, data_table, column, div_no_result;
+  let pages, data_table, column, div_no_result, page_active;
+  
+  
 
   if (type === 1) {
     //data = data__costumer;
@@ -791,6 +830,7 @@ function create_table_and_pagination(
     column = ["nama", "no_hp", "action"];
     div_no_result = document
       .querySelector(".costumer-no-result");
+    page_active = data__.pages.costumer.active;
   } else if (type === 2) {
     //data = data__order;
     pages = document
@@ -800,14 +840,18 @@ function create_table_and_pagination(
     column = ["tanggal", "kode_pemesanan", "status"];
     div_no_result = document
       .querySelector(".order-no-result");
+    page_active = data__.pages.order.active;
+    
   }
+  page_active = parseInt(page_active);
+  
 
   // Konfigurasi pagination
   let {
     goto,
     max_data,
     max_button,
-    page_active,
+    //page_active,
     first_link_page,
     first_data_number,
     page_total,
@@ -816,8 +860,8 @@ function create_table_and_pagination(
     primary_button_lvl_2,
   } = set_page;
   
-  if (a__page_active !== null) page_active = a__page_active;
-  console.log(page_active);
+  //if (a__page_active !== null) page_active = a__page_active;
+  
 
   // Jumlah total halaman
   page_total = Math.ceil(data.length / max_data);
@@ -874,7 +918,7 @@ function create_table_and_pagination(
   if (is_create_table) {
     let result = "";
     first_data_number = (page_active - 1) * max_data;
-    console.log("cr tabel : page act", page_active);
+    
 
     for (let i = 0; i < column.length; i++) {
       result += `<th>${column[i].toUpperCase()}</th>`;
@@ -886,13 +930,26 @@ function create_table_and_pagination(
     for (let i = first_data_number; i < end_for; i++) {
       let row = "";
       for (let ii = 0; ii < column.length; ii++) {
+        //event for column action
         if (column[ii] == "action") {
           row += `<td><button data-costumer_id="${
             data[i]["id"]
           }" class="to-order">Order</button></td>`;
+        
+        //event column status
+        } else if (column[ii] == "status") {
+          row += `<td data-change_status_by_id="${
+            data[i]["id"]
+          }" class="td-status">${
+            data[i][column[ii]]
+          }</td>`;
+        
+        //selain itu
         } else row += `<td>${data[i][column[ii]]}</td>`;
         
       }
+      
+      
       row = `<tr><td>${i + 1}</td>${row}</tr>`;
       result += row;
     }
@@ -933,7 +990,11 @@ function createHarga(params = [
     select_paket.innerHTML = code;
 }
 
+let button_search_order_by_date = [
+  null
+];
 
+let search_group_order = [];
 
 
 function calcTotal() {
@@ -986,6 +1047,32 @@ document.addEventListener("DOMContentLoaded", function() {
         inputHarga = document.querySelector("#harga");
         harga = 3000;
         createHarga();
+        
+        search_group_order.push(
+          document.querySelector(
+            ".search-order .search-group"
+          )
+        );
+        
+        document.querySelectorAll(
+          ".search-order .search-group .search-group-order"
+        ).forEach((s) => {
+          search_group_order.push(s.firstElementChild);
+          
+        });
+        
+        
+        button_search_order_by_date[1] = 
+          document.querySelector(
+            "#search-order-by-date-1"
+          );
+        button_search_order_by_date[2] = 
+          document.querySelector(
+            "#search-order-by-date-2"
+          );
+        
+        button_search_order_by_date[1].value = today;
+        button_search_order_by_date[2].value = today;
         
         //data_table = document.querySelector("#table-costumer");
         //setPagination(data__.costumer.all);
@@ -1081,6 +1168,7 @@ document.addEventListener("DOMContentLoaded", function() {
           .scrollBehavior = "smooth";
         
         let to_page = e.target.dataset.topage;
+        
         page_active = to_page;
         
         console.log(" active ::", page_active);
@@ -1103,6 +1191,7 @@ document.addEventListener("DOMContentLoaded", function() {
           setPagination(data__.costumer.all); 
           createTable(data__.costumer.all);
           */
+          data__.pages.costumer.active = to_page;
           create_table_and_pagination(
             1, 
             data__.costumer.all,
@@ -1113,7 +1202,7 @@ document.addEventListener("DOMContentLoaded", function() {
             .parentElement.classList
             .contains("pages-search-order") 
         ) {
-          console.log(" page order");
+          
           /*
           setPagination(
             data__order.all, 
@@ -1121,6 +1210,7 @@ document.addEventListener("DOMContentLoaded", function() {
               ".pages-search-order"
             )
           );
+          
           createTable(
             data__.order.all, 
             ["tanggal", "kode_pemesanan", "status"], 
@@ -1128,8 +1218,9 @@ document.addEventListener("DOMContentLoaded", function() {
             document.querySelector(".order-no-result")
           );
           */
+          data__.pages.order.active = to_page;
           create_table_and_pagination(
-            1,
+            2,
             data__.order.all,
             page_active
           );
@@ -1169,7 +1260,7 @@ document.addEventListener("DOMContentLoaded", function() {
       //event search order
       else if ( 
         e.target === document.querySelector(
-          ".search-order .search-group button"
+          ".searchorder .search-group button"
         ) 
       ) {
       
@@ -1191,7 +1282,7 @@ document.addEventListener("DOMContentLoaded", function() {
         );
         */
         create_table_and_pagination(
-          1,
+          2,
           data__.order.search.result
         );
      
@@ -1284,6 +1375,106 @@ document.addEventListener("DOMContentLoaded", function() {
           .dataset.costumer_id]["no_hp"];
     //end event button to-order
     }
+    
+    //event search-order 
+    
+    if ( 
+      e.target === search_group_order[6]
+    ) {
+      
+      let dummy = "";
+      let keyword = [];
+      let result = [];
+      let date_list = [];
+      let key = "__Search:Status[";
+      
+      if ( 
+        !search_group_order[2].checked &&
+        !search_group_order[3].checked &&
+        !search_group_order[4].checked
+      ) {
+        search_group_order[2].checked = true;
+        search_group_order[3].checked = true;
+        search_group_order[4].checked = true;
+      }
+      
+      if ( search_group_order[2].checked ) {
+        keyword.push("Progress");
+        key += "Progress_";
+      }
+      
+      if ( search_group_order[3].checked ) {
+        keyword.push("Selesai");
+        key += "Selesai_";
+      }
+      
+      if ( search_group_order[4].checked ) {
+        keyword.push("DiAmbil");
+        key += "DiAmbil";
+      }
+      
+      key += "]";
+      
+      result = data__.order.all.filter(
+        r => keyword.includes(r.status)
+      );
+      
+      if ( search_group_order[1].checked ) {
+        
+        
+        
+        date_list = getListDate(
+          button_search_order_by_date[1].value,
+          button_search_order_by_date[2].value,
+          "-",
+          "-"
+        );
+        
+        console.log(date_list);
+        console.log(Array.isArray(date_list));
+        
+        
+        key += "_Date[" + button_search_order_by_date [1] + "_" + button_search_order_by_date [2] + "]";
+        
+        
+        result = result.filter(
+          r => { 
+            date_list.includes(r.tanggal);
+            
+            if (
+              date_list.includes(r.tanggal)
+            ) {
+              console.log(date_list, "==", r.tanggal);
+              return r;
+            } else console.error(date_list, "!=", r.tanggal);
+            
+           }
+        );
+      }
+      
+      
+      if ( search_group_order[5].checked ) {
+        result = result.reverse();
+        key += "_reverse";
+      }
+      
+      key += "__";
+      
+      console.log(result);
+      
+      data__.order.search.keyword = key;
+      data__.order.search.result = result;
+      
+      data__.pages.order.active = 1;
+      
+      create_table_and_pagination(
+        2,
+        data__.order.search.result
+      );
+      
+      
+    } //end event search order
+    
   }); 
   
   document.querySelector("main")
@@ -1293,24 +1484,46 @@ document.addEventListener("DOMContentLoaded", function() {
     //evenet pada class status progress
     if ( 
       e.target.classList
-      .contains("td-status-progress") 
+        .contains("td-status") && (
+      e.target.innerText === "Progress" ||
+      e.target.innerText === "Selesai" )
     ) {
+      
+      let change_to = 
+        (e.target.innerText === "Progress") 
+        ? "Selesai" 
+        : "DiAmbil";
       
       let confirm_event = 
         confirm("R U SURE TO CHANGE STATUS BY ID : " + 
-          e.target.dataset.change_status_by_id);
+          e.target.dataset.change_status_by_id + ",\nSTATUS = " + e.target.innerText + " -> " + change_to );
       
       //event confirm
       if (confirm_event) {
         main({
           directory: "../App/index.php?",
           url: "url=Pemesanan/change_status",
-          keyword: e.target.dataset.change_status_by_id,
+          keyword: e.target.dataset.change_status_by_id +"/"+ change_to,
           type: "GET",
           resultType: "json"
         }, function(result) {
             if ( result.status == true ) {
-              alert("SUCCESS TO CHANGE STATUS")
+              //alert("SUCCESS TO CHANGE STATUS")
+              
+              fillData(  "order_all"  );
+              fillData(
+                "order_status",
+                [null, null],
+                "__request_wait__"
+              );
+              
+              setTimeout(() => {
+                create_table_and_pagination(
+                  2,
+                  data__.order.all
+                );
+              }, 7000);
+              
             } else console.log(result);
         });
       //end event confirm
@@ -1382,7 +1595,8 @@ function fillData(
       
         data__[data__type]["search"]["keyword"] = keyword;
         data__[data__type]["search"]["result"] = result;
-        console.log(result);
+        data__["pages"][data__type]["active"] = 1;
+        
         
       } else console.error(`Tidak ada '${keyword}' dalam kolom '${column}' pada object '${data__type}'`);
       
@@ -1400,7 +1614,7 @@ function fillData(
         data__.order.status.complete = data__.order.all
           .filter(arr => arr.status === "Selesai");
         data__.order.status.takeout = data__.order.all
-          .filter(arr => arr.status === "Telah Di Ambil");
+          .filter(arr => arr.status === "DiAmbil");
       // jika bukan array
       } else console.error(`data__ -> order -> all bukan sebuah array`);
     }, time);
@@ -1454,7 +1668,7 @@ setTimeout(() => {
   progress = data__["order"]["all"].filter((arr) => arr["status"] === "Progress");
   selesai = data__["order"]["all"].filter((arr) => arr.status === "Selesai");
   
-  console.log(data__["order"]["all"]);
+  
   
   
   //[progress, selesai] = data__.order.all.filter(() => );
@@ -1467,12 +1681,118 @@ setTimeout(() => {
     }
   });
   
-  console.log(progress);
-  console.log(selesai);
+  
   
 }, 3000);
 */
 
+
+const getListDate = (date_first, date_last, char_split = "/", result_split = "/") => {
+  
+  console.table(date_first, date_last);
+  
+  const year = { first: 0, last: 0 },
+       month = { first: 0, last: 0 },
+         day = { first: 0, last: 0 };
+  
+  let i = { start: 0, loop: 0, end: 0 },
+     ii = { start: 0, loop: 0, end: 0 },
+    iii = { start: 0, loop: 0, end: 0 };
+  
+  
+  const date = {
+    default: {
+      year: {
+        first: 2024,
+        last: 2024
+      },
+      month: {
+        first: 1,
+        last: 12
+      },
+      day: {
+        first: 1,
+        last: 31
+      }
+    }
+  };
+  
+  //**set rules
+  
+  let result = [];
+  
+  [year.first, month.first, day.first] 
+    = date_first.split(char_split).map(m => parseInt(m));;
+  
+  [year.last, month.last, day.last] 
+    = date_last.split(char_split).map(m => parseInt(m));
+  
+  if (
+    year.first === undefined ||
+    year.last === undefined ||
+    month.first === undefined ||
+    month.last === undefined ||
+    day.first === undefined || 
+    day.last === undefined
+  ) {
+    console.error("format parameter harus YYYY/MM/DD");
+    return false;
+  }
+  
+  //**set rules --date_2 must be a next day
+  if ( year.first <= year.last ) {
+    if ( month.first <= month.last || year.first < year.last ) {
+      if ( day.first <= day.last || month.first < month.last || year.first < year.last ) {
+        
+        i.start = year.first;
+        i.end = year.last;
+        
+        for ( i.loop = i.start; i.loop <= i.end; i.loop++ ) {
+          
+          ii.start = (i.loop === year.first) ? month.first : date.default.month.first;
+          ii.end = (i.loop === year.last) ? month.last : date.default.month.last;
+          
+          for ( ii.loop = ii.start; ii.loop <= ii.end; ii.loop++ ) {
+            
+            iii.start = ( ii.loop === month.first && i.loop === year.first ) ? day.first : date.default.day.first;
+            iii.end = ( ii.loop === month.last && i.loop === year.last ) ? day.last : date.default.day.last;
+            
+            for ( iii.loop = iii.start; iii.loop <= iii.end; iii.loop++ ) {
+              
+              result.push(`${i.loop}${
+                result_split
+              }${
+                (ii.loop < 10) 
+                  ? "0" + ii.loop 
+                  : ii.loop
+              }${
+                result_split
+              }${
+                (iii.loop < 10)
+                  ? "0" + iii.loop
+                  : iii.loop
+              }`);
+              /*
+              console.log(`${i.loop}/${
+                (ii.loop < 10) 
+                  ? "0" + ii.loop 
+                  : ii.loop
+              }/${
+                (iii.loop < 10)
+                  ? "0" + iii.loop
+                  : iii.loop
+              }`);
+              */
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  
+  return result;
+};
 
 </script>
 </body>
