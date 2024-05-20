@@ -146,7 +146,7 @@ if (!session_id()) session_start();
 
 /*** Dashboard -- search-order search-group ***/
 .dashboard .search-order .search-group {
-  diaplay: flex;
+  display: flex;
   justify-content: space-evenly;
   align-items: start;
   flex-wrap: wrap;
@@ -158,7 +158,7 @@ if (!session_id()) session_start();
   /*border: 1px solid black;*/
 }
 
-.dashboard .search-order .search-group .search-group-order.6 {
+.dashboard .search-order .search-group .search-group-order.enam {
   display: flex;
 }
 
@@ -216,7 +216,57 @@ if (!session_id()) session_start();
   scroll-behavior: smooth;
 }
 
+/*** Dashboard - change data ***/
+.dashboard .change-data {
+  position: fixed;
+  z-index: -2;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
 
+  background-color: #5558ff;
+
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard .change-data .wrapper {
+  max-width: 500px;
+  background-color: #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 1.2em;
+}
+
+.dashboard .change-data .wrapper table {
+  display: flex;
+  row-gap: 10px;
+}
+
+.dashboard .change-data .wrapper tr {
+  padding: 10px 5px;
+}
+
+.dashboard .change-data .wrapper .button-group {
+  display: flex;
+  border-radius: 4px;
+  color: black;
+  justify-content: space-around;
+  margin: 10px 0 0 0;
+}
+
+.dashboard .change-data .wrapper .button-group button {
+  overflow: hidden;
+  background-color: red;
+  width: 45%;
+  padding: 5px;
+}
+
+.dashboard .change-data .wrapper .button-group button:last-child {
+  background-color: greenyellow;
+}
 
   </style>
 </head>
@@ -869,14 +919,15 @@ function create_table_and_pagination(
   // Membuat pagination
   if (is_create_pagination) {
     // Penanganan kesalahan
-    if (page_active < 1 || page_active > page_total || data.length === 0) {
-      data_table.style.display = "none";
-      div_no_result.style.display = "flex";
-      return false;
-    } else {
-      data_table.style.display = "block";
-      div_no_result.display = "none";
-    }
+
+    // if (page_active < 1 || page_active > page_total || data.length === 0) {
+    //   data_table.style.display = "none";
+    //   div_no_result.style.display = "flex";
+    //   return false;
+    // } else {
+    //   data_table.style.display = "block";
+    //   div_no_result.display = "none";
+    // }
 
     let result = "";
     let end_for = Math.min(max_button + first_link_page, page_total + 1);
@@ -911,7 +962,9 @@ function create_table_and_pagination(
         )}" data-topage="${page_total}">&raquo&raquo</a></li>`;
     }
 
-    pages.innerHTML = result;
+    if (page_active < 1 || page_active > page_total || data.length === 0) {
+      pages.innerHTML = "";
+    } else pages.innerHTML = result;
   }
 
   // Membuat tabel
@@ -944,6 +997,14 @@ function create_table_and_pagination(
             data[i][column[ii]]
           }</td>`;
         
+        //event kode pemesanan
+        } else if (column[ii] == "kode_pemesanan" ) {
+          row += `<td data-change_data_by_id="${
+            data[i]["id"]
+          }" class="td-change-data-by-id" >${
+            data[i][column[ii]]
+          }</td>`;
+
         //selain itu
         } else row += `<td>${data[i][column[ii]]}</td>`;
         
@@ -953,7 +1014,9 @@ function create_table_and_pagination(
       row = `<tr><td>${i + 1}</td>${row}</tr>`;
       result += row;
     }
-    data_table.innerHTML = result;
+    if (page_active < 1 || page_active > page_total || data.length === 0) {
+      data_table.innerHTML = `<tr><th style="font-size: 2.2em;">NO RESULT! PLEASE RETRY SEARCH FOR ANOTHER KEYWORD.<th></tr>`;
+    } else data_table.innerHTML = result;
   }
 }
 
@@ -977,7 +1040,9 @@ let inputBerat = document.querySelector("#berat");
 let berat = 0;
 let inputHarga = document.querySelector("#harga");
 let harga = 3000;
-function createHarga(params = [
+function createHarga(
+  select_paket = document.getElementById("list-paket"),
+  params = [
     ["Biasa", 3000],
     ["Cepat", 5000],
     ["Kilat", 7000]
@@ -996,10 +1061,21 @@ let button_search_order_by_date = [
 
 let search_group_order = [];
 
+let input_change = {
+  date: "",
+  name: "",
+  no_hp: "",
+  package: "",
+  harga: "",
+  wight: "",
+  total: "",
+  btn_cancel: "",
+  btn_edit: ""
+};
 
-function calcTotal() {
-    //$("#total-harga").val(harga * berat);
-    document.querySelector("#harga_total").value = harga * berat;
+
+function calcTotal(input_harga_total = document.querySelector("#harga_total")) {
+  input_harga_total.value = harga * berat;
 }
 
 
@@ -1073,6 +1149,22 @@ document.addEventListener("DOMContentLoaded", function() {
         
         button_search_order_by_date[1].value = today;
         button_search_order_by_date[2].value = today;
+
+        button_search_order_by_date[1].parentElement.display = "none";
+
+        input_change = {
+          date: document.querySelector("#change_date"),
+          name: document.querySelector("#change_nama"),
+          no_hp: document.querySelector("#change_no_hp"),
+          package: document.querySelector("#change_list-paket"),
+          harga: document.querySelector("#change_harga"),
+          wight: document.querySelector("#change_berat"),
+          total: document.querySelector("#change_harga_total"),
+          btn_cancel: document.querySelector(".change-data .button-group").firstElementChild,
+          btn_edit: document.querySelector(".change-data .button-group").firstElementChild.nextElementSibling
+        };
+
+        createHarga(input_change.package);
         
         //data_table = document.querySelector("#table-costumer");
         //setPagination(data__.costumer.all);
@@ -1253,7 +1345,7 @@ document.addEventListener("DOMContentLoaded", function() {
           1,
           data__.costumer.search.result
         );
-     
+    
       //end event search costumer
       } 
       
@@ -1285,7 +1377,7 @@ document.addEventListener("DOMContentLoaded", function() {
           2,
           data__.order.search.result
         );
-     
+      
       //end event search order
       }
     // end event main content adalah dashboard
@@ -1330,6 +1422,11 @@ document.addEventListener("DOMContentLoaded", function() {
       if (berat == "" || berat <= 0) berat = 0;
       calcTotal();
     //end change berat
+    }
+
+    //event change data 
+    if ( e.target == input_change.date ) {
+      
     }
   }); 
   
@@ -1377,6 +1474,16 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     //event search-order 
+
+    if ( e.target === search_group_order[1] ) {
+      if ( search_group_order[1].checked ) {
+        button_search_order_by_date[1].display = "none";
+        button_search_order_by_date[2].display = "none";
+      } else {
+        button_search_order_by_date[1].display = "block";
+        button_search_order_by_date[2].display = "block";
+      }
+    }
     
     if ( 
       e.target === search_group_order[6]
@@ -1448,7 +1555,7 @@ document.addEventListener("DOMContentLoaded", function() {
               return r;
             } else console.error(date_list, "!=", r.tanggal);
             
-           }
+          }
         );
       }
       
@@ -1530,12 +1637,18 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     //end event class status progress
     }
+    
+  //event change data by id
+  if ( e.target.classList.contains("td-change-data-by-id") ) {
+    
+  } //end event change data by id
+
   });
   //end delegation lv 2
   
   
   // Event fill var data
- fillData("all");
+  fillData("all");
   
 }); //end function LoadDOM
 
@@ -1632,7 +1745,7 @@ function fillData(
       const [i, m] of list__menu.entries() 
       //entries: memasukan suatu nilai kedalam array 
     ) {
-     main({
+      main({
         directory: `Content/${m}/index.html`,
         url: "",
         keyword: "",
