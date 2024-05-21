@@ -57,4 +57,60 @@ class Pemesanan {
     }
     echo json_encode($result);
   }
+  
+  
+  public function change_order($id, $tanggal, $nama, $no_hp, $paket, $harga, $berat, $total_harga) {
+    
+    $query = "UPDATE {$this->table} SET status = :status WHERE id = :id";
+    
+    $query = "UPDATE {$this->table} SET
+               tanggal = :tanggal,
+                nama   = :nama,
+                no_hp  = :no_hp,
+                 paket = :paket, 
+                 harga = :harga,
+                 berat = :berat,
+           total_harga = :total_harga
+              WHERE id = :id";
+    
+    $this->db->query($query);
+    
+    $this->db->bind('tanggal', $tanggal);
+    $this->db->bind('nama', $nama);
+    $this->db->bind('no_hp', $no_hp);
+    $this->db->bind('paket', $paket);
+    $this->db->bind('harga', $harga);
+    $this->db->bind('berat', $berat);
+    $this->db->bind('total_harga', $total_harga);
+    
+    $this->db->bind('id', $id); // Gunakan 'id' yang diterima sebagai argumen
+    $this->db->execute();
+    
+    
+    if ($this->db->rowCount() > 0) {
+      $result = ["status" => true, "result" => "SUCCESS"];
+    } else if ($this->db->rowCount() > 0) {
+      $result = ["status" => false, "result" => "Failed"];
+    }
+    echo json_encode($result);
+  }
+  
+  
+  
+  
+  public function delete_order($id) {
+    $query = "DELETE FROM {$this->table} WHERE id = :id";
+    
+    $this->db->query($query);
+    $this->db->bind('id', $id);
+    $this->db->execute();
+    
+    if ($this->db->rowCount() > 0) {
+      $result = ["status" => true, "result" => "DELETED SUCCESS"];
+    } else if ($this->db->rowCount() > 0) {
+      $result = ["status" => false, "result" => "Failed"];
+    }
+    echo json_encode($result);
+  }
+  
 }

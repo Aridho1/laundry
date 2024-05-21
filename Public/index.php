@@ -23,6 +23,7 @@ if (!session_id()) session_start();
   flex-direction: column;
   gap: 20px;
   padding: 10px 30px;
+  osition: relative;
 }
 
 .dashboard .content-type {
@@ -162,6 +163,12 @@ if (!session_id()) session_start();
   display: flex;
 }
 
+.dashboard .search-order .search-group .search-order-by-date {
+  display: none;
+  justify-content: space-between;
+  margin: 10px 0 0 0;
+}
+
 /* STYLE PAGES */
 .dashboard .pages {
   list-style: none;
@@ -217,27 +224,69 @@ if (!session_id()) session_start();
 }
 
 /*** Dashboard - change data ***/
+
 .dashboard .change-data {
   position: fixed;
-  z-index: 6;
+  z-index: 5;
   top: 0;
   left: 0;
+  
+  
   width: 100vw;
   height: 100vh;
+  
 
-  background-color: #5558ff;
+  //background-color: #5558ff;
+  
 
   display: flex;
   justify-content: center;
   align-items: center;
+  ointer-events: none;
+  transition: all 0.5s;
+  transform: scale(0);
+}
+
+.dashboard .change-data.show {
+  transform: scale(1);
+}
+
+.dashboard .change-data.slide {
+  background-color: var(--nav-bg-color);
+  ointer-events: true;
+  transform: scale(2);
 }
 
 .dashboard .change-data .wrapper {
   max-width: 500px;
   background-color: #ddd;
   border-radius: 8px;
-  padding: 10px;
+  padding: 20px;
   font-size: 1.2em;
+  
+  transform: translateY(-500%) scale(0);
+  transition: all 1s;
+  
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard .change-data .wrapper.slide {
+  transform: translateY(0) scale(0.5);
+}
+
+.dashboard .change-data .wrapper .close-change-data {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: cebter;
+  color: black;
+  background-color: red;
+  
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .dashboard .change-data .wrapper table {
@@ -254,19 +303,33 @@ if (!session_id()) session_start();
   border-radius: 4px;
   color: black;
   justify-content: space-around;
+  flex-wrap: wrap;
   margin: 10px 0 0 0;
+  row-gap: 10px;
 }
 
 .dashboard .change-data .wrapper .button-group button {
   overflow: hidden;
-  background-color: red;
-  width: 45%;
+  width: 40%;
   padding: 5px;
+  color: #fff;
+}
+
+.dashboard .change-data .wrapper .button-group button:first-child {
+  background-color: green;
+  width: 90%;
+}
+
+.dashboard .change-data .wrapper .button-group button:nth-child(2) {
+  background-color: blue
 }
 
 .dashboard .change-data .wrapper .button-group button:last-child {
-  background-color: greenyellow;
+  background-color: red;
+  
 }
+
+
 
   </style>
 </head>
@@ -280,7 +343,7 @@ if (!session_id()) session_start();
   <ul>
     <li><a href="">Home</a></li>
     <li><a href="">Dashboard</a></li>
-    <li><a href="">Laporan</a></li>
+    <!-- <li><a href="">Laporan</a></li> -->
     <li><a href="">Login</a></li>
     <li><a href="">Logout</a></li>
   </ul>
@@ -354,23 +417,28 @@ let contents = "";
 
 let data_table = "";
 
-async function fetchData(  url, type, resultType  ) {
+async function fetchData(  url, type, resultType, data = null  ) {
   return new Promise((resolve, reject) => {
     let xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
-          data = "";
+          
           if (resultType == "contents") resolve(xhr.responseText);
           else resolve(JSON.parse(xhr.responseText));
         } else {
-          data = "";
+          
           reject("Failed to fetch data: " + xhr.status);
         }
       }
     };
     xhr.open(type, url, true);
-    xhr.send();
+    
+    if (type == "POST") {
+      xhr.setRequestHeader("Content-Type", "application/json");
+    }
+    
+    xhr.send((type == "POST") ? JSON.stringify(data) : null);
   });
 }
 
@@ -379,13 +447,16 @@ async function main(params = {
   url: "url=Pelanggan/liveSearch",
   keyword: "",
   type: "GET",
-  resultType: "json"
+  resultType: "json",
+  data: null
 }, callback = null) {
   try {
+    params.data = (params.data == undefined) ? null : params.data;
     params.url = params.directory + params.url;
-    if (params.keyword !== "" && params.keyword !== undefined) params.url += "/" + params.keyword;
     
-    let result = await fetchData(params.url, params.type, params.resultType);
+    if (params.keyword !== "" && params.keyword !== undefined) params.url += "/" + params.keyword;
+    console.error(params.url);
+    let result = await fetchData(params.url, params.type, params.resultType, params.data);
 
     
     if (callback && typeof callback === "function") {
@@ -1032,7 +1103,7 @@ function set___undefined(param, default_value) {
 
 
 
-let input = {
+let input; /* {
   /*
   costumer: {
     name: document.querySelector("#input-add-costumer-name"),
@@ -1062,9 +1133,11 @@ let input = {
     btn_cancel: document.querySelector("#input-change-order-button-group").firstElementChild,
     btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling
   }
-  */
+  
 };
+*/
 
+let id;
 
 // let select_paket = document.getElementById("list-paket");
 // let option_paket = "";
@@ -1143,6 +1216,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       //event dashboard
       if (e.target.innerText === "Dashboard") {
+        
         // document.querySelector("#date").value = today;
         // select_paket = document.getElementById("list-paket");
         // option_paket = "";
@@ -1181,15 +1255,18 @@ document.addEventListener("DOMContentLoaded", function() {
             weight:  document.querySelector("#input-change-order-weight"),
             total:  document.querySelector("#input-change-order-total"),
             btn_cancel: document.querySelector("#input-change-order-button-group").firstElementChild,
-            btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling
+            btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling,
+            btn_delete: document.querySelector("#input-change-order-button-group").lastElementChild
           }
           
         };
         
         createHargaPackage(input.order.package);
         createHargaPackage(input.edit_order.package);
+        
+        input.order.date.value = today;
 
-
+        
 
         search_group_order.push(
           document.querySelector(
@@ -1487,18 +1564,14 @@ document.addEventListener("DOMContentLoaded", function() {
       calcTotal("edit_order");
     //end change berat
     }
-
-    //event change data 
-    if ( e.target == input_change.date ) {
-      
-    }
   }); 
   
   // delegation lv 2 => main => click
   document.querySelector("main")
     .addEventListener("click", 
   function(e) {
-  
+    
+    
     //event to-order
     if ( 
       e.target.classList.contains("to-order") 
@@ -1537,19 +1610,18 @@ document.addEventListener("DOMContentLoaded", function() {
     //end event button to-order
     }
     
+    
     //event search-order 
 
     if ( e.target === search_group_order[1] ) {
-      if ( search_group_order[1].checked ) {
-        button_search_order_by_date[1].display = "none";
-        button_search_order_by_date[2].display = "none";
+      if ( !search_group_order[1].checked ) {
+        button_search_order_by_date[1].parentElement.style.display = "none";
       } else {
-        button_search_order_by_date[1].display = "block";
-        button_search_order_by_date[2].display = "block";
+        button_search_order_by_date[1].parentElement.style.display = "flex";
       }
     }
     
-    if ( 
+    else if ( 
       e.target === search_group_order[6]
     ) {
       
@@ -1646,6 +1718,96 @@ document.addEventListener("DOMContentLoaded", function() {
       
     } //end event search order
     
+    //event btn cancel edit order
+    if ( e.target == input.edit_order.btn_cancel ){
+      console.error("id::" + id);
+      fillInputChangeData(id);
+    }
+    
+    //event btn close edit order
+    else if ( 
+      e.target.classList
+        .contains("close-change-data") || 
+      e.target === input.edit_order.btn ||
+      e.target === input.edit_order.btn_delete
+    ) {
+     setTimeout(() => {
+     document.querySelector(".dashboard .change-data").classList.remove("slide");
+      document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
+      setTimeout(() => {
+        
+        
+        document.querySelector(".dashboard .change-data").classList.remove("show");
+        
+      }, 800);
+      }, (e.target === input.edit_order.btn || e.target === input.edit_order.btn_delete) ? 1000 : 0 );
+    } //end event close edit order
+    
+    //event submit edit order
+    if ( e.target === input.edit_order.btn ) {
+      
+      let data = [
+        input.edit_order.date.value,
+        input.edit_order.name.value,
+        input.edit_order.phone_num.value,
+        input.edit_order.package.value,
+        input.edit_order.price.value,
+        input.edit_order.weight.value,
+        input.edit_order.total.value
+      ];
+      
+      main({
+        directory: "../App/index.php?",
+        url: "url=Pemesanan/change_order",
+        keyword: id+"/"+ data.join("/"),
+        type: "GET",
+        resultType: 'json',
+      }, result => {
+        if ( typeof result.status === "boolean" ) {
+          fillData(  "order_all"  );
+          fillData(
+            "order_status",
+            [null, null],
+            "__request_wait__"
+          );
+          setTimeout(() => {
+            create_table_and_pagination(
+              2,
+              data__.order.all
+            );
+          }, 6000);
+          console.log("success change data");
+        } else console.error(result);
+      });
+      
+    } //end event submit edit order
+    
+    else if ( e.target === input.edit_order.btn_delete ) {
+      main({
+        directory: "../App/index.php?",
+        url: "url=Pemesanan/delete_order",
+        keyword: id,
+        type: "GET",
+        resultType: "json"
+      }, result => {
+        if ( typeof result.status === "boolean" ) {
+          fillData(  "order_all"  );
+          fillData(
+            "order_status",
+            [null, null],
+            "__request_wait__"
+          );
+          setTimeout(() => {
+            create_table_and_pagination(
+              2,
+              data__.order.all
+            );
+          }, 6000);
+        } else console.error(result);
+      });
+    }
+    
+    
   }); 
   
   document.querySelector("main")
@@ -1693,7 +1855,7 @@ document.addEventListener("DOMContentLoaded", function() {
                   2,
                   data__.order.all
                 );
-              }, 7000);
+              }, 6000);
               
             } else console.log(result);
         });
@@ -1704,6 +1866,20 @@ document.addEventListener("DOMContentLoaded", function() {
     
   //event change data by id
   if ( e.target.classList.contains("td-change-data-by-id") ) {
+    id = e.target.dataset.change_data_by_id;
+    
+    //event show change data
+    document.querySelector(".dashboard .change-data").classList.add("show");
+    
+    document.querySelector(".dashboard .change-data").firstElementChild.classList.add("slide");
+    
+    setTimeout(() => {
+      document.querySelector(".dashboard .change-data").classList.add("slide");
+    }, 800);
+    
+    document.body.style.overflow = "hidden";
+    
+    fillInputChangeData(id);
     
   } //end event change data by id
 
@@ -1971,7 +2147,21 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
   return result;
 };
 
-console.log(document.querySelector("#input-add-order-package"));
+const fillInputChangeData = (id, type = "edit_order") => {
+
+  let data = data__[type.split("_")[1]].all.filter(d => d.id == id)[0];
+  
+  console.log(data.tanggal.split("/").reverse().join("-"));
+  
+  input[type].date.value = data.tanggal.split("/").reverse().join("-");
+  input[type].name.value = data.nama;
+  input[type].phone_num.value = data.no_hp;
+  input[type].package.value = data.paket;
+  input[type].price.value = data.harga;
+  input[type].weight.value = data.berat;
+  input[type].total.value = data.total_harga;
+  
+};
 
 </script>
 </body>
