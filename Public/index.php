@@ -1,5 +1,6 @@
 <?php
 if (!session_id()) session_start();
+//$_SESSION["isLogin"] = false;
 ?>
 
 <script>
@@ -13,7 +14,13 @@ if ( isset($_SESSION["isLogin"]) ) {
     echo "<script>is_login = 'isLogin';</script>";
   } 
 }
-
+/*
+if ( !isset($_SESSION["isLogin"]) ) {
+  echo "Session Is Login Is Empty";
+} else var_dump($_SESSION["isLogin"]);
+*/
+//$_SESSION["isLogin"] = true;
+//unset($_SESSION["isLogin"]);
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -341,6 +348,8 @@ if ( isset($_SESSION["isLogin"]) ) {
   
 }
 
+/*** Login ***/
+
 #login {
   position: fixed;
   top: 0;
@@ -352,6 +361,13 @@ if ( isset($_SESSION["isLogin"]) ) {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.7s;
+  z-index: 999;
+}
+
+#login.empty {
+  opacity: 0;
+  z-index: -1;
 }
 
 #login .wrapper {
@@ -478,94 +494,41 @@ data__ = {
   }
 };
 
-/*
-let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;
-*/
-
 let data = {};
-let data__costumer = {};
-let data__order = {};
-let data__contents = "";
-let contents = "";
 
-let data_table = "";
-
-async function fetchData(  url, type, resultType, data = null  ) {
+const fetchData = async (  url, type  ) => {
   return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState == 4) {
-        if (xhr.status == 200) {
-          
-          if (resultType == "contents") resolve(xhr.responseText);
-          else resolve(JSON.parse(xhr.responseText));
-        } else {
-          
-          reject("Failed to fetch data: " + xhr.status);
-        }
+    const xhr = new XMLHttpRequest();
+    
+    xhr.onreadystatechange = () => {
+    
+      if (xhr.readyState==4) {
+        if (xhr.status==200) {
+          resolve(xhr.responseText);
+        } else reject("Failed to fetch data: " + xhr.status)
       }
     };
+    
     xhr.open(type, url, true);
-    
-    if (type == "POST") {
-      xhr.setRequestHeader("Content-Type", "application/json");
-    }
-    
-    xhr.send((type == "POST") ? JSON.stringify(data) : null);
+    xhr.send();
   });
-}
+};
 
-async function main(params = {
-  directory: "../App/index.php?",
-  url: "url=Pelanggan/liveSearch",
-  keyword: "",
-  type: "GET",
-  resultType: "json",
-  data: null
-}, callback = null) {
+const main = async (params = {
+  url: "../App/index.php?url=Pelanggan/liveSearch",
+  type: "GET"
+}, callback = null) => {
   try {
-    params.data = (params.data == undefined) ? null : params.data;
-    params.url = params.directory + params.url;
     
-    if (params.keyword !== "" && params.keyword !== undefined) params.url += "/" + params.keyword;
-    console.error(params.url);
-    let result = await fetchData(params.url, params.type, params.resultType, params.data);
+    let result = await fetchData(params.url, params.type);
 
     
-    if (callback && typeof callback === "function") {
-      callback(result);
-    }
+    if (callback && typeof callback==="function") callback(result);
     
-  } catch (error) {
-    console.error(error);
+  } catch (error) { 
+    console.error(error); 
   }
-}
-
-
-/*
-main({
-  directory: "Content/Dashboard/index.html",
-  url: "",
-  type: "GET",
-  resultType: "contents"
-});
-
-main({
-  directory: "../App/index.php?",
-  url: "url=Pelanggan/liveSearch",
-  keyword: "a",
-  type: "GET",
-  resultType: "json"
-})
-
-multipart/form-data
-
-application/json
-
-application/octet-stream
-
-application/x-www-form-urlencoded
-*/
+};
 
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
 let nav_links = document.querySelector("nav ul");
@@ -604,392 +567,6 @@ let day = new Date();
 
 //func
 
-function setPagination(  data, pages, set_page = {}  ) {
-  
-  //binding bug. data int yang dimanipulasi oleh DOM malah berubah menjadi str
-  set_page.page_active = parseInt(set_page.page_active);
-  
-  let page_is_valid = true;
-  
-  //**set Rules --filter beberapa logika.
-  //max_data = 5. normalnya, ada 5 button.
-  
-  //gagalkan ekesuki jika : 
-  
-  if (set_page.page_active < 0 || set_page.page_active > set_page.page_total) {
-    page_is_valid = false;
-  
-  //jika page_total tidak melebihi max_button
-  //tidak ada yang terjadi. (hanya berjalan normal)
-  } else if (set_page.page_total <= set_page.max_button) {
-    set_page.first_link_page = 1;
-  
-  //sampai sini, berarti page_total lebih dari max_button.
-  //jika page_active nya tidak berada ditengah atau lebih dari itu. (tengah itu 3, karena buttonnya 5)
-  //tidak ada yang terjadi. (hanya berjalan normal)
-  } else if (set_page.page_active <= Math.floor(set_page.max_button / 2)) {
-    set_page.first_link_page = 1;
-  
-  //sampai sini, berarti page_active nya lebih dari setengah max_button.
-  //jika page_activenya belum berada di page hampir terakhir atau terkahir, 
-  //maka button page_active harus berada di tengah.
-  } else if (set_page.page_total - set_page.page_active >= Math.floor(set_page.max_button / 2)) {
-    set_page.first_link_page = set_page.page_active - Math.floor(set_page.max_button / 2);
-    
-  //sampai sini, berarti page_active nya berada di hampir paling terkahir, atau bahkan terkahir.
-  //maka button awal alias first_link_page : 
-  } else if (set_page.page_total - set_page.page_active >= 0) {
-    set_page.first_link_page = set_page.page_total - set_page.max_button + 1;
-  
-  //selain itu, maka, emmmmm buat execute false atau error
-  //karena gatau lagi masuk ke kondisi apa.
-  } else page_is_valid = false; 
-  //eksekusi func createPagination jika kondisi terpenuhi
-  
-  if (page_is_valid === true) {
-    createPagination(data, {page_is_valid: true, primary_button: true, primary_button_lvl_2: true}, pages, set_page);
-  } else {
-    createPagination(data, {page_is_valid: false}, pages, set_page);
-  }
-  
-}
-
-function createPagination(  data, params = {
-  page_is_valid: true,
-  primary_button: true,
-  primary_button_lvl_2: true
-}, pages, set_page  ) {
-  
-  /* Configure */
-  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
-    
-  let max_data = set___undefined(set_page.max_data, 10);
-  
-  let max_button = set___undefined(set_page.max_button, 5);
-  
-  let page_active = set___undefined(set_page.page_active, 1);
-  
-  let first_link_page = set___undefined(set_page.first_link_page, 1);
-  
-  let first_data_number = set___undefined(set_page.first_data_number, 1);
-  
-  let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
-
-  //inisiasi result
-  let result = "";
-  
-  
-  
-  /*
-  if (params.page_is_valid === false || data.length === undefined) {
-    data_table.style.display = "none";
-    document.querySelector("div.no-result").style.display = "flex";
-    return false;
-  } else {
-    data_table.style.display = "block";
-    document.querySelector("div.no-result").style.display = "none";
-  }
-  */
-  
-  
-  // buat button berdasarkan data global.
-  
-  let end_for = max_button;
-  
-  //binding, jika page_total < max_button : 
-  if (page_total < max_button) end_for = page_total;
-  
-  //buat button angka
-  end_for += first_link_page;
-  for (let i = first_link_page; i < end_for; i++) {
-    
-    result += `<li><a href="#${goto}" class="${checkPageActive([i, page_active], ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
-    
-  }
-  
-  //jika primary_button_lvl_2 adalah true, buat button previous dan next yang membungkus button yang sudah dibuat 
-  if (params.primary_button_lvl_2 === true) {
-    result = `<li><a href="#${goto}" class="previous-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
-      ${result}
-    <li><a href="#${goto}" class="next-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
-  }
-  
-  //sama.
-  if (params.primary_button === true) {
-    result = `<li><a href="#${goto}" class="first-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
-      ${result}
-    <li><a href="#${goto}" class="last-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
-  }
-  //ubah isi elemen dengan class pages menjadi result
-  pages.innerHTML = result;
-  
-}
-
-function checkPageActive([binding1, binding2], return_value = [true, false]) {
-  /*
-  return 
-    (binding === page_active)
-    ? return_value[0]
-    : return_value[1];
-  */
-  
-  if (binding1 === binding2) {
-    return return_value[0];
-  
-  //
-  } else {
-      return return_value [1];
-  }
-}
-
-
-
-function createTable(  data, data_table, set_page, column  ) {
-  
-  /* Configure */
-  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
-    
-  let max_data = set___undefined(set_page.max_data, 10);
-  
-  let max_button = set___undefined(set_page.max_button, 5);
-  
-  let page_active = set___undefined(set_page.page_active, 1);
-  
-  let first_link_page = set___undefined(set_page.first_link_page, 1);
-  
-  let first_data_number = set___undefined(set_page.first_data_number, 1);
-  
-  let page_total = set___undefined(set_page.page_total, Math.ceil(data.length / max_data));
-  
-  let result = "";
-  
-  first_data_number = (page_active - 1) * max_data;
-  
-  
-  //untuk header / thead
-  for (let i = 0; i < column.length; i++) {
-    result += `<th>${column[i].toUpperCase()}</th>`;
-  }
-  
-  result = `<tr><th>NO</th>${result}</tr>`;
-  
-  //binding jika total data tidak sebanyak kelipatan dari max_data
-  let end_for = max_data * page_active;
-  
-  if (data.length < max_data * page_active) end_for = data.length;
-  
-  //tbody
-  for (let i = first_data_number; i < end_for; i++) {
-    let row = "";
-    
-    
-    for(let ii = 0; ii < column.length - 1; ii++) {
-      
-      row += `<td>${data[i][column[ii]]}</td>`;
-    }
-    
-    row = `<tr><td>${i+1}</td>${row}<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td></tr>`;
-    result += row;
-  }
-  data_table.innerHTML = result;
-  
-}
-
-/*
-let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;*/
-// params = {
-//   page_is_valid: true,
-//   primary_button: true,
-  // primary_button_lvl_2: true
-/*
-function create_table_and_pagination(  
-  type,
-  data,
-  a__page_active = null,
-  set_page = {
-    goto, 
-    max_data, 
-    max_button, 
-    page_active, 
-    first_link_page, 
-    first_data_number,
-    page_total,
-
-    page_is_valid,
-    primary_button,
-    primary_button_lvl_2,
-  },
-  is_ = [is_create_table = true, is_create_pagination = true ]
-) {
-  
-  // Configure
-  let data;
-  let pages;
-  let data_table;
-  let column;
-  let div_no_result;
-  if (type === 1) { 
-    data = data__costumer;
-    pages = document.querySelector(".pages-search-costumer");
-    data_table = document.querySelector("#table-costumer");
-    column = ["nama", "no_hp", "action"];
-    div_no_result = document.querySelector(".costumer-no-result");
-    
-  } else if (type === 2) {
-    data = data__order;
-    pages = document.querySelector(".pages-search-order");
-    data_table = document.querySelector("#table-order");
-    column = ["tanggal", "kode_pemesanan", "status", "action"];
-    div_no_result = document.querySelector(".order-no-result");
-  }
-  
-  //config set rule of pagination
-  let goto = set___undefined(set_page.goto, document.querySelector(".content"));
-  let max_data = set___undefined(set_page.max_data, 10);
-  
-  let max_button = set___undefined(set_page.max_button, 5);
-
-  let page_active = set___undefined(set_page.page_active, 1);
-  
-  let first_link_page = set___undefined(set_page.first_link_page, 1);
-  
-  let first_data_number = set___undefined(set_page.first_data_number, 1);
-  
-  let total_page = Math.ceil(data.length / set_page.max_data);
-  let page_total = total_page;
-  
-  // setPagination(data, pages, set_page);
-  // createTable(data, data_table, set_page, column);
-
-
-  //config create pagination
-  let page_is_valid = set___undefined(set_page.page_is_valid, true);
-  let primary_button = set___undefined(set_page.primary_button, true);
-  let primary_button_lvl_2 = set___undefined(set_page.primary_button_lvl_2, true);
-  let result = "";
-
-  
-
-  // create pagination 
-  if ( is_create_pagination === true ) {
-    //set config
-    page_active = parseInt(page_active);
-    
-    //**set Rules --filter beberapa logika.
-    //max_data = 5. normalnya, ada 5 button.
-    
-    //gagalkan ekesuki jika : 
-    
-    if (page_active < 0 || page_active > page_total) {
-      page_is_valid = false;
-    
-    //jika page_total tidak melebihi max_button
-    //tidak ada yang terjadi. (hanya berjalan normal)
-    } else if (page_total <= max_button) {
-      first_link_page = 1;
-    
-    //sampai sini, berarti page_total lebih dari max_button.
-    //jika page_active nya tidak berada ditengah atau lebih dari itu. (tengah itu 3, karena buttonnya 5)
-    //tidak ada yang terjadi. (hanya berjalan normal)
-    } else if (page_active <= Math.floor(max_button / 2)) {
-      first_link_page = 1;
-    
-    //sampai sini, berarti page_active nya lebih dari setengah max_button.
-    //jika page_activenya belum berada di page hampir terakhir atau terkahir, 
-    //maka button page_active harus berada di tengah.
-    } else if (page_total - page_active >= Math.floor(max_button / 2)) {
-      first_link_page = page_active - Math.floor(max_button / 2);
-      
-    //sampai sini, berarti page_active nya berada di hampir paling terkahir, atau bahkan terkahir.
-    //maka button awal alias first_link_page : 
-    } else if (page_total - page_active >= 0) {
-      first_link_page = page_total - max_button + 1;
-    
-    //selain itu, maka, emmmmm buat execute false atau error
-    //karena gatau lagi masuk ke kondisi apa.
-    } else page_is_valid = false; 
-
-
-    // create pagination
-    //inisiasi result
-    result = "";
-    
-    if (page_is_valid === false || data.length === undefined || data.length == 0) {
-      data_table.style.display = "none";
-      div_no_result.style.display = "flex";
-      return false;
-    } else {
-      data_table.style.display = "block";
-      div_no_result.display = "none";
-    }
-    
-    
-    // buat button berdasarkan data global.
-    
-    let end_for = max_button;
-    
-    //binding, jika page_total < max_button : 
-    if (page_total < max_button) end_for = page_total;
-    
-    //buat button angka
-    end_for += first_link_page;
-    for (let i = first_link_page; i < end_for; i++) {
-      
-      result += `<li><a href="#${goto}" class="${checkPageActive([i, page_active], ['active disable', 'smooth'])}" data-topage="${i}">${i}</a></li>`;
-      
-    }
-    
-    //jika primary_button_lvl_2 adalah true, buat button previous dan next yang membungkus button yang sudah dibuat 
-    if (primary_button_lvl_2 === true) {
-      result = `<li><a href="#${goto}" class="previous-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="${page_active-1}">&laquo</a></li>
-        ${result}
-      <li><a href="#${goto}" class="next-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_active+1}">&raquo</a></li>`;
-    }
-    
-    //sama.
-    if (primary_button === true) {
-      result = `<li><a href="#${goto}" class="first-page ${checkPageActive([1, page_active], ['disable', 'smooth'])}" data-topage="1">&laquo&laquo</a></li>
-        ${result}
-      <li><a href="#${goto}" class="last-page ${checkPageActive([page_total, page_active], ['disable', 'smooth'])}" data-topage="${page_total}">&raquo&raquo</a></li>`;
-    }
-    //ubah isi elemen dengan class pages menjadi result
-    pages.innerHTML = result;
-
-  } // end create pagination
-  if ( is_create_table === true ) {
-    result = "";
-    first_data_number = (page_active - 1) * max_data;
-    
-    //untuk header / thead
-    for (let i = 0; i < column.length; i++) {
-      result += `<th>${column[i].toUpperCase()}</th>`;
-    }
-    
-    result = `<tr><th>NO</th>${result}</tr>`;
-    
-    //binding jika total data tidak sebanyak kelipatan dari max_data
-    let end_for = max_data * page_active;
-    
-    if (data.length < max_data * page_active) end_for = data.length;
-    
-    //tbody
-    for (let i = first_data_number; i < end_for; i++) {
-      let row = "";
-      
-      
-      for(let ii = 0; ii < column.length - 1; ii++) {
-        
-        row += `<td>${data[i][column[ii]]}</td>`;
-      }
-      
-      row = `<tr><td>${i+1}</td>${row}<td><button data-cotumer_id="${data[i]['id']}" data-data_loop="${i}" class="to-order">Order</button></td></tr>`;
-      result += row;
-    }
-    data_table.innerHTML = result;
-  } // end create table
-
-}
-*/
 function create_table_and_pagination(
   type,
   data,
@@ -1054,7 +631,7 @@ function create_table_and_pagination(
     primary_button_lvl_2,
   } = set_page;
   
-  //if (a__page_active !== null) page_active = a__page_active;
+  
   
 
   // Jumlah total halaman
@@ -1062,48 +639,41 @@ function create_table_and_pagination(
 
   // Membuat pagination
   if (is_create_pagination) {
-    // Penanganan kesalahan
-
-    // if (page_active < 1 || page_active > page_total || data.length === 0) {
-    //   data_table.style.display = "none";
-    //   div_no_result.style.display = "flex";
-    //   return false;
-    // } else {
-    //   data_table.style.display = "block";
-    //   div_no_result.display = "none";
-    // }
+    // Penanganan kkesalahan
 
     let result = "";
     let end_for = Math.min(max_button + first_link_page, page_total + 1);
     
     for (let i = first_link_page; i < end_for; i++) {
-      result += `<li><a href="#${goto}" class="${ (i == page_active) ? "active disable" : "smooth" }" data-topage="${i}">${i}</a></li>`;
+      result += `<li><a href="#${goto}" class="${ 
+        (i == page_active) ? "active disable" : "smooth" 
+        }" data-topage="${i}">${i}</a></li>`;
     }
-
+    
     if (primary_button_lvl_2) {
-      result =
-        `<li><a href="#${goto}" class="previous-page ${checkPageActive(
-          [1, page_active],
-          ["disable", "smooth"]
-        )}" data-topage="${page_active - 1}">&laquo</a></li>` +
-        result +
-        `<li><a href="#${goto}" class="next-page ${checkPageActive(
-          [page_total, page_active],
-          ["disable", "smooth"]
-        )}" data-topage="${page_active + 1}">&raquo</a></li>`;
+      result = `<li><a href="#${
+          goto
+        }" class="previous-page ${
+          (1 == page_active) ? "disable" : "smooth"
+        }" data-topage="${page_active - 1}">&laquo</a></li>` +
+          result
+        + `<li><a href="#${
+          goto
+        }" class="next-page ${
+          (page_total == page_active) ? "disable" : "smooth"
+        }" data-topage="${
+          page_active + 1
+        }">&raquo</a></li>`;
     }
 
     if (primary_button) {
-      result =
-        `<li><a href="#${goto}" class="first-page ${checkPageActive(
-          [1, page_active],
-          ["disable", "smooth"]
-        )}" data-topage="1">&laquo&laquo</a></li>` +
+      result = `<li><a href="#${goto}" class="first-page ${
+          page_active == 1 ? "disable" : "smooth"
+        }" data-topage="1">&laquo&laquo</a></li>` +
         result +
-        `<li><a href="#${goto}" class="last-page ${checkPageActive(
-          [page_total, page_active],
-          ["disable", "smooth"]
-        )}" data-topage="${page_total}">&raquo&raquo</a></li>`;
+        `<li><a href="#${goto}" class="last-page ${
+          page_active == page_total ? "disable" : "smooth"
+        }" data-topage="${page_total}">&raquo&raquo</a></li>`;
     }
 
     if (page_active < 1 || page_active > page_total || data.length === 0) {
@@ -1132,8 +702,7 @@ function create_table_and_pagination(
           row += `<td><button data-costumer_id="${
             data[i]["id"]
           }" class="to-order">Order</button></td>`;
-          console.log(data[i]);
-          console.log(row);
+          
         
         //event column status
         } else if (column[ii] == "status") {
@@ -1185,39 +754,7 @@ let input = {
   edit_order: {},
   login: {}
   */
-}; /* {
-  /*
-  costumer: {
-    name: document.querySelector("#input-add-costumer-name"),
-    phone_num:  document.querySelector("#input-add-costumer-phone-num"),
-    btn_cancel: document.querySelector("#input-add-costumer-button-group").firstElementChild,
-    btn: document.querySelector("#input-add-costumer-button-group").firstElementChild.nextElementSibling
-  },
-  order: {
-    date: document.querySelector("#input-add-order-date"),
-    name: document.querySelector("#input-add-order-name"),
-    phone_num:  document.querySelector("#input-add-order-phone-num"),
-    package:  document.querySelector("#input-add-order-package"),
-    price:  document.querySelector("#input-add-order-price"),
-    weight:  document.querySelector("#input-add-order-weight"),
-    total:  document.querySelector("#input-add-order-total"),
-    btn_cancel: document.querySelector("#input-add-order-button-group").firstElementChild,
-    btn: document.querySelector("#input-add-order-button-group").firstElementChild.nextElementSibling
-  },
-  edit_order: {
-    date: document.querySelector("#input-change-order-date"),
-    name: document.querySelector("#input-change-order-name"),
-    phone_num:  document.querySelector("#input-change-order-phone-num"),
-    package:  document.querySelector("#input-change-order-package"),
-    price:  document.querySelector("#input-change-order-price"),
-    weight:  document.querySelector("#input-change-order-weight"),
-    total:  document.querySelector("#input-change-order-total"),
-    btn_cancel: document.querySelector("#input-change-order-button-group").firstElementChild,
-    btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling
-  }
-  
 };
-*/
 
 let btn_login = "";
 let input_login_username = "";
@@ -1225,12 +762,6 @@ let input_login_password = "";
 
 let id;
 
-// let select_paket = document.getElementById("list-paket");
-// let option_paket = "";
-// let inputBerat = document.querySelector("#berat");
-// let berat = 0;
-// let inputHarga = document.querySelector("#harga");
-// let harga = 3000;
 function createHargaPackage(
   package = input.order.package,
   params = [
@@ -1291,7 +822,11 @@ load.refresh("data");
 
 
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", async () => {
+  
+  // Event fill var data
+  await fillData("all");
+  
   document.body.addEventListener("click", function(e) {
     
     //event request contents
@@ -1309,11 +844,17 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("home");
       main_content.classList.remove("dashboard");
       main_content.classList.remove("laporan");
-      main_content.classList.remove("login");
+      main_content.classList.remove("logout");
       
-      //event backup content
-      if ( data__.contents.previous != "" ) {
-        data__.contents[data__.contents.a.log.previous] = main_content.innerHTML;
+      
+      //event logout
+      if ( e.target.innerText == "Logout") {
+        
+        //unset session
+        document.body.innerHMl += "<?php $_SESSION['isLogin'] = false; ?>";
+        console.log(document.body.innerHTML.toString());
+        
+      //end event logout
       }
       
       
@@ -1334,8 +875,8 @@ document.addEventListener("DOMContentLoaded", function() {
         e.target.innerText === "Dashboard"
       ) {
         
-        //clear load dashboard
-        load.data.dashboard = false;
+        console.log("ok dashboard ");
+        
 
         // event deklarasi var input
         input.costumer = {
@@ -1422,9 +963,7 @@ document.addEventListener("DOMContentLoaded", function() {
         createHargaPackage(input.edit_order.package);
         
         input.order.date.value = today;
-
         
-
         search_group_order.push(
           document.querySelector(
             ".search-order .search-group"
@@ -1450,31 +989,15 @@ document.addEventListener("DOMContentLoaded", function() {
         
         button_search_order_by_date[1].value = today;
         button_search_order_by_date[2].value = today;
-
+        
         button_search_order_by_date[1].parentElement.display = "none";
 
-        
-        //data_table = document.querySelector("#table-costumer");
-        //setPagination(data__.costumer.all);
-        //createTable(data__.costumer.all);
-        
-        //setPagination(data__.order.all, document.querySelector(".pages-search-order"));
-        //createTable(data__.order.all, ["tanggal", "kode_pemesanan", "status"], document.querySelector("#table-order"), document.querySelector(".order-no-result"));
-        
         create_table_and_pagination(1, data__.costumer.all);
         create_table_and_pagination(2, data__.order.all);
         
       //end event dashboard
-      }
-      //event login
-      if ( e.target.innerText === "Login" ) {
-        /*
-        btn_login = document.querySelector("#input-submit-login ");
-        input_login_username = document.querySelector("#input-login-username");
-        input_login_password = document.querySelector("#input-login-password");
-        */
-       
-      }
+      } 
+      
       
     //end event request contents
     }
@@ -1561,7 +1084,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         page_active = to_page;
         
-        console.log(" active ::", page_active);
         //binding error kondisi.
         //hanya di binding saat request dari button.
         if (page_active == 0) {
@@ -1577,10 +1099,6 @@ document.addEventListener("DOMContentLoaded", function() {
             .parentElement.classList
             .contains("pages-search-costumer") 
         ) {
-          /*
-          setPagination(data__.costumer.all); 
-          createTable(data__.costumer.all);
-          */
           data__.pages.costumer.active = to_page;
           create_table_and_pagination(
             1, 
@@ -1592,22 +1110,6 @@ document.addEventListener("DOMContentLoaded", function() {
             .parentElement.classList
             .contains("pages-search-order") 
         ) {
-          
-          /*
-          setPagination(
-            data__order.all, 
-            document.querySelector(
-              ".pages-search-order"
-            )
-          );
-          
-          createTable(
-            data__.order.all, 
-            ["tanggal", "kode_pemesanan", "status"], 
-            document.querySelector("#table-order"), 
-            document.querySelector(".order-no-result")
-          );
-          */
           data__.pages.order.active = to_page;
           create_table_and_pagination(
             2,
@@ -1631,14 +1133,6 @@ document.addEventListener("DOMContentLoaded", function() {
           ["nama", e.target.previousElementSibling.value] 
         );
         page_active = 1;
-        /*
-        setPagination(
-          data__.costumer.search.result
-        );
-        createTable(
-          data__.costumer.search.result
-        );
-        */
         create_table_and_pagination(
           1,
           data__.costumer.search.result
@@ -1659,18 +1153,6 @@ document.addEventListener("DOMContentLoaded", function() {
           ["nama", e.target.previousElementSibling.value]  
         );
         page_active = 1;
-        /*
-        setPagination(
-          data__order, 
-          document.querySelector(".pages-search-order")
-        );
-        createTable(
-          data__order, 
-          ["tanggal", "kode_pemesanan", "status"], 
-          document.querySelector("#table-order"), 
-          document.querySelector(".order-no-result")
-        );
-        */
         create_table_and_pagination(
           2,
           data__.order.search.result
@@ -1926,12 +1408,12 @@ document.addEventListener("DOMContentLoaded", function() {
       ];
       
       main({
-        directory: "../App/index.php?",
-        url: "url=Pemesanan/change_order",
-        keyword: id+"/"+ data.join("/"),
-        type: "GET",
-        resultType: 'json',
+        url: `../App/index.php?url=Pemesanan/change_order/${id}/${data.join("/")}`,
+        type: "GET"
       }, result => {
+        
+        result = JSON.parse(result);
+        
         if ( typeof result.status === "boolean" ) {
           fillData(  "order_all"  );
           fillData(
@@ -1945,7 +1427,7 @@ document.addEventListener("DOMContentLoaded", function() {
               data__.order.all
             );
           }, 6000);
-          console.log("success change data");
+          
         } else console.error(result);
       });
       
@@ -1954,12 +1436,12 @@ document.addEventListener("DOMContentLoaded", function() {
     //event delete order
     else if ( e.target === input.edit_order.btn_delete ) {
       main({
-        directory: "../App/index.php?",
-        url: "url=Pemesanan/delete_order",
-        keyword: id,
-        type: "GET",
-        resultType: "json"
+        url: `../App/index.php?url=Pemesanan/delete_order/${id}`,
+        type: "GET"
       }, result => {
+        
+        result = JSON.parse(result);
+        
         if ( typeof result.status === "boolean" ) {
           fillData(  "order_all"  );
           fillData(
@@ -2007,14 +1489,15 @@ document.addEventListener("DOMContentLoaded", function() {
       //event confirm
       if (confirm_event) {
         main({
-          directory: "../App/index.php?",
-          url: "url=Pemesanan/change_status",
-          keyword: e.target.dataset.change_status_by_id +"/"+ change_to,
+          url: `../App/index.php?url=Pemesanan/change_status/${
+              e.target.dataset.change_status_by_id
+            }/${change_to}`,
           type: "GET",
-          resultType: "json"
-        }, function(result) {
+          }, function(result) {
+            
+            result = JSON.parse(result);
+            
             if ( result.status == true ) {
-              //alert("SUCCESS TO CHANGE STATUS")
               
               fillData(  "order_all"  );
               fillData(
@@ -2060,8 +1543,7 @@ document.addEventListener("DOMContentLoaded", function() {
   //end delegation lv 2
   
   
-  // Event fill var data
-  fillData("all");
+  
   
   //event check login
   setTimeout(() => {
@@ -2085,43 +1567,31 @@ document.addEventListener("DOMContentLoaded", function() {
           "#input-login-password"
       );
       
-      console.log(btn_login);
-      console.log(input_login_username);
-      console.log(input_login_password);
-      
       document.querySelector("#login").addEventListener('click', e => {
         
         if ( e.target === btn_login ) {
-          console.log("login button");
+          
           const user = {};
           main({
-            directory: "../App/index.php?",
-            url: `url=Pengguna/liveSearch`,
-            keyword: "",
+            url: `../App/index.php?url=Pengguna/liveSearch`,
             type: "GET",
-            resultType: "json"
-          }, function(result) {
+          }, result => {
+            
+            result = JSON.parse(result);
+            
             if (typeof result.status==="boolean") {
-              const users = result.result.filter(user => user.username.toLowerCase() == input_login_username.value.toLowerCase()).filter(user => user.password == input_login_password.value.toLowerCase());
+              const users = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
               
               if (users.length > 0) {
                 
-                console.log(users);
-                /*
-                user.push(users[0]);
-                console.log(user);
-                */
-                /*
-                main({
-                  directory: "../App/index.php?",
-                  url: `url=Pengguna/liveSearch`,
-                  keyword: "",
-                  type: "GET",
-                  resultType: "json"
-                });
-                */
-                
                 document.querySelector("#login").firstElementChild.classList.remove("fade");
+                
+                setTimeout(()=> {
+                document.querySelector('#login').classList.add('empty');
+                
+                document.body.innerHMl += "<?php $_SESSION['isLogin'] = true; ?>";
+                
+                }, 900);
                 
               } else console.error("User Tidak Ditemukan");
               
@@ -2138,11 +1608,15 @@ document.addEventListener("DOMContentLoaded", function() {
 }); //end function LoadDOM
 
 
-function fillData(  
+
+
+
+
+const fillData = async (  
   type, 
   keywords = [null, null], 
   add_param = null 
-) {
+) => {
 
   let [column, keyword] = keywords;
   
@@ -2150,15 +1624,15 @@ function fillData(
     
     let data__type = type.split("_")[0];
     
-    main({
-      directory: "../App/index.php?",
-      url: `url=${
-        (data__type == "costumer") ? "Pelanggan" : "Pemesanan" 
-      }/liveSearch`,
-      keyword: "",
-      type: "GET",
-      resultType: "json"
-    }, function(result) {
+    await main({
+      url: `../App/index.php?url=${
+          (data__type == "costumer") ? "Pelanggan" : "Pemesanan" 
+        }/liveSearch`,
+      type: "GET"
+    }, result => {
+      
+      result = JSON.parse(result);
+      
       if (typeof result.status === "boolean") {
         data__[data__type]["all"] = result.result;
       } else console.log(result);
@@ -2231,13 +1705,10 @@ function fillData(
       const [i, m] of list__menu.entries() 
       //entries: memasukan suatu nilai kedalam array 
     ) {
-      main({
-        directory: `Content/${m}/index.html`,
-        url: "",
-        keyword: "",
-        type: "GET",
-        resultType: "contents"
-      }, function(result) {
+      await main({
+        url: `Content/${m}/index.html`,
+        type: "GET"
+      }, result => {
         data__["contents"][m.toLowerCase()] = result;
       });
     }
@@ -2246,49 +1717,21 @@ function fillData(
   
   
   if (type == "all") {
-    fillData(  "costumer_all"  );
-    fillData(  "order_all"  );
-    fillData(  
-      "order_status", 
+    console.log("Loading...");
+    await fillData(  "contents"  );
+    await fillData(  "costumer_all"  );
+    await fillData(  "order_all"  );
+    await fillData(  
+      "order_status" /*, 
       [null, null], 
-      "__request_wait__"  
+      "__request_wait__"  */
     );
-    fillData(  "contents"  );
+    
+    console.log("Selesai");
   }
-}
-
-/*
-let progress = ["empty"];
-let selesai = [];
-
-setTimeout(() => {
-  console.log("timeout");
-  
-  progress = data__["order"]["all"].filter((arr) => arr["status"] === "Progress");
-  selesai = data__["order"]["all"].filter((arr) => arr.status === "Selesai");
-  
-  
-  
-  
-  //[progress, selesai] = data__.order.all.filter(() => );
-  
-  [progress, selesai] = data__.order.all.filter((arr, arr2) => {
-    /*if (arr.status === "Progress") {
-      return ["x", arr];
-    } else if (arr.status === "Selesai") {
-      return [arr, "x"];
-    }
-  });
-  
-  
-  
-}, 3000);
-*/
-
+};
 
 const getListDate = (date_first, date_last, char_split = "/", result_split = "/") => {
-  
-  console.table(date_first, date_last);
   
   const year = { first: 0, last: 0 },
        month = { first: 0, last: 0 },
@@ -2338,7 +1781,7 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
     return false;
   }
   
-  //**set rules --date_2 must be a next day
+  //**set rules --date_last must be a next day
   if ( year.first <= year.last ) {
     if ( month.first <= month.last || year.first < year.last ) {
       if ( day.first <= day.last || month.first < month.last || year.first < year.last ) {
@@ -2371,24 +1814,12 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
                   ? "0" + iii.loop
                   : iii.loop
               }`);
-              /*
-              console.log(`${i.loop}/${
-                (ii.loop < 10) 
-                  ? "0" + ii.loop 
-                  : ii.loop
-              }/${
-                (iii.loop < 10)
-                  ? "0" + iii.loop
-                  : iii.loop
-              }`);
-              */
             }
           }
         }
       }
     }
   }
-  
   
   return result;
 };
