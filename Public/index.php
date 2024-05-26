@@ -1,6 +1,18 @@
 <?php
-
 if (!session_id()) session_start();
+?>
+
+<script>
+  let is_login = false;
+</script>
+
+<?php
+
+if ( isset($_SESSION["isLogin"]) ) {
+  if ( $_SESSION["isLogin"] === true ) {
+    echo "<script>is_login = 'isLogin';</script>";
+  } 
+}
 
 ?>
 <!DOCTYPE html>
@@ -329,7 +341,63 @@ if (!session_id()) session_start();
   
 }
 
+#login {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--nav-bg-color);
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+#login .wrapper {
+  max-width: 500px;
+  background-color: #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 1.3em;
+  
+  transform: scale(0);
+  transition: all 1s;
+}
+
+#login .wrapper.fade {
+  transform: scale(1);
+}
+
+#login .wrapper .paper {
+  display: flex;
+  flex-direction: column;
+}
+
+#login .wrapper .paper .input-group {
+  display: flex;
+  margin: auto;
+  gap: 20px;
+  flex-direction: column;
+}
+
+#login .wrapper .title {
+  text-align: center;
+}
+
+#login .wrapper table tr td {
+  margin: 20px 0;
+}
+
+#login .wrapper .input-group .button-group {
+  display: flex;
+  justify-content: center;
+}
+
+#login .wrapper .input-group .button-group button{
+  flex: 1;
+  padding : 4px;
+}
 
   </style>
 </head>
@@ -344,7 +412,7 @@ if (!session_id()) session_start();
     <li><a href="">Home</a></li>
     <li><a href="">Dashboard</a></li>
     <!-- <li><a href="">Laporan</a></li> -->
-    <li><a href="">Login</a></li>
+    <!-- <li><a href="">Login</a></li> -->
     <li><a href="">Logout</a></li>
   </ul>
   
@@ -393,7 +461,12 @@ data__ = {
     }
   },
   contents: {
-    home: "", dashboard: "", laporan: "", login: ""
+    home: "", dashboard: "", login: "",
+    a: {
+      log: {
+        previous: ""
+      }
+    }
   },
   pages: {
     costumer: {
@@ -927,7 +1000,7 @@ function create_table_and_pagination(
     max_button: 5,
     //page_active: 1,
     first_link_page: 1,
-    first_data_number: 1,
+    first_data_number: 0,
     page_total: 0,
     page_is_valid: true,
     primary_button: true,
@@ -1059,6 +1132,8 @@ function create_table_and_pagination(
           row += `<td><button data-costumer_id="${
             data[i]["id"]
           }" class="to-order">Order</button></td>`;
+          console.log(data[i]);
+          console.log(row);
         
         //event column status
         } else if (column[ii] == "status") {
@@ -1103,7 +1178,14 @@ function set___undefined(param, default_value) {
 
 
 
-let input; /* {
+let input = {
+  /*
+  costumer: {},
+  order: {},
+  edit_order: {},
+  login: {}
+  */
+}; /* {
   /*
   costumer: {
     name: document.querySelector("#input-add-costumer-name"),
@@ -1136,6 +1218,10 @@ let input; /* {
   
 };
 */
+
+let btn_login = "";
+let input_login_username = "";
+let input_login_password = "";
 
 let id;
 
@@ -1179,6 +1265,23 @@ let button_search_order_by_date = [
 
 let search_group_order = [];
 
+let load = {
+  data: {
+    home: false,
+    dashboard: false,
+    login: false,
+    logout: false
+  },
+  refresh: function(property_name) {
+    for (const p in this[property_name]) {
+      this[property_name][p] = true;
+    }
+    console.log(this);
+  }
+};
+
+load.refresh("data");
+
 
 
 /*** *** *** End Dashboard func *** *** ***/
@@ -1208,58 +1311,112 @@ document.addEventListener("DOMContentLoaded", function() {
       main_content.classList.remove("laporan");
       main_content.classList.remove("login");
       
+      //event backup content
+      if ( data__.contents.previous != "" ) {
+        data__.contents[data__.contents.a.log.previous] = main_content.innerHTML;
+      }
+      
+      
+      //event replace content
       main_content.classList
         .add(e.target.innerText.toLowerCase());
       main_content.innerHTML = 
         data__["contents"][e
           .target.innerText.toLowerCase()];
       
+      //event mark replace content
+      data__.contents.a.log.previous = 
+        e.target.innerText.toLowerCase();
+      
+      
       //event dashboard
-      if (e.target.innerText === "Dashboard") {
+      if (
+        e.target.innerText === "Dashboard"
+      ) {
         
-        // document.querySelector("#date").value = today;
-        // select_paket = document.getElementById("list-paket");
-        // option_paket = "";
-        // inputBerat = document.querySelector("#berat");
-        // berat = 0;
-        // inputHarga = document.querySelector("#harga");
-        // harga = 3000;
-        //createHarga();
+        //clear load dashboard
+        load.data.dashboard = false;
 
         // event deklarasi var input
-        input = {
-          
-          costumer: {
-            name: document.querySelector("#input-add-costumer-name"),
-            phone_num:  document.querySelector("#input-add-costumer-phone-num"),
-            btn_cancel: document.querySelector("#input-add-costumer-button-group").firstElementChild,
-            btn: document.querySelector("#input-add-costumer-button-group").firstElementChild.nextElementSibling
-          },
-          order: {
-            date: document.querySelector("#input-add-order-date"),
-            name: document.querySelector("#input-add-order-name"),
-            phone_num:  document.querySelector("#input-add-order-phone-num"),
-            package:  document.querySelector("#input-add-order-package"),
-            price:  document.querySelector("#input-add-order-price"),
-            weight:  document.querySelector("#input-add-order-weight"),
-            total:  document.querySelector("#input-add-order-total"),
-            btn_cancel: document.querySelector("#input-add-order-button-group").firstElementChild,
-            btn: document.querySelector("#input-add-order-button-group").firstElementChild.nextElementSibling
-          },
-          edit_order: {
-            date: document.querySelector("#input-change-order-date"),
-            name: document.querySelector("#input-change-order-name"),
-            phone_num:  document.querySelector("#input-change-order-phone-num"),
-            package:  document.querySelector("#input-change-order-package"),
-            price:  document.querySelector("#input-change-order-price"),
-            weight:  document.querySelector("#input-change-order-weight"),
-            total:  document.querySelector("#input-change-order-total"),
-            btn_cancel: document.querySelector("#input-change-order-button-group").firstElementChild,
-            btn: document.querySelector("#input-change-order-button-group").firstElementChild.nextElementSibling,
-            btn_delete: document.querySelector("#input-change-order-button-group").lastElementChild
-          }
-          
+        input.costumer = {
+          name: document.querySelector(
+            "#input-add-costumer-name"
+          ),
+          phone_num:  document.querySelector(
+            "#input-add-costumer-phone-num"
+          ),
+          btn_cancel: document.querySelector(
+            "#input-add-costumer-button-group"
+          ).firstElementChild,
+          btn: document.querySelector(
+            "#input-add-costumer-button-group"
+          ).firstElementChild.nextElementSibling
         };
+        
+        input.order = {
+          date: document.querySelector(
+            "#input-add-order-date"
+          ),
+          name: document.querySelector(
+            "#input-add-order-name"
+          ),
+          phone_num:  document.querySelector(
+            "#input-add-order-phone-num"
+          ),
+          package:  document.querySelector(
+            "#input-add-order-package"
+          ),
+          price:  document.querySelector(
+            "#input-add-order-price"
+          ),
+          weight:  document.querySelector(
+            "#input-add-order-weight"
+          ),
+          total:  document.querySelector(
+            "#input-add-order-total"
+          ),
+          btn_cancel: document.querySelector(
+            "#input-add-order-button-group"
+          ).firstElementChild,
+          btn: document.querySelector(
+            "#input-add-order-button-group"
+          ).firstElementChild.nextElementSibling
+        };
+        
+        input.edit_order = {
+          date: document.querySelector(
+            "#input-change-order-date"
+          ),
+          name: document.querySelector(
+            "#input-change-order-name"
+          ),
+          phone_num:  document.querySelector(
+            "#input-change-order-phone-num"
+          ),
+          package:  document.querySelector(
+            "#input-change-order-package"
+          ),
+          price:  document.querySelector(
+            "#input-change-order-price"
+          ),
+          weight:  document.querySelector(
+            "#input-change-order-weight"
+          ),
+          total:  document.querySelector(
+            "#input-change-order-total"
+          ),
+          btn_cancel: document.querySelector(
+            "#input-change-order-button-group"
+          ).firstElementChild,
+          btn: document.querySelector(
+            "#input-change-order-button-group"
+          ).firstElementChild.nextElementSibling,
+          btn_delete: document.querySelector(
+            "#input-change-order-button-group"
+          ).lastElementChild
+        };
+        
+        
         
         createHargaPackage(input.order.package);
         createHargaPackage(input.edit_order.package);
@@ -1277,8 +1434,8 @@ document.addEventListener("DOMContentLoaded", function() {
         document.querySelectorAll(
           ".search-order .search-group .search-group-order"
         ).forEach((s) => {
-          search_group_order.push(s.firstElementChild);
-          
+          search_group_order
+            .push(s.firstElementChild);
         });
         
         
@@ -1309,6 +1466,16 @@ document.addEventListener("DOMContentLoaded", function() {
         
       //end event dashboard
       }
+      //event login
+      if ( e.target.innerText === "Login" ) {
+        /*
+        btn_login = document.querySelector("#input-submit-login ");
+        input_login_username = document.querySelector("#input-login-username");
+        input_login_password = document.querySelector("#input-login-password");
+        */
+       
+      }
+      
     //end event request contents
     }
     
@@ -1513,7 +1680,8 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     // end event main content adalah dashboard
     }
-  //end event delegation
+    
+  //end event delegation body
   });
   
   /*** *** *** Dashboard func *** *** ***/
@@ -1577,6 +1745,7 @@ document.addEventListener("DOMContentLoaded", function() {
       e.target.classList.contains("to-order") 
     ) {
     
+      let data = data__.costumer.all.filter(d => d.id == e.target.dataset.costumer_id)[0];
       document.querySelector('.dashboard .add-order')
         .style.display = "flex";
       document.querySelector('.dashboard .add-order')
@@ -1596,17 +1765,17 @@ document.addEventListener("DOMContentLoaded", function() {
         `.form-no-permission`
       ).style.display = "none";
       
+      
+      
+      
+      
       //isi input berdasarkan baris table pada button yang di klik
       document.querySelector(
         ".dashboard .add-order .nama"
-      ).value = 
-        data__["costumer"]["all"][e.target
-          .dataset.costumer_id]["nama"];
+      ).value = data.nama;
       document.querySelector(
         ".dashboard .add-order .no_hp"
-      ).value = 
-        data__["costumer"]["all"][e.target
-          .dataset.costumer_id]["no_hp"];
+      ).value = data.no_hp;
     //end event button to-order
     }
     
@@ -1725,7 +1894,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     //event btn close edit order
-    else if ( 
+    if ( 
       e.target.classList
         .contains("close-change-data") || 
       e.target === input.edit_order.btn ||
@@ -1782,6 +1951,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
     } //end event submit edit order
     
+    //event delete order
     else if ( e.target === input.edit_order.btn_delete ) {
       main({
         directory: "../App/index.php?",
@@ -1805,10 +1975,13 @@ document.addEventListener("DOMContentLoaded", function() {
           }, 6000);
         } else console.error(result);
       });
-    }
+    } //end event delete order
     
-    
-  }); 
+  }); //end delegation click
+  
+  
+  
+  //event delegation lv 2 => main => dbclick
   
   document.querySelector("main")
     .addEventListener("dblclick", 
@@ -1889,6 +2062,78 @@ document.addEventListener("DOMContentLoaded", function() {
   
   // Event fill var data
   fillData("all");
+  
+  //event check login
+  setTimeout(() => {
+    
+    if (!is_login) {
+      
+      document.body.innerHTML += `<div id="login">${data__.contents.login}</div>`;
+      setTimeout(() => {
+        document.querySelector("#login").firstElementChild.classList.add("fade");
+      }, 500);
+      
+      
+      btn_login = document.querySelector(
+        "#input-submit-login"
+      );
+      input_login_username = document.querySelector(
+        "#input-login-username"
+      );
+      input_login_password = document
+        .querySelector(
+          "#input-login-password"
+      );
+      
+      console.log(btn_login);
+      console.log(input_login_username);
+      console.log(input_login_password);
+      
+      document.querySelector("#login").addEventListener('click', e => {
+        
+        if ( e.target === btn_login ) {
+          console.log("login button");
+          const user = {};
+          main({
+            directory: "../App/index.php?",
+            url: `url=Pengguna/liveSearch`,
+            keyword: "",
+            type: "GET",
+            resultType: "json"
+          }, function(result) {
+            if (typeof result.status==="boolean") {
+              const users = result.result.filter(user => user.username.toLowerCase() == input_login_username.value.toLowerCase()).filter(user => user.password == input_login_password.value.toLowerCase());
+              
+              if (users.length > 0) {
+                
+                console.log(users);
+                /*
+                user.push(users[0]);
+                console.log(user);
+                */
+                /*
+                main({
+                  directory: "../App/index.php?",
+                  url: `url=Pengguna/liveSearch`,
+                  keyword: "",
+                  type: "GET",
+                  resultType: "json"
+                });
+                */
+                
+                document.querySelector("#login").firstElementChild.classList.remove("fade");
+                
+              } else console.error("User Tidak Ditemukan");
+              
+            } else console.log(result);
+          });
+        }
+        
+      });
+      
+    }
+    
+  }, 1500);
   
 }); //end function LoadDOM
 
@@ -1978,7 +2223,8 @@ function fillData(
   else if (type == "contents") {
     let list__menu = [
       "Home",
-      "Dashboard"
+      "Dashboard",
+      "Login"
     ];
     
     for ( 
