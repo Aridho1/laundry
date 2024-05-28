@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 20 Bulan Mei 2024 pada 11.25
--- Versi server: 10.4.25-MariaDB
--- Versi PHP: 8.1.10
+-- Waktu pembuatan: 28 Bulan Mei 2024 pada 02.52
+-- Versi server: 11.3.2-MariaDB
+-- Versi PHP: 8.3.6
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,7 +31,7 @@ CREATE TABLE `pelanggan` (
   `id` int(11) NOT NULL,
   `nama` varchar(50) NOT NULL,
   `no_hp` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `pelanggan`
@@ -51,7 +51,12 @@ INSERT INTO `pelanggan` (`id`, `nama`, `no_hp`) VALUES
 (11, 'wow', '123'),
 (12, 'Brando', '6200000000012'),
 (13, 'Duta', '6200000000013'),
-(14, 'Dani', '6200000000014');
+(14, 'Dani', '6200000000014'),
+(15, 'Bintang', '6200000000015'),
+(16, 'Jessica', '6200000000016'),
+(17, 'Cantika', '6200000000017'),
+(18, 'Herman', '6200000000018'),
+(19, 'Udin', '6200000000019');
 
 -- --------------------------------------------------------
 
@@ -70,7 +75,7 @@ CREATE TABLE `pemesanan` (
   `berat` varchar(5) NOT NULL,
   `total_harga` varchar(30) NOT NULL,
   `status` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `pemesanan`
@@ -78,16 +83,15 @@ CREATE TABLE `pemesanan` (
 
 INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `paket`, `harga`, `berat`, `total_harga`, `status`) VALUES
 (1, '00AOqJab01', '16/05/2024', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'DiAmbil'),
-(2, 'JJShUE0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
-(3, 'dFXNlz0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Progress'),
-(4, 'VwgHfq0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
-(5, 'PRIAQj0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Progress'),
-(6, 'fYuUeH0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Progress'),
-(7, 'PcNHUx0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Progress'),
+(2, 'JJShUE0002', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '4', '28000', 'Selesai'),
+(3, 'dFXNlz0002', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '3', '21000', 'DiAmbil'),
+(5, 'PRIAQj0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
+(6, 'fYuUeH0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'DiAmbil'),
+(7, 'PcNHUx0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
 (8, 'jRTroB0003', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'Progress'),
-(9, 'ONWiLB0004', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'Progress'),
+(9, 'ONWiLB0004', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'Selesai'),
 (10, 'EiJLRj0005', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'DiAmbil'),
-(11, 'uyIiCB0006', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
+(11, 'uyIiCB0006', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Selesai'),
 (12, 'vcSxFL0007', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
 (13, 'ohUvRX0008', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
 (14, 'sqdYxf0009', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'Progress'),
@@ -108,21 +112,44 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (29, 'eKsIMr0029', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '8', '24000', 'Progress'),
 (30, 'RxOqnE0030', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
 (31, 'cokIHS0031', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
-(32, 'JiIrkD0032', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
+(32, 'JiIrkD0032', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Selesai'),
 (33, 'BFyQUb0033', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
-(34, 'avzFgk0034', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Progress'),
-(35, 'CSDloH0035', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
-(36, 'YGTEeR0036', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'Progress'),
-(37, 'EyZsja0037', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '11', '33000', 'Progress'),
+(34, 'avzFgk0034', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '9', '27000', 'Selesai'),
+(35, 'CSDloH0035', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Selesai'),
+(36, 'YGTEeR0036', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'Selesai'),
+(37, 'EyZsja0037', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '11', '33000', 'Selesai'),
 (38, 'akNuBq0038', '2024-05-16', 'Rossy', '6200000000003', 'Biasa', '3000', '12', '36000', 'Progress'),
-(39, 'xfQAIN0039', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
+(39, 'xfQAIN0039', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Selesai'),
 (40, 'FlNVJP0040', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
 (41, 'ZbjeSS0041', '2024-05-16', 'Yasir', '6200000000002', 'Biasa', '3000', '5', '15000', 'Progress'),
 (42, 'vFcdfR0042', '2024-05-16', 'Oci', '6200000000007', 'Kilat', '7000', '5', '35000', 'Progress'),
 (43, 'vKRrNz0043', '2024-05-16', 'Akbar', '6200000000008', 'Cepat', '5000', '5', '25000', 'Progress'),
 (44, 'nEAMit0044', '2024-05-16', 'Juni', '6200000000006', 'Kilat', '7000', '2', '14000', 'Progress'),
 (45, 'YbuZir0045', '2024-05-16', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
-(46, 'eIUKkD0046', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'DiAmbil');
+(46, 'eIUKkD0046', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'DiAmbil'),
+(49, 'AJLlQm0049', '2024-05-21', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
+(51, 'iiyGiH0051', '2024-05-24', 'Udin', '6200000000019', 'Kilat', '7000', '9', '63000', 'Progress'),
+(52, 'aysdVc0052', '2024-05-24', 'Yasir', '6200000000002', 'Biasa', '3000', '5', '15000', 'Progress');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `pengguna`
+--
+
+CREATE TABLE `pengguna` (
+  `username` varchar(25) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `user_level` varchar(3) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data untuk tabel `pengguna`
+--
+
+INSERT INTO `pengguna` (`username`, `password`, `user_level`) VALUES
+('admin', '1234', '1'),
+('special_user', 'special_user', '2');
 
 -- --------------------------------------------------------
 
@@ -133,14 +160,14 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 CREATE TABLE `total_pemesanan` (
   `id` int(11) NOT NULL,
   `angka` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data untuk tabel `total_pemesanan`
 --
 
 INSERT INTO `total_pemesanan` (`id`, `angka`) VALUES
-(1, 46);
+(1, 52);
 
 --
 -- Indexes for dumped tables
@@ -159,6 +186,12 @@ ALTER TABLE `pemesanan`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indeks untuk tabel `pengguna`
+--
+ALTER TABLE `pengguna`
+  ADD PRIMARY KEY (`username`);
+
+--
 -- Indeks untuk tabel `total_pemesanan`
 --
 ALTER TABLE `total_pemesanan`
@@ -172,13 +205,13 @@ ALTER TABLE `total_pemesanan`
 -- AUTO_INCREMENT untuk tabel `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT untuk tabel `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT untuk tabel `total_pemesanan`
