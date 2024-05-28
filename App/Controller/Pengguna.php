@@ -1,5 +1,5 @@
 <?php
-
+if (!session_id()) session_start();
 class Pengguna {
   private $table = "pengguna";
   private $db;
@@ -43,12 +43,26 @@ class Pengguna {
   
   
   
-  public function setSessionLogin() {
-    $_SESSION["isLogin"] = true;
-    
-    $result = ["status" => true, "result" => "Success"];
-    
-    echo json_encode($result);
+  public function setSessionLogin($getSession = true) {
+
+    // $_SESSION["isLogin"] = $getSession == false ? false : true;
+    echo $getSession;
+    if ( $getSession == "true" ) {
+      $_SESSION["isLogin"] = true;
+      echo "trueeeee";
+    } else if ( $getSession == "false" ) {
+      $_SESSION["isLogin"] = false;
+      echo "falseeeee";
+
+    }
     var_dump($_SESSION["isLogin"]);
+    echo "<script>
+      window.location.href = '../Public/index.php';
+    </script>";
+    
+    // $result = ["status" => true, "result" => "Success"];
+    
+    // echo json_encode($result);
+    // var_dump($_SESSION["isLogin"]);
   }
 }

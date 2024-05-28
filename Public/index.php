@@ -1,6 +1,7 @@
 <?php
 if (!session_id()) session_start();
 //$_SESSION["isLogin"] = false;
+var_dump($_SESSION);
 ?>
 
 <script>
@@ -10,15 +11,10 @@ if (!session_id()) session_start();
 <?php
 
 if ( isset($_SESSION["isLogin"]) ) {
-  if ( $_SESSION["isLogin"] === true ) {
-    echo "<script>is_login = 'isLogin';</script>";
+  if ( $_SESSION["isLogin"] == true ) {
+    echo "<script>is_login = true;</script>";
   } 
 }
-/*
-if ( !isset($_SESSION["isLogin"]) ) {
-  echo "Session Is Login Is Empty";
-} else var_dump($_SESSION["isLogin"]);
-*/
 //$_SESSION["isLogin"] = true;
 //unset($_SESSION["isLogin"]);
 ?>
@@ -42,7 +38,6 @@ if ( !isset($_SESSION["isLogin"]) ) {
   flex-direction: column;
   gap: 20px;
   padding: 10px 30px;
-  osition: relative;
 }
 
 .dashboard .content-type {
@@ -255,13 +250,10 @@ if ( !isset($_SESSION["isLogin"]) ) {
   height: 100vh;
   
 
-  //background-color: #5558ff;
-  
-
   display: flex;
   justify-content: center;
   align-items: center;
-  ointer-events: none;
+  pointer-events: none;
   transition: all 0.5s;
   transform: scale(0);
 }
@@ -272,7 +264,7 @@ if ( !isset($_SESSION["isLogin"]) ) {
 
 .dashboard .change-data.slide {
   background-color: var(--nav-bg-color);
-  ointer-events: true;
+  pointer-events: true;
   transform: scale(2);
 }
 
@@ -362,12 +354,13 @@ if ( !isset($_SESSION["isLogin"]) ) {
   justify-content: center;
   align-items: center;
   transition: all 0.7s;
-  z-index: 999;
+  z-index: -2;
+  opacity: 0;
 }
 
-#login.empty {
-  opacity: 0;
-  z-index: -1;
+#login.to-login {
+  opacity: 1;
+  z-index: 999;
 }
 
 #login .wrapper {
@@ -537,7 +530,8 @@ nav_toggle.addEventListener("click", function() {
   nav_links.classList.toggle("slide");
 });
 
-let main_content = document.querySelector("main .content");
+let main_content = "";
+console.log(main_content);
 
 photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 
@@ -811,8 +805,6 @@ let load = {
   }
 };
 
-load.refresh("data");
-
 
 
 /*** *** *** End Dashboard func *** *** ***/
@@ -827,6 +819,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Event fill var data
   await fillData("all");
   
+  main_content = document.querySelector(
+      "main .content"
+  );
+
+
+  console.log(main_content);
+
+  
+
   document.body.addEventListener("click", function(e) {
     
     //event request contents
@@ -834,6 +835,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.target.tagName === "A" && 
       e.target.closest("nav") 
     ) {
+
+      const main_content = document.querySelector(
+          "main .content"
+      );
+
       e.preventDefault();
       document.querySelector("main header h2")
         .innerText = e.target.innerText;
@@ -844,18 +850,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       main_content.classList.remove("home");
       main_content.classList.remove("dashboard");
       main_content.classList.remove("laporan");
-      main_content.classList.remove("logout");
       
       
-      //event logout
-      if ( e.target.innerText == "Logout") {
-        
-        //unset session
-        document.body.innerHMl += "<?php $_SESSION['isLogin'] = false; ?>";
-        console.log(document.body.innerHTML.toString());
-        
-      //end event logout
-      }
+      
       
       
       //event replace content
@@ -868,7 +865,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       //event mark replace content
       data__.contents.a.log.previous = 
         e.target.innerText.toLowerCase();
+      console.log("content");
+      console.log(
+          document.querySelector(
+              "main .content"
+          )
+      );
       
+      
+      console.log(main_content);
+
+      //event logout
+      if ( e.target.innerText == "Logout") {
+        
+        contentToLogin();
+
+        //unset session
+        document.body.innerHTMl += "<?php $_SESSION['isLogin'] = false; ?>";
+        console.log(document.body.innerHTML.toString());
+
+        window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false";
+        
+      //end event logout
+      }
       
       //event dashboard
       if (
@@ -1382,15 +1401,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.target === input.edit_order.btn ||
       e.target === input.edit_order.btn_delete
     ) {
-     setTimeout(() => {
-     document.querySelector(".dashboard .change-data").classList.remove("slide");
-      document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
       setTimeout(() => {
-        
-        
-        document.querySelector(".dashboard .change-data").classList.remove("show");
-        
-      }, 800);
+        document.querySelector(".dashboard .change-data").classList.remove("slide");
+        document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
+        setTimeout(() => {
+          
+          document.querySelector(".dashboard .change-data").classList.remove("show");
+          
+        }, 800);
       }, (e.target === input.edit_order.btn || e.target === input.edit_order.btn_delete) ? 1000 : 0 );
     } //end event close edit order
     
@@ -1544,64 +1562,54 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   
   
-  
+  document.body.innerHTML += `<div id="login">${data__.contents.login}</div>`;
+
+  btn_login = document.querySelector(
+    "#input-submit-login"
+  );
+  input_login_username = document.querySelector(
+    "#input-login-username"
+  );
+  input_login_password = document.querySelector(
+    "#input-login-password"
+  );
+
+  console.log(document.querySelector("#login"));
+
+  document.querySelector("#login").addEventListener('click', e => {
+    console.log(e.target);
+    if ( e.target === btn_login ) {
+      main({
+        url: `../App/index.php?url=Pengguna/liveSearch`,
+        type: "GET",
+      }, result => {
+        
+        result = JSON.parse(result);
+        
+        if (typeof result.status==="boolean") {
+          const user = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
+          
+          if (user.length > 0) {
+            
+            contentToLogin(false);
+            document.body.innerHMl += "<?php $_SESSION['isLogin'] = true; ?>";
+
+            setTimeout(() => {
+              window.location.href = "../App/index.php?url=Pengguna/setSessionLogin";
+            }, 500);
+            
+          } else console.error("User Tidak Ditemukan");
+          
+        } else console.log(result);
+      });
+    }
+    
+  });
+
   //event check login
   setTimeout(() => {
     
-    if (!is_login) {
-      
-      document.body.innerHTML += `<div id="login">${data__.contents.login}</div>`;
-      setTimeout(() => {
-        document.querySelector("#login").firstElementChild.classList.add("fade");
-      }, 500);
-      
-      
-      btn_login = document.querySelector(
-        "#input-submit-login"
-      );
-      input_login_username = document.querySelector(
-        "#input-login-username"
-      );
-      input_login_password = document
-        .querySelector(
-          "#input-login-password"
-      );
-      
-      document.querySelector("#login").addEventListener('click', e => {
-        
-        if ( e.target === btn_login ) {
-          
-          const user = {};
-          main({
-            url: `../App/index.php?url=Pengguna/liveSearch`,
-            type: "GET",
-          }, result => {
-            
-            result = JSON.parse(result);
-            
-            if (typeof result.status==="boolean") {
-              const users = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
-              
-              if (users.length > 0) {
-                
-                document.querySelector("#login").firstElementChild.classList.remove("fade");
-                
-                setTimeout(()=> {
-                document.querySelector('#login').classList.add('empty');
-                
-                document.body.innerHMl += "<?php $_SESSION['isLogin'] = true; ?>";
-                
-                }, 900);
-                
-              } else console.error("User Tidak Ditemukan");
-              
-            } else console.log(result);
-          });
-        }
-        
-      });
-      
-    }
+    if (!is_login) contentToLogin();
     
   }, 1500);
   
@@ -1839,6 +1847,33 @@ const fillInputChangeData = (id, type = "edit_order") => {
   input[type].total.value = data.total_harga;
   
 };
+
+
+// methode toggle show/hide content login
+const contentToLogin = (show = true) => {
+
+  if ( show === true ) {
+
+    document.querySelector("#login")
+      .classList.add("to-login");
+
+    document.querySelector("#login")
+      .firstElementChild.classList.add("fade");
+      
+    } else if ( show === false ) {
+      
+      document.querySelector("#login")
+      .firstElementChild.classList.remove("fade");
+
+      setTimeout(() => {
+        document.querySelector("#login")
+          .classList.remove("to-login");
+      }, 200)
+
+  }
+
+};
+
 
 </script>
 </body>
