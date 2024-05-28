@@ -43,7 +43,7 @@ class Pengguna {
   
   
   
-  public function setSessionLogin($getSession = true) {
+  public function setSessionLogin($getSession) {
 
     // $_SESSION["isLogin"] = $getSession == false ? false : true;
     echo $getSession;

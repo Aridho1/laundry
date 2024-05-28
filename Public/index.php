@@ -523,15 +523,138 @@ const main = async (params = {
   }
 };
 
+
+const fillData = async (  
+  type, 
+  keywords = [null, null], 
+  add_param = null 
+) => {
+
+  let [column, keyword] = keywords;
+  
+  if (type == "costumer_all" || type == "order_all") {
+    
+    let data__type = type.split("_")[0];
+    
+    await main({
+      url: `../App/index.php?url=${
+          (data__type == "costumer") ? "Pelanggan" : "Pemesanan" 
+        }/liveSearch`,
+      type: "GET"
+    }, result => {
+      
+      result = JSON.parse(result);
+      
+      if (typeof result.status === "boolean") {
+        data__[data__type]["all"] = result.result;
+      } else console.log(result);
+    });
+  } 
+  
+  else if (
+    (
+      type == "costumer_search" || 
+      type == "order_search"
+    ) && 
+    column != null && 
+    keyword != null
+  ) {
+  
+    let data__type = type.split("_")[0];
+    
+    if (data__.order.all.length > 1) {
+      /*
+      let result = data__[data__type]["all"]
+        .filter(arr => arr[column] === keyword);
+      */
+      
+      let result = data__[data__type]["all"]
+        .filter(arr => arr[column].toLowerCase()
+          .includes(keyword.toLowerCase()));
+      
+      if (
+        typeof result == "object" && 
+        result.length > 0
+      ) {
+      
+        data__[data__type]["search"]["keyword"] = keyword;
+        data__[data__type]["search"]["result"] = result;
+        data__["pages"][data__type]["active"] = 1;
+        
+        
+      } else console.error(`Tidak ada '${keyword}' dalam kolom '${column}' pada object '${data__type}'`);
+      
+    // jika bukan array
+    } else console.error(`data__ -> ${data__type} -> all bukan sebuah array`);
+  }
+  
+  else if (type == "order_status") {
+    time = (add_param == "__request_wait__") ? 5000 : 0;
+    
+    setTimeout(() => {
+      if (data__.order.all.length > 1) {
+        data__.order.status.progress = data__.order.all
+          .filter(arr => arr.status === "Progress");
+        data__.order.status.complete = data__.order.all
+          .filter(arr => arr.status === "Selesai");
+        data__.order.status.takeout = data__.order.all
+          .filter(arr => arr.status === "DiAmbil");
+      // jika bukan array
+      } else console.error(`data__ -> order -> all bukan sebuah array`);
+    }, time);
+  }
+  
+  
+  
+  else if (type == "contents") {
+    let list__menu = [
+      "Home",
+      "Dashboard",
+      "Login"
+    ];
+    
+    for ( 
+      const [i, m] of list__menu.entries() 
+      //entries: memasukan suatu nilai kedalam array 
+    ) {
+      await main({
+        url: `Content/${m}/index.html`,
+        type: "GET"
+      }, result => {
+        data__["contents"][m.toLowerCase()] = result;
+      });
+    }
+  }
+  
+  
+  
+  if (type == "all") {
+    console.log("Loading...");
+    await fillData(  "contents"  );
+    await fillData(  "costumer_all"  );
+    await fillData(  "order_all"  );
+    await fillData(  
+      "order_status" /*, 
+      [null, null], 
+      "__request_wait__"  */
+    );
+    
+    console.log("Selesai");
+  }
+};
+
+// Event fill var data
+
+
+const log = (...any) => console.log(any.join(' '));
+const l = (...any) => log(any.join(' '));
+
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
 let nav_links = document.querySelector("nav ul");
 let nav_toggle = document.querySelector("div.menu-toggle");
 nav_toggle.addEventListener("click", function() {
   nav_links.classList.toggle("slide");
 });
-
-let main_content = "";
-console.log(main_content);
 
 photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 
@@ -805,44 +928,41 @@ let load = {
   }
 };
 
-
-
 /*** *** *** End Dashboard func *** *** ***/
-
-
-
-
-
+// Event fill var data
+// fillData("all");
 
 document.addEventListener("DOMContentLoaded", async () => {
   
-  // Event fill var data
   await fillData("all");
-  
-  main_content = document.querySelector(
+  console.log("end dom");
+  console.log(document.querySelector(".content"));
+
+  const default_menu = "home";
+
+  document.querySelector(".content")
+    .previousElementSibling.firstElementChild.innerHTML = default_menu.split("").map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter).join("");
+
+  document.querySelector(".content")
+    .innerHTML = data__.contents[default_menu];
+
+  document.querySelector(".content")
+    .classList.add(default_menu);
+
+
+  // event big delegation for tempplating engine, pagination, search, and CRUD
+  document.body.addEventListener("click", (e) => {
+    const main_content = document.querySelector(
       "main .content"
-  );
+    );
 
-
-  console.log(main_content);
-
-  
-
-  document.body.addEventListener("click", function(e) {
-    
     //event request contents
     if ( 
       e.target.tagName === "A" && 
       e.target.closest("nav") 
     ) {
 
-      const main_content = document.querySelector(
-          "main .content"
-      );
-
       e.preventDefault();
-      document.querySelector("main header h2")
-        .innerText = e.target.innerText;
       
       checkbox.checked = false;
       nav_links.classList.remove("slide");
@@ -854,7 +974,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       
       
       
+      if ( e.target.innerText == "Logout") {
+        
+        const sure = confirm("Are You Sure To Logout?");
+        if ( sure ) window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false";
+        else return false;
+        //end event logout
+      }
       
+      document.querySelector("main header h2")
+        .innerText = e.target.innerText;
+
+
       //event replace content
       main_content.classList
         .add(e.target.innerText.toLowerCase());
@@ -876,27 +1007,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.log(main_content);
 
       //event logout
-      if ( e.target.innerText == "Logout") {
-        
-        contentToLogin();
-
-        //unset session
-        document.body.innerHTMl += "<?php $_SESSION['isLogin'] = false; ?>";
-        console.log(document.body.innerHTML.toString());
-
-        window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false";
-        
-      //end event logout
-      }
       
       //event dashboard
       if (
         e.target.innerText === "Dashboard"
       ) {
-        
-        console.log("ok dashboard ");
-        
-
         // event deklarasi var input
         input.costumer = {
           name: document.querySelector(
@@ -1574,8 +1689,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     "#input-login-password"
   );
 
-  console.log(document.querySelector("#login"));
-
   document.querySelector("#login").addEventListener('click', e => {
     console.log(e.target);
     if ( e.target === btn_login ) {
@@ -1592,15 +1705,16 @@ document.addEventListener("DOMContentLoaded", async () => {
           if (user.length > 0) {
             
             contentToLogin(false);
-            document.body.innerHMl += "<?php $_SESSION['isLogin'] = true; ?>";
 
             setTimeout(() => {
-              window.location.href = "../App/index.php?url=Pengguna/setSessionLogin";
+              window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/true";
             }, 500);
             
           } else console.error("User Tidak Ditemukan");
-          
         } else console.log(result);
+
+        input_login_username.value = "";
+        input_login_password.value = "";
       });
     }
     
@@ -1620,124 +1734,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-const fillData = async (  
-  type, 
-  keywords = [null, null], 
-  add_param = null 
-) => {
-
-  let [column, keyword] = keywords;
-  
-  if (type == "costumer_all" || type == "order_all") {
-    
-    let data__type = type.split("_")[0];
-    
-    await main({
-      url: `../App/index.php?url=${
-          (data__type == "costumer") ? "Pelanggan" : "Pemesanan" 
-        }/liveSearch`,
-      type: "GET"
-    }, result => {
-      
-      result = JSON.parse(result);
-      
-      if (typeof result.status === "boolean") {
-        data__[data__type]["all"] = result.result;
-      } else console.log(result);
-    });
-  } 
-  
-  else if (
-    (
-      type == "costumer_search" || 
-      type == "order_search"
-    ) && 
-    column != null && 
-    keyword != null
-  ) {
-  
-    let data__type = type.split("_")[0];
-    
-    if (data__.order.all.length > 1) {
-      /*
-      let result = data__[data__type]["all"]
-        .filter(arr => arr[column] === keyword);
-      */
-      
-      let result = data__[data__type]["all"]
-        .filter(arr => arr[column].toLowerCase()
-          .includes(keyword.toLowerCase()));
-      
-      if (
-        typeof result == "object" && 
-        result.length > 0
-      ) {
-      
-        data__[data__type]["search"]["keyword"] = keyword;
-        data__[data__type]["search"]["result"] = result;
-        data__["pages"][data__type]["active"] = 1;
-        
-        
-      } else console.error(`Tidak ada '${keyword}' dalam kolom '${column}' pada object '${data__type}'`);
-      
-    // jika bukan array
-    } else console.error(`data__ -> ${data__type} -> all bukan sebuah array`);
-  }
-  
-  else if (type == "order_status") {
-    time = (add_param == "__request_wait__") ? 5000 : 0;
-    
-    setTimeout(() => {
-      if (data__.order.all.length > 1) {
-        data__.order.status.progress = data__.order.all
-          .filter(arr => arr.status === "Progress");
-        data__.order.status.complete = data__.order.all
-          .filter(arr => arr.status === "Selesai");
-        data__.order.status.takeout = data__.order.all
-          .filter(arr => arr.status === "DiAmbil");
-      // jika bukan array
-      } else console.error(`data__ -> order -> all bukan sebuah array`);
-    }, time);
-  }
-  
-  
-  
-  else if (type == "contents") {
-    let list__menu = [
-      "Home",
-      "Dashboard",
-      "Login"
-    ];
-    
-    for ( 
-      const [i, m] of list__menu.entries() 
-      //entries: memasukan suatu nilai kedalam array 
-    ) {
-      await main({
-        url: `Content/${m}/index.html`,
-        type: "GET"
-      }, result => {
-        data__["contents"][m.toLowerCase()] = result;
-      });
-    }
-  }
-  
-  
-  
-  if (type == "all") {
-    console.log("Loading...");
-    await fillData(  "contents"  );
-    await fillData(  "costumer_all"  );
-    await fillData(  "order_all"  );
-    await fillData(  
-      "order_status" /*, 
-      [null, null], 
-      "__request_wait__"  */
-    );
-    
-    console.log("Selesai");
-  }
-};
 
 const getListDate = (date_first, date_last, char_split = "/", result_split = "/") => {
   
@@ -1790,9 +1786,13 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
   }
   
   //**set rules --date_last must be a next day
-  if ( year.first <= year.last ) {
-    if ( month.first <= month.last || year.first < year.last ) {
-      if ( day.first <= day.last || month.first < month.last || year.first < year.last ) {
+  // if ( year.first <= year.last ) {
+  //   if ( month.first <= month.last || year.first < year.last ) {
+  //     if ( day.first <= day.last || month.first < month.last || year.first < year.last ) {
+
+      if ( year.first < year.last || 
+      (month.first < month.last && year.first <= year.last) || 
+      (day.first < day.last && month.first <= month.last && year.first <= year.last) ) {
         
         i.start = year.first;
         i.end = year.last;
@@ -1826,8 +1826,9 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
           }
         }
       }
-    }
-  }
+  //     }
+  //   }
+  // }
   
   return result;
 };
