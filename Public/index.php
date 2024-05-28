@@ -11,7 +11,9 @@ if (!session_id()) session_start();
 
 if ( isset($_SESSION["isLogin"]) ) {
   if ( $_SESSION["isLogin"] === true ) {
-    echo "<script>is_login = 'isLogin';</script>";
+    $isLogin = true;
+    echo $isLogin;
+    echo "<script>is_login = true;</script>";
   } 
 }
 /*
@@ -362,12 +364,13 @@ if ( !isset($_SESSION["isLogin"]) ) {
   justify-content: center;
   align-items: center;
   transition: all 0.7s;
-  z-index: 999;
+  z-index: -2;
+  opacity: 0;
 }
 
-#login.empty {
-  opacity: 0;
-  z-index: -1;
+#login.to-login {
+  opacity: 1;
+  z-index: 999;
 }
 
 #login .wrapper {
@@ -457,6 +460,8 @@ if ( !isset($_SESSION["isLogin"]) ) {
 
 <script>
 
+console.log("exec pharse");
+
 let data__ = {};
 data__ = {
   costumer: {
@@ -529,6 +534,22 @@ const main = async (params = {
     console.error(error); 
   }
 };
+
+
+// handle Asynchronous
+const wait = (callback) => {
+  
+  return new Promise( (resolve, reject) => {
+    if (callback && typeof callback==="function") {
+      
+    }
+  } );
+  
+};
+
+//shorthand log
+const log = (...any) => console.log(any.join(' '));
+const l = (...any) => log(any.join(' '));
 
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
 let nav_links = document.querySelector("nav ul");
@@ -730,7 +751,7 @@ function create_table_and_pagination(
       result += row;
     }
     if (page_active < 1 || page_active > page_total || data.length === 0) {
-      data_table.innerHTML = `<tr><th style="font-size: 2.2em;">NO RESULT! PLEASE RETRY SEARCH FOR ANOTHER KEYWORD.<th></tr>`;
+      data_table.innerHTML = `<tr><th style="font-size: 2em;">NO RESULT! PLEASE RETRY SEARCH FOR ANOTHER KEYWORD.<th></tr>`;
     } else data_table.innerHTML = result;
   }
 }
@@ -822,18 +843,40 @@ load.refresh("data");
 
 
 
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", (el) => {
   
   // Event fill var data
-  await fillData("all");
+  fillData("all");
+  /*
+  console.log('all start');
+  document.body.style.backgroundColor = "#f0f0f0";
+  try {
+      
+    await fillData(  "contents"  );
+    await fillData(  "costumer_all"  );
+    await fillData(  "order_all"  );
+    await fillData(  "order_status" );
+    
+  } catch (err) {
+    console.error('Error for FillData : ', error);
+  } finally {
+    console.log("all clear");
+    document.body.style.backgroundColor = '';
+  }
+  */
+  console.log("before listeneraa");
+  console.log(data__.contents.home);
+  console.log("before listener");
   
-  document.body.addEventListener("click", function(e) {
+  
+  document.body.addEventListener("click", (e) => {
     
     //event request contents
     if ( 
       e.target.tagName === "A" && 
       e.target.closest("nav") 
     ) {
+      console.log("my nav");
       e.preventDefault();
       document.querySelector("main header h2")
         .innerText = e.target.innerText;
@@ -851,7 +894,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if ( e.target.innerText == "Logout") {
         
         //unset session
-        document.body.innerHMl += "<?php $_SESSION['isLogin'] = false; ?>";
+        document.body.innerHTMl += "<?php $_SESSION["isLogin"] = false; ?>";
         console.log(document.body.innerHTML.toString());
         
       //end event logout
@@ -869,13 +912,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       data__.contents.a.log.previous = 
         e.target.innerText.toLowerCase();
       
+      main_content.parentElement.style.backgroundColor = "violet";
+      console.log(main_content.innerHTML);
+      /*console.log(data__["contents"][e
+          .target.innerText.toLowerCase()]);
+          */
       
       //event dashboard
       if (
         e.target.innerText === "Dashboard"
       ) {
         
-        console.log("ok dashboard ");
+        log("ok dashboard ");
+        console.log(document.querySelector(
+            "#input-add-costumer-button-group"
+          ));
+        log("clear dashboard ");
         
 
         // event deklarasi var input
@@ -893,7 +945,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             "#input-add-costumer-button-group"
           ).firstElementChild.nextElementSibling
         };
-        
+        log("abcdd");
         input.order = {
           date: document.querySelector(
             "#input-add-order-date"
@@ -1324,9 +1376,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           "-"
         );
         
-        console.log(date_list);
-        console.log(Array.isArray(date_list));
-        
         
         key += "_Date[" + button_search_order_by_date [1] + "_" + button_search_order_by_date [2] + "]";
         
@@ -1545,67 +1594,67 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   
   
+  document.body.innerHTML += `<div id="login">${data__.contents.login}</div>`;
+  
   //event check login
+  
+  btn_login = document.querySelector(
+    "#input-submit-login"
+  );
+  input_login_username = document.querySelector(
+    "#input-login-username"
+  );
+  input_login_password = document.querySelector(
+    "#input-login-password"
+  );
+  
+  document.querySelector("#login").addEventListener('click', e => {
+    
+    if ( e.target === btn_login ) {
+          
+      const user = {};
+      main({
+        url: `../App/index.php?url=Pengguna/liveSearch`,
+        type: "GET",
+      }, result => {
+        
+        result = JSON.parse(result);
+        
+        if (typeof result.status==="boolean") {
+          const users = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
+          
+          if (users.length > 0) {
+            
+            contentToLogin(false);
+            
+            setTimeout(()=> {
+              
+              document.body.innerHTMl += "<?php $_SESSION["isLogin"] = true; ?>";
+            
+            }, 900);
+            
+          } else console.error("User Tidak Ditemukan");
+          
+        } else console.log(result);
+        
+      //end main func
+      });
+    }
+        
+  });
+  
+  
   setTimeout(() => {
     
-    if (!is_login) {
-      
-      document.body.innerHTML += `<div id="login">${data__.contents.login}</div>`;
-      setTimeout(() => {
-        document.querySelector("#login").firstElementChild.classList.add("fade");
-      }, 500);
-      
-      
-      btn_login = document.querySelector(
-        "#input-submit-login"
-      );
-      input_login_username = document.querySelector(
-        "#input-login-username"
-      );
-      input_login_password = document
-        .querySelector(
-          "#input-login-password"
-      );
-      
-      document.querySelector("#login").addEventListener('click', e => {
-        
-        if ( e.target === btn_login ) {
-          
-          const user = {};
-          main({
-            url: `../App/index.php?url=Pengguna/liveSearch`,
-            type: "GET",
-          }, result => {
-            
-            result = JSON.parse(result);
-            
-            if (typeof result.status==="boolean") {
-              const users = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
-              
-              if (users.length > 0) {
-                
-                document.querySelector("#login").firstElementChild.classList.remove("fade");
-                
-                setTimeout(()=> {
-                document.querySelector('#login').classList.add('empty');
-                
-                document.body.innerHMl += "<?php $_SESSION['isLogin'] = true; ?>";
-                
-                }, 900);
-                
-              } else console.error("User Tidak Ditemukan");
-              
-            } else console.log(result);
-          });
-        }
-        
-      });
-      
-    }
+    if (!is_login) contentToLogin();
     
-  }, 1500);
+  }, 500);
+  
+  console.log("Clear!");
   
 }); //end function LoadDOM
+
+
 
 
 
@@ -1717,17 +1766,45 @@ const fillData = async (
   
   
   if (type == "all") {
+    console.log("all wait");
+    
+    /*
     console.log("Loading...");
     await fillData(  "contents"  );
     await fillData(  "costumer_all"  );
     await fillData(  "order_all"  );
     await fillData(  
-      "order_status" /*, 
-      [null, null], 
-      "__request_wait__"  */
+      "order_status" 
     );
     
     console.log("Selesai");
+    */
+    /*
+    const wait = [
+      fillData(  "contents"  ),
+      fillData(  "costumer_all"  ),
+      fillData(  "order_all"  ),
+      fillData(  
+        "order_status"
+      )
+    ];
+    
+    await Promise.all((wait).then(() => console.log("all clear"));
+    */
+    
+    try {
+      
+      await fillData(  "contents"  );
+      await fillData(  "costumer_all"  );
+      await fillData(  "order_all"  );
+      await fillData(  "order_status" );
+      
+    } catch (err) {
+      console.error('Error for FillData : ', error);
+    }
+    
+    console.log("all clear");
+    
   }
 };
 
@@ -1838,6 +1915,29 @@ const fillInputChangeData = (id, type = "edit_order") => {
   input[type].weight.value = data.berat;
   input[type].total.value = data.total_harga;
   
+};
+
+
+// handle toggle show/hidden content login
+const contentToLogin = (show = true) => {
+  
+  if (show) {
+    document.querySelector("#login")
+      .classList.add("to-login");
+    
+     document.querySelector("#login")
+       .firstElementChild.classList.add("fade");
+  
+  //jika bukan show, maka hidden
+  } else {
+     document.querySelector("#login")
+       .firstElementChild.classList.remove("fade");
+     
+     setTimeout(() => {
+       document.querySelector("#login")
+         .classList.remove("to-login");
+     }, 200);
+  }
 };
 
 </script>
