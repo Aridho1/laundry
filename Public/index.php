@@ -253,7 +253,6 @@ if ( isset($_SESSION["isLogin"]) ) {
   display: flex;
   justify-content: center;
   align-items: center;
-  pointer-events: none;
   transition: all 0.5s;
   transform: scale(0);
 }
@@ -284,6 +283,7 @@ if ( isset($_SESSION["isLogin"]) ) {
 
 .dashboard .change-data .wrapper.slide {
   transform: translateY(0) scale(0.5);
+  z-index: 10;
 }
 
 .dashboard .change-data .wrapper .close-change-data {
@@ -913,35 +913,24 @@ let button_search_order_by_date = [
 
 let search_group_order = [];
 
-let load = {
-  data: {
-    home: false,
-    dashboard: false,
-    login: false,
-    logout: false
-  },
-  refresh: function(property_name) {
-    for (const p in this[property_name]) {
-      this[property_name][p] = true;
-    }
-    console.log(this);
-  }
-};
-
 /*** *** *** End Dashboard func *** *** ***/
 // Event fill var data
 // fillData("all");
 
-document.addEventListener("DOMContentLoaded", async () => {
-  
-  await fillData("all");
+document.addEventListener("DOMContentLoaded", async (el) => {
   console.log("end dom");
-  console.log(document.querySelector(".content"));
+  
+  // fill fata and wait
+  await fillData("all");
 
+  // set default menu
   const default_menu = "home";
 
   document.querySelector(".content")
-    .previousElementSibling.firstElementChild.innerHTML = default_menu.split("").map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter).join("");
+    .previousElementSibling.firstElementChild.innerHTML = 
+      default_menu.split("")
+        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter)
+          .join("");
 
   document.querySelector(".content")
     .innerHTML = data__.contents[default_menu];
@@ -967,46 +956,28 @@ document.addEventListener("DOMContentLoaded", async () => {
       checkbox.checked = false;
       nav_links.classList.remove("slide");
       
-      main_content.classList.remove("home");
-      main_content.classList.remove("dashboard");
-      main_content.classList.remove("laporan");
-      
-      
-      
       
       if ( e.target.innerText == "Logout") {
         
         const sure = confirm("Are You Sure To Logout?");
-        if ( sure ) window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false";
+        if ( sure ) window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false"
         else return false;
         //end event logout
       }
       
+      main_content.classList.remove("home");
+      main_content.classList.remove("dashboard");
+      main_content.classList.remove("laporan");
+      
       document.querySelector("main header h2")
         .innerText = e.target.innerText;
-
-
+      
       //event replace content
       main_content.classList
         .add(e.target.innerText.toLowerCase());
       main_content.innerHTML = 
         data__["contents"][e
           .target.innerText.toLowerCase()];
-      
-      //event mark replace content
-      data__.contents.a.log.previous = 
-        e.target.innerText.toLowerCase();
-      console.log("content");
-      console.log(
-          document.querySelector(
-              "main .content"
-          )
-      );
-      
-      
-      console.log(main_content);
-
-      //event logout
       
       //event dashboard
       if (
@@ -1092,7 +1063,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         };
         
         
-        
         createHargaPackage(input.order.package);
         createHargaPackage(input.edit_order.package);
         
@@ -1158,7 +1128,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           .toLowerCase().replace(/ /g, "-"); 
           // Mengganti semua spasi dengan tanda strip
         
-        
         if (e.target.innerText === listContent[i]) {
           document.querySelector(
             '.dashboard .' + switch_class[i] 
@@ -1191,13 +1160,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     // end event switch content
     }
     
-    //event button pagination
+    //event saat main content adalah dashboard
     if ( 
-      main_content.classList
-        .contains("dashboard") 
+      document.querySelector("main .content").classList
+      .contains("dashboard") 
     ) {
       
-      //event saat main content adalah dashboard
+      //**event button pagination
+      //event pagination disable or active
       if ( 
         e.target.tagName === "A" && 
         (e.target.classList.contains("disable") || 
@@ -1219,7 +1189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         page_active = to_page;
         
         //binding error kondisi.
-        //hanya di binding saat request dari button.
+        //hanya di cek saat request dari button.
         if (page_active == 0) {
           page_active = 1;
           console.error("filter page 0");
@@ -1229,9 +1199,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         //event pembuatan tabel berdasarkan topage
         } else if ( 
-          e.target.parentElement
-            .parentElement.classList
-            .contains("pages-search-costumer") 
+          // e.target.parentElement
+          //   .parentElement.classList
+          //   .contains("pages-search-costumer") 
+          e.target.closest(".pages-search-costumer") 
         ) {
           data__.pages.costumer.active = to_page;
           create_table_and_pagination(
@@ -1240,10 +1211,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             page_active
           );
         } else if ( 
-          e.target.parentElement
-            .parentElement.classList
-            .contains("pages-search-order") 
-        ) {
+          // e.target.parentElement
+          //   .parentElement.classList
+          //   .contains("pages-search-order") 
+          e.target.closest(".pages-search-order") 
+          ) {
           data__.pages.order.active = to_page;
           create_table_and_pagination(
             2,
@@ -1276,26 +1248,262 @@ document.addEventListener("DOMContentLoaded", async () => {
       } 
       
       //event search order
-      else if ( 
-        e.target === document.querySelector(
-          ".searchorder .search-group button"
-        ) 
+      // else if ( 
+      //   e.target === document.querySelector(
+      //     ".searchorder .search-group button"
+      //   ) 
+      // ) {
+      
+      //   fillData(  
+      //     "order_search", 
+      //     ["nama", e.target.previousElementSibling.value]  
+      //   );
+      //   page_active = 1;
+      //   create_table_and_pagination(
+      //     2,
+      //     data__.order.search.result
+      //   );
+      
+      //end event search order
+      // }
+      log("mian click");
+      console.log(e.target)
+;      //event to-order
+      if ( 
+        e.target.classList.contains("to-order") 
       ) {
       
-        fillData(  
-          "order_search", 
-          ["nama", e.target.previousElementSibling.value]  
+        let data = data__.costumer.all.filter(d => d.id == e.target.dataset.costumer_id)[0];
+        document.querySelector('.dashboard .add-order')
+          .style.display = "flex";
+        document.querySelector('.dashboard .add-order')
+          .classList.add("content-active");
+            
+        document.querySelector('.dashboard .search-costumer')
+          .style.display = "none";
+        document.querySelector('.dashboard .search-costumer')
+          .classList.remove("content-active");
+        
+        //change display
+        document.querySelector(
+          `.dashboard .${switch_class[2]} form`
+        ).style.display = "block";
+        document.querySelector(
+          `.dashboard .${switch_class[2]} ` + 
+          `.form-no-permission`
+        ).style.display = "none";
+        
+        
+        
+        
+        
+        //isi input berdasarkan baris table pada button yang di klik
+        document.querySelector(
+          ".dashboard .add-order .nama"
+        ).value = data.nama;
+        document.querySelector(
+          ".dashboard .add-order .no_hp"
+        ).value = data.no_hp;
+      //end event button to-order
+      }
+      
+      
+      //event search-order 
+
+      if ( e.target === search_group_order[1] ) {
+        if ( !search_group_order[1].checked ) {
+          button_search_order_by_date[1].parentElement.style.display = "none";
+        } else {
+          button_search_order_by_date[1].parentElement.style.display = "flex";
+        }
+      }
+      
+      else if ( 
+        e.target === search_group_order[6]
+      ) {
+        
+        let dummy = "";
+        let keyword = [];
+        let result = [];
+        let date_list = [];
+        let key = "__Search:Status[";
+        
+        if ( 
+          !search_group_order[2].checked &&
+          !search_group_order[3].checked &&
+          !search_group_order[4].checked
+        ) {
+          search_group_order[2].checked = true;
+          search_group_order[3].checked = true;
+          search_group_order[4].checked = true;
+        }
+        
+        if ( search_group_order[2].checked ) {
+          keyword.push("Progress");
+          key += "Progress_";
+        }
+        
+        if ( search_group_order[3].checked ) {
+          keyword.push("Selesai");
+          key += "Selesai_";
+        }
+        
+        if ( search_group_order[4].checked ) {
+          keyword.push("DiAmbil");
+          key += "DiAmbil";
+        }
+        
+        key += "]";
+        
+        result = data__.order.all.filter(
+          r => keyword.includes(r.status)
         );
-        page_active = 1;
+        
+        if ( search_group_order[1].checked ) {
+          
+          
+          
+          date_list = getListDate(
+            button_search_order_by_date[1].value,
+            button_search_order_by_date[2].value,
+            "-",
+            "-"
+          );
+          
+          console.log(date_list);
+          console.log(Array.isArray(date_list));
+          
+          
+          key += "_Date[" + button_search_order_by_date [1] + "_" + button_search_order_by_date [2] + "]";
+          
+          
+          result = result.filter(
+            r => { 
+              date_list.includes(r.tanggal);
+              
+              if (
+                date_list.includes(r.tanggal)
+              ) {
+                console.log(date_list, "==", r.tanggal);
+                return r;
+              } else console.error(date_list, "!=", r.tanggal);
+              
+            }
+          );
+        }
+        
+        
+        if ( search_group_order[5].checked ) {
+          result = result.reverse();
+          key += "_reverse";
+        }
+        
+        key += "__";
+        
+        console.log(result);
+        
+        data__.order.search.keyword = key;
+        data__.order.search.result = result;
+        
+        data__.pages.order.active = 1;
+        
         create_table_and_pagination(
           2,
           data__.order.search.result
         );
+        
+        
+      } //end event search order
       
-      //end event search order
+      //event btn cancel edit order
+      if ( e.target == document.querySelector("#input-change-order-button-group button:nth-child(1)") ){
+        fillInputChangeData(id);
+      }
+      
+      //event btn close edit order
+      if ( 
+        e.target.classList
+          .contains("close-change-data") || 
+        e.target === document
+          .querySelector("#input-change-order-button-group button:nth-child(2)") ||
+        e.target === document
+          .querySelector("#input-change-order-button-group button:nth-child(3)")
+      ) {
+        log("close change data");
+        setTimeout(() => {
+          document.querySelector(".dashboard .change-data").classList.remove("slide");
+          document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
+          setTimeout(() => {
+            
+            document.querySelector(".dashboard .change-data").classList.remove("show");
+            
+          }, 800);
+        }, (e.target === document.querySelector("#input-change-order-button-group:nth-child(2)") || e.target === document.querySelector("#input-change-order-button-group:nth-child(2)")) ? 1000 : 0 );
+      } //end event close edit order
+      
+      //event submit edit order
+      if ( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ) {
+        
+        let data = [
+          input.edit_order.date.value,
+          input.edit_order.name.value,
+          input.edit_order.phone_num.value,
+          input.edit_order.package.value,
+          input.edit_order.price.value,
+          input.edit_order.weight.value,
+          input.edit_order.total.value
+        ];
+        
+        main({
+          url: `../App/index.php?url=Pemesanan/change_order/${id}/${data.join("/")}`,
+          type: "GET"
+        }, async (result) => {
+          
+          result = JSON.parse(result);
+          
+          if ( typeof result.status === "boolean" ) {
+            await fillData (  "order_all"  );
+            await fillData( "order_status" );
+            create_table_and_pagination(
+              2,
+              data__.order.all
+            );
+            
+          } else console.error(result);
+        });
+        
+      } //end event submit edit order
+      
+      //event delete order
+      else if ( e.target === document.querySelector("#input-change-order-button-group button:nth-child(3)") ) {
+        main({
+          url: `../App/index.php?url=Pemesanan/delete_order/${id}`,
+          type: "GET"
+        }, async (result) => {
+          
+          result = JSON.parse(result);
+          
+          if ( typeof result.status === "boolean" ) {
+            await fillData (  "order_all"  );
+            await fillData( "order_status" );
+            create_table_and_pagination(
+              2,
+              data__.order.all
+            );
+          } else console.error(result);
+        });
+      //end event delete order
       }
     // end event main content adalah dashboard
     }
+
+
+
+
+
+
+
+
     
   //end event delegation body
   });
@@ -1313,9 +1521,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   
   //delegation lv 2 => main => input
-  document.querySelector("main")
-    .addEventListener("input", 
-  function(e) {
+  document.body.addEventListener("input", (e) => {
     
     //change harga
     if ( e.target.tagName == "SELECT" ) {
@@ -1329,285 +1535,34 @@ document.addEventListener("DOMContentLoaded", async () => {
       
     //end change harga
     }
+
     //change berat for add order
-    else if ( 
-      e.target === input.order.weight 
-    ) {
-      console.log(input.order.weight);
-      // if (weight.value == "" || weight.value <= 0) weight.value = 0;
+    else if ( e.target === input.order.weight ) {
       calcTotal();
     //end change berat
     }
 
     //change berat for change data
-    else if ( 
-      e.target === input.edit_order.weight 
-    ) {
-      console.log(input.edit_order.weight);
-      // if (weight.value == "" || weight.value <= 0) weight.value = 0;
+    else if ( e.target === input.edit_order.weight ) {
       calcTotal("edit_order");
     //end change berat
     }
-  }); 
-  
-  // delegation lv 2 => main => click
-  document.querySelector("main")
-    .addEventListener("click", 
-  function(e) {
-    
-    
-    //event to-order
-    if ( 
-      e.target.classList.contains("to-order") 
-    ) {
-    
-      let data = data__.costumer.all.filter(d => d.id == e.target.dataset.costumer_id)[0];
-      document.querySelector('.dashboard .add-order')
-        .style.display = "flex";
-      document.querySelector('.dashboard .add-order')
-        .classList.add("content-active");
-          
-      document.querySelector('.dashboard .search-costumer')
-        .style.display = "none";
-      document.querySelector('.dashboard .search-costumer')
-        .classList.remove("content-active");
-      
-      //change display
-      document.querySelector(
-        `.dashboard .${switch_class[2]} form`
-      ).style.display = "block";
-      document.querySelector(
-        `.dashboard .${switch_class[2]} ` + 
-        `.form-no-permission`
-      ).style.display = "none";
-      
-      
-      
-      
-      
-      //isi input berdasarkan baris table pada button yang di klik
-      document.querySelector(
-        ".dashboard .add-order .nama"
-      ).value = data.nama;
-      document.querySelector(
-        ".dashboard .add-order .no_hp"
-      ).value = data.no_hp;
-    //end event button to-order
-    }
-    
-    
-    //event search-order 
 
-    if ( e.target === search_group_order[1] ) {
-      if ( !search_group_order[1].checked ) {
-        button_search_order_by_date[1].parentElement.style.display = "none";
-      } else {
-        button_search_order_by_date[1].parentElement.style.display = "flex";
-      }
-    }
-    
-    else if ( 
-      e.target === search_group_order[6]
-    ) {
-      
-      let dummy = "";
-      let keyword = [];
-      let result = [];
-      let date_list = [];
-      let key = "__Search:Status[";
-      
-      if ( 
-        !search_group_order[2].checked &&
-        !search_group_order[3].checked &&
-        !search_group_order[4].checked
-      ) {
-        search_group_order[2].checked = true;
-        search_group_order[3].checked = true;
-        search_group_order[4].checked = true;
-      }
-      
-      if ( search_group_order[2].checked ) {
-        keyword.push("Progress");
-        key += "Progress_";
-      }
-      
-      if ( search_group_order[3].checked ) {
-        keyword.push("Selesai");
-        key += "Selesai_";
-      }
-      
-      if ( search_group_order[4].checked ) {
-        keyword.push("DiAmbil");
-        key += "DiAmbil";
-      }
-      
-      key += "]";
-      
-      result = data__.order.all.filter(
-        r => keyword.includes(r.status)
-      );
-      
-      if ( search_group_order[1].checked ) {
-        
-        
-        
-        date_list = getListDate(
-          button_search_order_by_date[1].value,
-          button_search_order_by_date[2].value,
-          "-",
-          "-"
-        );
-        
-        console.log(date_list);
-        console.log(Array.isArray(date_list));
-        
-        
-        key += "_Date[" + button_search_order_by_date [1] + "_" + button_search_order_by_date [2] + "]";
-        
-        
-        result = result.filter(
-          r => { 
-            date_list.includes(r.tanggal);
-            
-            if (
-              date_list.includes(r.tanggal)
-            ) {
-              console.log(date_list, "==", r.tanggal);
-              return r;
-            } else console.error(date_list, "!=", r.tanggal);
-            
-          }
-        );
-      }
-      
-      
-      if ( search_group_order[5].checked ) {
-        result = result.reverse();
-        key += "_reverse";
-      }
-      
-      key += "__";
-      
-      console.log(result);
-      
-      data__.order.search.keyword = key;
-      data__.order.search.result = result;
-      
-      data__.pages.order.active = 1;
-      
-      create_table_and_pagination(
-        2,
-        data__.order.search.result
-      );
-      
-      
-    } //end event search order
-    
-    //event btn cancel edit order
-    if ( e.target == input.edit_order.btn_cancel ){
-      console.error("id::" + id);
-      fillInputChangeData(id);
-    }
-    
-    //event btn close edit order
-    if ( 
-      e.target.classList
-        .contains("close-change-data") || 
-      e.target === input.edit_order.btn ||
-      e.target === input.edit_order.btn_delete
-    ) {
-      setTimeout(() => {
-        document.querySelector(".dashboard .change-data").classList.remove("slide");
-        document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
-        setTimeout(() => {
-          
-          document.querySelector(".dashboard .change-data").classList.remove("show");
-          
-        }, 800);
-      }, (e.target === input.edit_order.btn || e.target === input.edit_order.btn_delete) ? 1000 : 0 );
-    } //end event close edit order
-    
-    //event submit edit order
-    if ( e.target === input.edit_order.btn ) {
-      
-      let data = [
-        input.edit_order.date.value,
-        input.edit_order.name.value,
-        input.edit_order.phone_num.value,
-        input.edit_order.package.value,
-        input.edit_order.price.value,
-        input.edit_order.weight.value,
-        input.edit_order.total.value
-      ];
-      
-      main({
-        url: `../App/index.php?url=Pemesanan/change_order/${id}/${data.join("/")}`,
-        type: "GET"
-      }, result => {
-        
-        result = JSON.parse(result);
-        
-        if ( typeof result.status === "boolean" ) {
-          fillData(  "order_all"  );
-          fillData(
-            "order_status",
-            [null, null],
-            "__request_wait__"
-          );
-          setTimeout(() => {
-            create_table_and_pagination(
-              2,
-              data__.order.all
-            );
-          }, 6000);
-          
-        } else console.error(result);
-      });
-      
-    } //end event submit edit order
-    
-    //event delete order
-    else if ( e.target === input.edit_order.btn_delete ) {
-      main({
-        url: `../App/index.php?url=Pemesanan/delete_order/${id}`,
-        type: "GET"
-      }, result => {
-        
-        result = JSON.parse(result);
-        
-        if ( typeof result.status === "boolean" ) {
-          fillData(  "order_all"  );
-          fillData(
-            "order_status",
-            [null, null],
-            "__request_wait__"
-          );
-          setTimeout(() => {
-            create_table_and_pagination(
-              2,
-              data__.order.all
-            );
-          }, 6000);
-        } else console.error(result);
-      });
-    } //end event delete order
-    
-  }); //end delegation click
+  }); //end legetaion input body
   
-  
-  
+
   //event delegation lv 2 => main => dbclick
   
-  document.querySelector("main")
-    .addEventListener("dblclick", 
-  function (e) {
+  document.body.addEventListener("dblclick", (e) => {
     
     //evenet pada class status progress
     if ( 
       e.target.classList
-        .contains("td-status") && (
-      e.target.innerText === "Progress" ||
-      e.target.innerText === "Selesai" )
+        .contains("td-status") && 
+      (
+        e.target.innerText === "Progress" ||
+        e.target.innerText === "Selesai"
+      )
     ) {
       
       let change_to = 
@@ -1626,57 +1581,51 @@ document.addEventListener("DOMContentLoaded", async () => {
               e.target.dataset.change_status_by_id
             }/${change_to}`,
           type: "GET",
-          }, function(result) {
+          }, async (result) => {
             
             result = JSON.parse(result);
             
             if ( result.status == true ) {
               
-              fillData(  "order_all"  );
-              fillData(
-                "order_status",
-                [null, null],
-                "__request_wait__"
+              await fillData(  "order_all"  );
+              await fillData( "order_status" );
+              
+              create_table_and_pagination(
+                2,
+                data__.order.all
               );
               
-              setTimeout(() => {
-                create_table_and_pagination(
-                  2,
-                  data__.order.all
-                );
-              }, 6000);
-              
             } else console.log(result);
-        });
+        }); // end fetch main
       //end event confirm
-      }
+      } else return false;
     //end event class status progress
     }
     
-  //event change data by id
-  if ( e.target.classList.contains("td-change-data-by-id") ) {
-    id = e.target.dataset.change_data_by_id;
-    
-    //event show change data
-    document.querySelector(".dashboard .change-data").classList.add("show");
-    
-    document.querySelector(".dashboard .change-data").firstElementChild.classList.add("slide");
-    
-    setTimeout(() => {
-      document.querySelector(".dashboard .change-data").classList.add("slide");
-    }, 800);
-    
-    document.body.style.overflow = "hidden";
-    
-    fillInputChangeData(id);
-    
-  } //end event change data by id
+    //event change data by id
+    if ( e.target.classList.contains("td-change-data-by-id") ) {
+      id = e.target.dataset.change_data_by_id;
+      
+      //event show change data
+      document.querySelector(".dashboard .change-data").classList.add("show");
+      
+      document.querySelector(".dashboard .change-data").firstElementChild.classList.add("slide");
+      
+      setTimeout(() => {
+        document.querySelector(".dashboard .change-data").classList.add("slide");
+      }, 800);
+      
+      document.body.style.overflow = "hidden";
+      
+      fillInputChangeData(id);
+      
+    } //end event change data by id
 
   });
   //end delegation lv 2
   
   
-  
+  //configure menu login
   document.body.innerHTML += `<div id="login">${data__.contents.login}</div>`;
 
   btn_login = document.querySelector(
@@ -1722,10 +1671,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   //event check login
   setTimeout(() => {
-    
     if (!is_login) contentToLogin();
-    
-  }, 1500);
+  }, 1);
   
 }); //end function LoadDOM
 
