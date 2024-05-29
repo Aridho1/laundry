@@ -43,26 +43,19 @@ class Pengguna {
   
   
   
-  public function setSessionLogin($getSession) {
+  public function setSessionLogin($getSession, $user_level = "0") {
 
-    // $_SESSION["isLogin"] = $getSession == false ? false : true;
-    echo $getSession;
-    if ( $getSession == "true" ) {
-      $_SESSION["isLogin"] = true;
-      echo "trueeeee";
-    } else if ( $getSession == "false" ) {
-      $_SESSION["isLogin"] = false;
-      echo "falseeeee";
+    // $_SESSION["user-level"] = $getSession == "true" ? $user_level : "0";
+    // if ( $getSession == "true" ) $_SESSION["is-login"] = true;
+    // else if ( $getSession == "false" ) $_SESSION["is-login"] = false;
 
-    }
-    var_dump($_SESSION["isLogin"]);
+
+    $_SESSION["laundry-rido"]["user-level"] = $getSession == "true" ? $user_level : 0;
+    if ( $getSession == "true" ) $_SESSION["laundry-rido"]["is-login"] = true;
+    else if ( $getSession == "false" ) $_SESSION["laundry-rido"]["is-login"] = false;
+
     echo "<script>
       window.location.href = '../Public/index.php';
     </script>";
-    
-    // $result = ["status" => true, "result" => "Success"];
-    
-    // echo json_encode($result);
-    // var_dump($_SESSION["isLogin"]);
   }
 }

@@ -59,7 +59,7 @@ class Pemesanan {
   }
   
   
-  public function change_order($id, $tanggal, $nama, $no_hp, $paket, $harga, $berat, $total_harga) {
+  public function edit_order($id, $tanggal, $nama, $no_hp, $paket, $harga, $berat, $total_harga) {
     
     $query = "UPDATE {$this->table} SET status = :status WHERE id = :id";
     

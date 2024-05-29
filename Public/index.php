@@ -1,23 +1,67 @@
+<p>
 <?php
 if (!session_id()) session_start();
-//$_SESSION["isLogin"] = false;
 var_dump($_SESSION);
 ?>
-
 <script>
-  let is_login = false;
+  const user__ = {
+    // is_login: false,
+    // level: 0
+  };
 </script>
 
 <?php
 
-if ( isset($_SESSION["isLogin"]) ) {
-  if ( $_SESSION["isLogin"] == true ) {
-    echo "<script>is_login = true;</script>";
+if ( isset($_SESSION["laundry-rido"]["is-login"]) && isset($_SESSION["laundry-rido"]["user-level"]) ) {
+  if ( $_SESSION["laundry-rido"]["is-login"] == true ) {
+    
+    $is_login = $_SESSION["laundry-rido"]["is-login"];
+    $user_level = $_SESSION["laundry-rido"]["user-level"];
+    
+    echo "<script>
+    user__.is_login = Boolean('$is_login');
+    user__.level = parseInt('$user_level');
+    </script>";
   } 
 }
-//$_SESSION["isLogin"] = true;
-//unset($_SESSION["isLogin"]);
+//$_SESSION["is-login"] = true;
+//unset($_SESSION["is-login"]);
 ?>
+
+<script>
+  console.log(user__);
+  user__.is_login = !user__.is_login ? false : user__.is_login;
+  user__.level = user__.level || false;
+  console.log(user__);
+
+  //** Binding empty | undefined variable
+
+  // deklar var undefined
+  let is_login, user_level, username, password;
+
+  // opt 1    if else statement
+  if ( !is_login ) {
+    is_login = true;
+  } else {
+    is_login = is_login;
+  }
+
+// opt 2    too
+if ( !user_level ) user_level = 1;
+else user_level = user_level;
+
+// opt 3    ternary operator
+username = !user_level ? "Dodi" : user_level;
+
+// opt 4    or operator
+password = password || "rahasia";
+
+[ is_login, user_level, username, password ] = [ undefined, undefined, undefined, undefined ];
+
+</script>
+
+<?php  ?>
+</p>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -512,7 +556,7 @@ const main = async (params = {
   type: "GET"
 }, callback = null) => {
   try {
-    
+    console.error(params.url);
     let result = await fetchData(params.url, params.type);
 
     
@@ -1443,55 +1487,14 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       
       //event submit edit order
       if ( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ) {
-        
-        let data = [
-          input.edit_order.date.value,
-          input.edit_order.name.value,
-          input.edit_order.phone_num.value,
-          input.edit_order.package.value,
-          input.edit_order.price.value,
-          input.edit_order.weight.value,
-          input.edit_order.total.value
-        ];
-        
-        main({
-          url: `../App/index.php?url=Pemesanan/change_order/${id}/${data.join("/")}`,
-          type: "GET"
-        }, async (result) => {
-          
-          result = JSON.parse(result);
-          
-          if ( typeof result.status === "boolean" ) {
-            await fillData (  "order_all"  );
-            await fillData( "order_status" );
-            create_table_and_pagination(
-              2,
-              data__.order.all
-            );
-            
-          } else console.error(result);
-        });
+        console.error("id nya :", id);
+        setDataOrder( "edit_order", id );
         
       } //end event submit edit order
       
       //event delete order
       else if ( e.target === document.querySelector("#input-change-order-button-group button:nth-child(3)") ) {
-        main({
-          url: `../App/index.php?url=Pemesanan/delete_order/${id}`,
-          type: "GET"
-        }, async (result) => {
-          
-          result = JSON.parse(result);
-          
-          if ( typeof result.status === "boolean" ) {
-            await fillData (  "order_all"  );
-            await fillData( "order_status" );
-            create_table_and_pagination(
-              2,
-              data__.order.all
-            );
-          } else console.error(result);
-        });
+        setDataOrder( "delete_order", id );
       //end event delete order
       }
     // end event main content adalah dashboard
@@ -1650,13 +1653,13 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         
         if (typeof result.status==="boolean") {
           const user = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
-          
+          console.log(user);
           if (user.length > 0) {
             
             contentToLogin(false);
 
             setTimeout(() => {
-              window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/true";
+              window.location.href = `../App/index.php?url=Pengguna/setSessionLogin/true/${user[0].user_level}`;
             }, 500);
             
           } else console.error("User Tidak Ditemukan");
@@ -1671,8 +1674,8 @@ document.addEventListener("DOMContentLoaded", async (el) => {
 
   //event check login
   setTimeout(() => {
-    if (!is_login) contentToLogin();
-  }, 1);
+    if (!user__.is_login) contentToLogin();
+  }, 100);
   
 }); //end function LoadDOM
 
@@ -1822,6 +1825,41 @@ const contentToLogin = (show = true) => {
 
 };
 
+
+const setDataOrder = ( type, id ) => {
+  type = type.toLowerCase();
+
+  if ( type == "edit_order" || type == "delete_order" ) {
+
+    let data = [
+      input.edit_order.date.value,
+      input.edit_order.name.value,
+      input.edit_order.phone_num.value,
+      input.edit_order.package.value,
+      input.edit_order.price.value,
+      input.edit_order.weight.value,
+      input.edit_order.total.value
+    ];
+    console.log(data);
+    main({
+      url: `../App/index.php?url=Pemesanan/${type}/${id}/${type == "edit_order" ? data.join("/") : ""}`,
+      type: "GET"
+    }, async (result) => {
+      result = JSON.parse(result);
+      
+      if ( typeof result.status === "boolean" ) {
+        await fillData (  "order_all"  );
+        await fillData( "order_status" );
+        create_table_and_pagination(
+          2,
+          data__.order.all
+        );
+        
+      } else console.error(result);
+    });
+  } // end edit || delete order
+
+};
 
 </script>
 </body>

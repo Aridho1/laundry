@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 28, 2024 at 11:04 AM
+-- Generation Time: May 29, 2024 at 11:41 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -83,17 +83,17 @@ CREATE TABLE `pemesanan` (
 --
 
 INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `paket`, `harga`, `berat`, `total_harga`, `status`) VALUES
-(1, '00AOqJab01', '16/05/2024', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'DiAmbil'),
+(1, '00AOqJab01', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '10', '30000', 'DiAmbil'),
 (2, 'JJShUE0002', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '4', '28000', 'Selesai'),
 (3, 'dFXNlz0002', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '3', '21000', 'DiAmbil'),
 (5, 'PRIAQj0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
 (6, 'fYuUeH0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'DiAmbil'),
 (7, 'PcNHUx0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
 (8, 'jRTroB0003', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'Progress'),
-(9, 'ONWiLB0004', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'Selesai'),
+(9, 'ONWiLB0004', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'DiAmbil'),
 (10, 'EiJLRj0005', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'DiAmbil'),
-(11, 'uyIiCB0006', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Selesai'),
-(12, 'vcSxFL0007', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
+(11, 'uyIiCB0006', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'DiAmbil'),
+(12, 'vcSxFL0007', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'DiAmbil'),
 (13, 'ohUvRX0008', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
 (14, 'sqdYxf0009', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'Progress'),
 (15, 'NWqzDM0009', '2024-05-16', 'Ahmad', '6200000000005', 'Biasa', '3000', '6', '18000', 'Progress'),
@@ -129,8 +129,7 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (45, 'YbuZir0045', '2024-05-16', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
 (46, 'eIUKkD0046', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'DiAmbil'),
 (49, 'AJLlQm0049', '2024-05-21', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
-(51, 'iiyGiH0051', '2024-05-24', 'Udin', '6200000000019', 'Kilat', '7000', '9', '63000', 'Progress'),
-(52, 'aysdVc0052', '2024-05-24', 'Yasir', '6200000000002', 'Biasa', '3000', '5', '15000', 'Progress');
+(51, 'iiyGiH0051', '2024-05-24', 'Udin', '6200000000019', 'Cepat', '5000', '9', '45000', 'Progress');
 
 -- --------------------------------------------------------
 
@@ -168,7 +167,7 @@ CREATE TABLE `total_pemesanan` (
 --
 
 INSERT INTO `total_pemesanan` (`id`, `angka`) VALUES
-(1, 52);
+(1, 53);
 
 --
 -- Indexes for dumped tables
@@ -212,7 +211,7 @@ ALTER TABLE `pelanggan`
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `total_pemesanan`
