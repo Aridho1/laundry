@@ -486,6 +486,7 @@ password = password || "rahasia";
   <div class="content">
     <p>HELLO WORLR!</p>
   </div>
+  <input type="text">
   <footer>Copyright 2024</footer>
 </main>
   
@@ -494,6 +495,14 @@ password = password || "rahasia";
 <script src="Support/resize.js"></script>
 
 <script>
+
+const log = (...any) => console.log(any.join(' '));  
+// document.body
+// .addEventListener("keyup", (e) => {
+//   log("key up");
+// })
+// .addEventListener("click", () => console.log("click body"));
+
 
 let data__ = {};
 data__ = {
@@ -682,7 +691,7 @@ const fillData = async (
 // Event fill var data
 
 
-const log = (...any) => console.log(any.join(' '));
+// const log = (...any) => console.log(any.join(' '));
 const l = (...any) => log(any.join(' '));
 
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
@@ -978,9 +987,10 @@ let button_search_order_by_date = [
 
 let search_group_order = [];
 
-/*** *** *** End Dashboard func *** *** ***/
-// Event fill var data
-// fillData("all");
+
+
+
+
 
 document.addEventListener("DOMContentLoaded", async (el) => {
   console.log("end dom");
@@ -1045,141 +1055,12 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           .target.innerText.toLowerCase()];
       
       //event dashboard
-      if (
-        e.target.innerText === "Dashboard"
-      ) {
-        // event deklarasi var input
-        input.costumer = {
-          name: document.querySelector(
-            "#input-add-costumer-name"
-          ),
-          phone_num:  document.querySelector(
-            "#input-add-costumer-phone-num"
-          ),
-          btn_cancel: document.querySelector(
-            "#input-add-costumer-button-group"
-          ).firstElementChild,
-          btn: document.querySelector(
-            "#input-add-costumer-button-group"
-          ).firstElementChild.nextElementSibling
-        };
+      if ( e.target.innerText === "Dashboard" ) {
         
-        input.order = {
-          date: document.querySelector(
-            "#input-add-order-date"
-          ),
-          name: document.querySelector(
-            "#input-add-order-name"
-          ),
-          phone_num:  document.querySelector(
-            "#input-add-order-phone-num"
-          ),
-          package:  document.querySelector(
-            "#input-add-order-package"
-          ),
-          price:  document.querySelector(
-            "#input-add-order-price"
-          ),
-          weight:  document.querySelector(
-            "#input-add-order-weight"
-          ),
-          total:  document.querySelector(
-            "#input-add-order-total"
-          ),
-          btn_cancel: document.querySelector(
-            "#input-add-order-button-group"
-          ).firstElementChild,
-          btn: document.querySelector(
-            "#input-add-order-button-group"
-          ).firstElementChild.nextElementSibling
-        };
+        loadConfigForDashboardMenu();
         
-        input.edit_order = {
-          date: document.querySelector(
-            "#input-change-order-date"
-          ),
-          name: document.querySelector(
-            "#input-change-order-name"
-          ),
-          phone_num:  document.querySelector(
-            "#input-change-order-phone-num"
-          ),
-          package:  document.querySelector(
-            "#input-change-order-package"
-          ),
-          price:  document.querySelector(
-            "#input-change-order-price"
-          ),
-          weight:  document.querySelector(
-            "#input-change-order-weight"
-          ),
-          total:  document.querySelector(
-            "#input-change-order-total"
-          ),
-          btn_cancel: document.querySelector(
-            "#input-change-order-button-group"
-          ).firstElementChild,
-          btn: document.querySelector(
-            "#input-change-order-button-group"
-          ).firstElementChild.nextElementSibling,
-          btn_delete: document.querySelector(
-            "#input-change-order-button-group"
-          ).lastElementChild
-        };
-        
-        
-        createHargaPackage(input.order.package);
-        createHargaPackage(input.edit_order.package);
-        
-        input.order.date.value = today;
-        
-        search_group_order.push(
-          document.querySelector(
-            ".search-order .search-group"
-          )
-        );
-        
-        document.querySelectorAll(
-          ".search-order .search-group .search-group-order"
-        ).forEach((s) => {
-          search_group_order
-            .push(s.firstElementChild);
-        });
-        
-        
-        button_search_order_by_date[1] = 
-          document.querySelector(
-            "#search-order-by-date-1"
-          );
-        button_search_order_by_date[2] = 
-          document.querySelector(
-            "#search-order-by-date-2"
-          );
-        
-        button_search_order_by_date[1].value = today;
-        button_search_order_by_date[2].value = today;
-        
-        button_search_order_by_date[1].parentElement.display = "none";
-
-        create_table_and_pagination(1, data__.costumer.all);
-        create_table_and_pagination(2, data__.order.all);
-
-        // event disable form
-        document.querySelector(
-          ".dashboard .add-order form"
-        ).addEventListener("submit", (event) => {
-          event.preventDefault();
-        });
-
-        document.querySelector(
-          ".dashboard .add-costumer form"
-        ).addEventListener("submit", (event) => {
-          event.preventDefault();
-        });
-        
-      //end event dashboard
+      // end event dashboard
       } 
-      
       
     //end event request contents
     }
@@ -1320,28 +1201,8 @@ document.addEventListener("DOMContentLoaded", async (el) => {
     
       //end event search costumer
       } 
-      
-      //event search order
-      // else if ( 
-      //   e.target === document.querySelector(
-      //     ".searchorder .search-group button"
-      //   ) 
-      // ) {
-      
-      //   fillData(  
-      //     "order_search", 
-      //     ["nama", e.target.previousElementSibling.value]  
-      //   );
-      //   page_active = 1;
-      //   create_table_and_pagination(
-      //     2,
-      //     data__.order.search.result
-      //   );
-      
-      //end event search order
-      // }
-      log("mian click");     
-      
+
+      log("main click");
       
       //event add costumer
       if ( e.target == document.querySelector("#input-add-costumer-submit") ) {
@@ -1398,7 +1259,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           input.order.total.value,
         ];
         
-        console.log(data);
         let rand_str = getRandStr(6);
         let countOfOrder = 0;
         await main({
@@ -1409,7 +1269,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
 
           if ( result.id ) {
             countOfOrder = result.angka; 
-            // console.log(result.angka);
           } else {
               console.error(resultStr);
               return false;
@@ -1469,10 +1328,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           `.form-no-permission`
         ).style.display = "none";
         
-        
-        
-        
-        
         //isi input berdasarkan baris table pada button yang di klik
         document.querySelector(
           ".dashboard .add-order .nama"
@@ -1483,9 +1338,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       //end event button to-order
       }
       
-      
       //event search-order 
-
       if ( e.target === search_group_order[1] ) {
         if ( !search_group_order[1].checked ) {
           button_search_order_by_date[1].parentElement.style.display = "none";
@@ -1668,9 +1521,14 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       fillInputChangeData(id);
       
     } //end event change data by id
+    
+  }); //end delegation lv 2 dbclick
 
-  });
-  //end delegation lv 2
+  
+  document.body.addEventListener("submit", (e) => {
+    e.preventDefault();
+  }); // event delegation submit
+
   
   
   //configure menu login
@@ -2003,6 +1861,131 @@ const setSearch = type => {
     // end event search order
   } 
 };
+
+
+
+const loadConfigForDashboardMenu = () => {
+
+  log("LOAD DASHBOARD CONFIG...");
+  
+  // event deklarasi var input
+  input.costumer = {
+    name: document.querySelector(
+      "#input-add-costumer-name"
+    ),
+    phone_num:  document.querySelector(
+      "#input-add-costumer-phone-num"
+    ),
+    btn_cancel: document.querySelector(
+      "#input-add-costumer-button-group"
+    ).firstElementChild,
+    btn: document.querySelector(
+      "#input-add-costumer-button-group"
+    ).firstElementChild.nextElementSibling
+  };
+  
+  input.order = {
+    date: document.querySelector(
+      "#input-add-order-date"
+    ),
+    name: document.querySelector(
+      "#input-add-order-name"
+    ),
+    phone_num:  document.querySelector(
+      "#input-add-order-phone-num"
+    ),
+    package:  document.querySelector(
+      "#input-add-order-package"
+    ),
+    price:  document.querySelector(
+      "#input-add-order-price"
+    ),
+    weight:  document.querySelector(
+      "#input-add-order-weight"
+    ),
+    total:  document.querySelector(
+      "#input-add-order-total"
+    ),
+    btn_cancel: document.querySelector(
+      "#input-add-order-button-group"
+    ).firstElementChild,
+    btn: document.querySelector(
+      "#input-add-order-button-group"
+    ).firstElementChild.nextElementSibling
+  };
+  
+  input.edit_order = {
+    date: document.querySelector(
+      "#input-change-order-date"
+    ),
+    name: document.querySelector(
+      "#input-change-order-name"
+    ),
+    phone_num:  document.querySelector(
+      "#input-change-order-phone-num"
+    ),
+    package:  document.querySelector(
+      "#input-change-order-package"
+    ),
+    price:  document.querySelector(
+      "#input-change-order-price"
+    ),
+    weight:  document.querySelector(
+      "#input-change-order-weight"
+    ),
+    total:  document.querySelector(
+      "#input-change-order-total"
+    ),
+    btn_cancel: document.querySelector(
+      "#input-change-order-button-group"
+    ).firstElementChild,
+    btn: document.querySelector(
+      "#input-change-order-button-group"
+    ).firstElementChild.nextElementSibling,
+    btn_delete: document.querySelector(
+      "#input-change-order-button-group"
+    ).lastElementChild
+  };
+  
+  
+  createHargaPackage(input.order.package);
+  createHargaPackage(input.edit_order.package);
+  
+  input.order.date.value = today;
+  search_group_order = [];
+  search_group_order.push(
+    document.querySelector(
+      ".search-order .search-group"
+    )
+  );
+  
+  document.querySelectorAll(
+    ".search-order .search-group .search-group-order"
+  ).forEach((s) => {
+    search_group_order
+      .push(s.firstElementChild);
+  });
+  
+  
+  button_search_order_by_date[1] = 
+    document.querySelector(
+      "#search-order-by-date-1"
+    );
+  button_search_order_by_date[2] = 
+    document.querySelector(
+      "#search-order-by-date-2"
+    );
+  
+  button_search_order_by_date[1].value = today;
+  button_search_order_by_date[2].value = today;
+  
+  button_search_order_by_date[1].parentElement.display = "none";
+
+  create_table_and_pagination(1, data__.costumer.all);
+  create_table_and_pagination(2, data__.order.all);
+        
+};
+
 
 </script>
 </body>
