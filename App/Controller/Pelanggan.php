@@ -8,6 +8,31 @@ class Pelanggan {
     $this->db = new Database;
   }
   
+  public function addCostumer( $nama, $no_hp ) {
+    $this->db->query("INSERT INTO {$this->table} (
+                          nama, 
+                          no_hp
+                          )
+                      VALUES (
+                          :nama, 
+                          :no_hp)"
+    );
+    $this->db->bind('nama', $nama);
+    $this->db->bind('no_hp', $no_hp);
+    
+    $this->db->execute();
+    
+    $result = $this->db->rowCount();
+    $massage = "To Add Data Costumer!";
+
+    if ( $result < 0 ) {
+      $result = ["status" => false, "result" => "Failed " . $massage];
+    } else {
+      $result = ["status" => true, "result" => "Succes " . $massage];
+    }
+
+    echo json_encode($result);
+  }
   
   public function liveSearch($keyword = null) {
     if ($keyword == null || $keyword == "") {

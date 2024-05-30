@@ -18,7 +18,7 @@ function generatRandomStr($length) {
 
 $randStr = generatRandomStr(26);
 
-$_SESSION["rand-str"] = $randStr;
-$_SESSION["base-url"] = "http://localhost:8080/Acoding/WebLeague/Project/Laundry/";
+$_SESSION["laundry-rido"]["rand-str"] = $randStr;
+$_SESSION["laundry-rido"]["base-url"] = "http://localhost:8080/Acoding/WebLeague/Project/Laundry/";
 
 header("location: ". $_SESSION["base-url"] ."Public/index.php");

@@ -7,8 +7,107 @@ class Pemesanan {
   public function __construct() {
     $this->db = new Database;
   }
+
+  public function addOrder(
+    $kode_pemesanan, 
+    $tanggal,
+    $nama, 
+    $no_hp, 
+    $paket, 
+    $harga, 
+    $berat, 
+    $total_harga,
+    $status
+  ) {
+    $this->db->query("INSERT INTO {$this->table} (
+                          kode_pemesanan, 
+                          tanggal,
+                          nama, 
+                          no_hp, 
+                          paket, 
+                          harga, 
+                          berat, 
+                          total_harga,
+                          status
+                          )
+                      VALUES (
+                          :kode_pemesanan, 
+                          :tanggal,
+                          :nama, 
+                          :no_hp, 
+                          :paket, 
+                          :harga, 
+                          :berat, 
+                          :total_harga,
+                          :status)"
+    );
+
+    $this->db->bind('kode_pemesanan', $kode_pemesanan);
+    $this->db->bind('tanggal', $tanggal);
+    $this->db->bind('nama', $nama);
+    $this->db->bind('no_hp', $no_hp);
+    $this->db->bind('paket', $paket);
+    $this->db->bind('harga', $harga);
+    $this->db->bind('berat', $berat);
+    $this->db->bind('total_harga', $total_harga);
+    $this->db->bind('status', $status);
+    
+    $this->db->execute();
+    
+    $result = $this->db->rowCount();
+    $massage = "To Add Data Order!";
+
+    if ( $result < 0 ) {
+      $result = ["status" => false, "result" => "Failed " . $massage];
+    } else {
+      $result = ["status" => true, "result" => "Succes " . $massage];
+      $this->addCountOrder();
+    }
+
+    echo json_encode($result);
+  }
+
+
+
+  public function getCountOrder($to = "js") {
+    // $total_pelanggan_db = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM total_pemesanan LIMIT 1;"))["angka"];
+    // $countOfOrder = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM total_pemesanan LIMIT 1;"))["angka"];
+    $query = "SELECT * FROM total_pemesanan LIMIT 1";
+
+    $this->db->query($query);
+    $this->db->execute();
+
+    $result = $this->db->single();
+    if ($to == "js") echo json_encode($result);
+    else if ( $to == "php" ) return $result;
+  }
+
+
+
+
+  public function addCountOrder() {
+    $countOfOrder = $this->getCountOrder("php")["angka"] + 1;
+    $id = 1;
+
+    $this->db->query("UPDATE total_pemesanan SET
+                        angka = :countOfOrder
+                      WHERE id = :id
+                      ");
+    $this->db->bind("countOfOrder", $countOfOrder);
+    $this->db->bind("id", $id);
+    $this->db->execute();
+
+    // echo $countOfOrder;
+  }
   
   
+
+
+
+
+
+
+
   public function liveSearch($keyword = null) {
     if ($keyword == null || $keyword == "") {
       $this->getAllData();
