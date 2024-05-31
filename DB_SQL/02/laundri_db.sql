@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2024 at 11:41 AM
+-- Generation Time: May 31, 2024 at 08:38 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -57,7 +57,9 @@ INSERT INTO `pelanggan` (`id`, `nama`, `no_hp`) VALUES
 (17, 'Cantika', '6200000000017'),
 (18, 'Herman', '6200000000018'),
 (19, 'Udin', '6200000000019'),
-(20, 'Mia', '6283800000020');
+(20, 'Mia', '6283800000020'),
+(21, 'Kokom', '628380000021'),
+(22, 'Budi', '6283800000022');
 
 -- --------------------------------------------------------
 
@@ -129,7 +131,14 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (45, 'YbuZir0045', '2024-05-16', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
 (46, 'eIUKkD0046', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '2', '6000', 'DiAmbil'),
 (49, 'AJLlQm0049', '2024-05-21', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
-(51, 'iiyGiH0051', '2024-05-24', 'Udin', '6200000000019', 'Cepat', '5000', '9', '45000', 'Progress');
+(51, 'iiyGiH0051', '2024-05-24', 'Udin', '6200000000019', 'Cepat', '5000', '9', '45000', 'Progress'),
+(54, 'iSiymn0054', '2024-05-30', 'Budi', '6200000000001', 'Biasa', '3000', '6', '18000', 'Progress'),
+(55, 'cbnInq0055', '2024-05-30', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'Progress'),
+(56, 'hheRKS0056', '2024-05-30', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'Progress'),
+(65, '2024-05-kTPzmo-57', '2024-05-30', 'Kokom', '628380000021', 'Biasa', '3000', '1', '3000', 'Progress'),
+(66, '2024-05-BzcIlw-58', '2024-05-30', 'Kokom', '628380000021', 'Biasa', '3000', '10', '30000', 'Progress'),
+(68, '2024-05-RDFiUM-60', '2024-05-30', 'Kokom', '628380000021', 'Biasa', '3000', '3', '9000', 'Progress'),
+(69, '2024-05-tzkhoR-61', '2024-05-30', 'Cantika', '6200000000017', 'Biasa', '3000', '1', '3000', 'Progress');
 
 -- --------------------------------------------------------
 
@@ -167,7 +176,7 @@ CREATE TABLE `total_pemesanan` (
 --
 
 INSERT INTO `total_pemesanan` (`id`, `angka`) VALUES
-(1, 53);
+(1, 62);
 
 --
 -- Indexes for dumped tables
@@ -205,13 +214,13 @@ ALTER TABLE `total_pemesanan`
 -- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `total_pemesanan`
