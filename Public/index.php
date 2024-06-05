@@ -638,22 +638,6 @@ const fillData = async (
     } else console.error(`data__ -> ${data__type} -> all bukan sebuah array`);
   }
   
-  // else if (type == "order_status") {
-  //   time = (add_param == "__request_wait__") ? 5000 : 0;
-    
-  //   setTimeout(() => {
-  //     if (data__.order.all.length > 1) {
-  //       data__.order.status.progress = data__.order.all
-  //         .filter(arr => arr.status === "Progress");
-  //       data__.order.status.complete = data__.order.all
-  //         .filter(arr => arr.status === "Selesai");
-  //       data__.order.status.takeout = data__.order.all
-  //         .filter(arr => arr.status === "DiAmbil");
-  //     // jika bukan array
-  //     } else console.error(`data__ -> order -> all bukan sebuah array`);
-  //   }, time);
-  // }
-  
   
   
   else if (type == "contents") {
@@ -765,6 +749,7 @@ function create_table_and_pagination(
       .querySelector(".costumer-no-result");
     page_active = data__.pages.costumer.active;
   } else if (type === 2) {
+    setSearch("order");
     data = data__.order.search.result;
     pages = document
       .querySelector(".pages-search-order");
@@ -916,8 +901,14 @@ function create_table_and_pagination(
         
       }
       
+      console.error(i, "!==", data.length);
       
-      row = `<tr><td>${i + 1}</td>${row}</tr>`;
+      row = `<tr ${
+        // event last data
+        (i == data.length - 1) 
+        ? "data-isLastData='true'"
+        : ""
+      }><td>${i + 1}</td>${row}</tr>`;
       result += row;
     }
     if (page_active < 1 || page_active > page_total || data.length === 0) {
@@ -1212,8 +1203,8 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         ];
         
         const duplicate = data__.costumer.all
-        .filter(cstmr => cstmr.nama.toLowerCase() == input.costumer.name.value.toLowerCase())
-        .filter(cstmr => cstmr.no_hp.toLowerCase() == input.costumer.phone_num.value.toLowerCase());
+          .filter(cstmr => cstmr.nama.toLowerCase() == input.costumer.name.value.toLowerCase())
+          .filter(cstmr => cstmr.no_hp.toLowerCase() == input.costumer.phone_num.value.toLowerCase());
         
         input.costumer.name.value = "";
         input.costumer.phone_num.value = "";
@@ -1237,7 +1228,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           } else console.error(resultStr); 
 
         });
-
+      // end event add costumer
       }
 
 
@@ -1300,7 +1291,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           } else console.error(resultStr); 
 
         });
-
+      // end event add order
       }
 
       //event to-order
@@ -1348,6 +1339,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       }
       
       else if ( e.target === search_group_order[6] ) {
+        data__.pages.order.active = 1;
         setSearch("order");
         create_table_and_pagination( 2 );
       }
@@ -1392,19 +1384,14 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         }
         
         console.error("id nya :", id);
+
+        if ( id == data__.order.all[data__.order.all.length - 1].id ) page_active -= 1;
+
         setDataOrder( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ? "edit_order" : "delete_order", id );
         
       } //end event submit edit / delete order
     // end event main content adalah dashboard
     }
-
-
-
-
-
-
-
-
     
   //end event delegation body
   });
@@ -1490,7 +1477,9 @@ document.addEventListener("DOMContentLoaded", async (el) => {
               
               await fillData(  "order_all"  );
               await fillData( "order_status" );
-              
+
+              console.log("page active status :", page_active);
+              data__.pages.order.active = page_active;
               create_table_and_pagination(
                 2,
                 data__.order.all
@@ -1747,18 +1736,23 @@ const setDataOrder = ( type, id ) => {
     main({
       url: `../App/index.php?url=Pemesanan/${type}/${id}/${type == "edit_order" ? data.join("/") : ""}`,
       type: "GET"
-    }, async (result) => {
-      result = JSON.parse(result);
-      
+    }, async (resultStr) => {
+
+      result = JSON.parse(resultStr);
+      log("page actat :", page_active);
       if ( typeof result.status === "boolean" ) {
         await fillData (  "order_all"  );
         await fillData( "order_status" );
+        data__.pages.order.active = page_active;
+        console.log("edit Order, page :", page_active);
         create_table_and_pagination(
           2,
-          data__.order.all
+          data__.order.all,
+          page_active
         );
         
-      } else console.error(result);
+      } else console.error(resultStr);
+
     });
   } // end edit || delete order
 
@@ -1854,8 +1848,6 @@ const setSearch = type => {
     data__.order.search.keyword = key;
     data__.order.search.result = result;
 
-    data__.pages.order.active = 1;
-
     return result;
     
     // end event search order
@@ -1866,6 +1858,8 @@ const setSearch = type => {
 
 const loadConfigForDashboardMenu = () => {
 
+  data__.pages.order.active = 1;
+  data__.pages.costumer.active = 1;
   log("LOAD DASHBOARD CONFIG...");
   
   // event deklarasi var input
