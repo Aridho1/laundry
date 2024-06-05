@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 31, 2024 at 08:38 AM
+-- Generation Time: Jun 05, 2024 at 10:27 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -95,19 +95,19 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (9, 'ONWiLB0004', '2024-05-16', 'Rossy', '6200000000003', 'Kilat', '7000', '1', '7000', 'DiAmbil'),
 (10, 'EiJLRj0005', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'DiAmbil'),
 (11, 'uyIiCB0006', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'DiAmbil'),
-(12, 'vcSxFL0007', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'DiAmbil'),
-(13, 'ohUvRX0008', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '2', '10000', 'Progress'),
-(14, 'sqdYxf0009', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '2', '14000', 'Progress'),
+(12, 'vcSxFL0007', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '4', '20000', 'DiAmbil'),
+(13, 'ohUvRX0008', '2024-05-16', 'Firzi', '6200000000004', 'Cepat', '5000', '3', '15000', 'DiAmbil'),
+(14, 'sqdYxf0009', '2024-05-16', 'Firzi', '6200000000004', 'Kilat', '7000', '11', '77000', 'DiAmbil'),
 (15, 'NWqzDM0009', '2024-05-16', 'Ahmad', '6200000000005', 'Biasa', '3000', '6', '18000', 'Progress'),
 (16, 'hfCqbK0009', '2024-05-16', 'Juni', '6200000000006', 'Biasa', '3000', '1', '3000', 'Progress'),
 (17, 'YOdEpE0017', '2024-05-16', 'Juni', '6200000000006', 'Biasa', '3000', '1', '3000', 'Progress'),
 (18, 'SUHgvv0018', '2024-05-16', 'Oci', '6200000000007', 'Kilat', '3000', '9', '', 'Progress'),
 (19, 'vibesd0019', '2024-05-16', 'Akbar', '6200000000008', 'Kilat', '7000', '1', '7000', 'Progress'),
-(20, 'BbSNeZ0020', '2024-05-16', 'Faazaa', '6200000000009', 'Cepat', '5000', '10', '50000', 'Progress'),
+(20, 'BbSNeZ0020', '2024-05-16', 'Faazaa', '6200000000009', 'Cepat', '5000', '10', '50000', 'Selesai'),
 (21, 'pMdgPd0021', '2024-05-16', 'Yasir', '6200000000002', 'Biasa', '3000', '1', '3000', 'Selesai'),
 (22, 'YWiCmw0022', '2024-05-16', 'Juni', '6200000000006', 'Biasa', '3000', '7', '21000', 'Progress'),
 (23, 'xOzUgx0023', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '1', '7000', 'Progress'),
-(24, 'PRgXgE0024', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '3', '9000', 'Progress'),
+(24, 'PRgXgE0024', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '3', '9000', 'Selesai'),
 (25, 'DEzsvJ0025', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '4', '12000', 'Progress'),
 (26, 'BukFBW0026', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '5', '15000', 'Progress'),
 (27, 'nWcNuF0027', '2024-05-16', 'Brando', '6200000000012', 'Biasa', '3000', '7', '21000', 'Progress'),
@@ -123,7 +123,7 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (37, 'EyZsja0037', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '11', '33000', 'Selesai'),
 (38, 'akNuBq0038', '2024-05-16', 'Rossy', '6200000000003', 'Biasa', '3000', '12', '36000', 'Progress'),
 (39, 'xfQAIN0039', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Selesai'),
-(40, 'FlNVJP0040', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
+(40, 'FlNVJP0040', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Selesai'),
 (41, 'ZbjeSS0041', '2024-05-16', 'Yasir', '6200000000002', 'Biasa', '3000', '5', '15000', 'Progress'),
 (42, 'vFcdfR0042', '2024-05-16', 'Oci', '6200000000007', 'Kilat', '7000', '5', '35000', 'Progress'),
 (43, 'vKRrNz0043', '2024-05-16', 'Akbar', '6200000000008', 'Cepat', '5000', '5', '25000', 'Progress'),
@@ -133,12 +133,18 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (49, 'AJLlQm0049', '2024-05-21', 'Akbar', '6200000000008', 'Biasa', '3000', '1', '3000', 'Progress'),
 (51, 'iiyGiH0051', '2024-05-24', 'Udin', '6200000000019', 'Cepat', '5000', '9', '45000', 'Progress'),
 (54, 'iSiymn0054', '2024-05-30', 'Budi', '6200000000001', 'Biasa', '3000', '6', '18000', 'Progress'),
-(55, 'cbnInq0055', '2024-05-30', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'Progress'),
-(56, 'hheRKS0056', '2024-05-30', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'Progress'),
+(55, 'cbnInq0055', '2024-05-30', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'DiAmbil'),
+(56, 'hheRKS0056', '2024-05-30', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'DiAmbil'),
 (65, '2024-05-kTPzmo-57', '2024-05-30', 'Kokom', '628380000021', 'Biasa', '3000', '1', '3000', 'Progress'),
 (66, '2024-05-BzcIlw-58', '2024-05-30', 'Kokom', '628380000021', 'Biasa', '3000', '10', '30000', 'Progress'),
 (68, '2024-05-RDFiUM-60', '2024-05-30', 'Kokom', '628380000021', 'Biasa', '3000', '3', '9000', 'Progress'),
-(69, '2024-05-tzkhoR-61', '2024-05-30', 'Cantika', '6200000000017', 'Biasa', '3000', '1', '3000', 'Progress');
+(69, '2024-05-tzkhoR-61', '2024-05-30', 'Cantika', '6200000000017', 'Biasa', '3000', '1', '3000', 'Progress'),
+(70, '2024-06-OOLYkt-62', '2024-06-05', 'Brando', '6200000000012', 'Biasa', '3000', '1', '3000', 'Selesai'),
+(71, '2024-06-QZtsPC-63', '2024-06-05', 'Yasir', '6200000000002', 'Biasa', '3000', '2', '6000', 'Progress'),
+(72, '2024-06-fpbCYb-64', '2024-06-05', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'Selesai'),
+(73, '2024-06-kuiUEf-65', '2024-06-05', 'Rossy', '6200000000003', 'Biasa', '3000', '1', '3000', 'DiAmbil'),
+(74, '2024-06-jXfDfL-66', '2024-06-05', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
+(75, '2024-06-AYTkky-67', '2024-06-05', 'Faazaa', '6200000000009', 'Biasa', '3000', '2', '6000', 'Selesai');
 
 -- --------------------------------------------------------
 
@@ -176,7 +182,7 @@ CREATE TABLE `total_pemesanan` (
 --
 
 INSERT INTO `total_pemesanan` (`id`, `angka`) VALUES
-(1, 62);
+(1, 70);
 
 --
 -- Indexes for dumped tables
@@ -220,7 +226,7 @@ ALTER TABLE `pelanggan`
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `total_pemesanan`

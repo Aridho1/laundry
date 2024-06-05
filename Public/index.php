@@ -336,7 +336,7 @@ password = password || "rahasia";
   height: 20px;
   display: flex;
   justify-content: center;
-  align-items: cebter;
+  align-items: center;
   color: black;
   background-color: red;
   
@@ -453,6 +453,26 @@ password = password || "rahasia";
   padding : 4px;
 }
 
+/* Aside */
+aside {
+  position: fixed;
+  z-index: -2;
+  top: 0;
+  left: 0;
+  width: 0vw;
+  height: 0vh;
+  background-color: #eee;
+  transform: scale(0);
+  transition: all 0.6s;
+}
+
+aside.aside.show {
+  z-index: 100;
+  transform: scale(1) rotate(360deg);
+  width: 100vw;
+  height: 100vh;
+}
+
   </style>
 </head>
 <body>
@@ -465,8 +485,6 @@ password = password || "rahasia";
   <ul>
     <li><a href="">Home</a></li>
     <li><a href="">Dashboard</a></li>
-    <!-- <li><a href="">Laporan</a></li> -->
-    <!-- <li><a href="">Login</a></li> -->
     <li><a href="">Logout</a></li>
   </ul>
   
@@ -478,17 +496,17 @@ password = password || "rahasia";
   </div>
 </nav>
 
-
 <main>
   <header>
-    <h2>Dashboard</h2>
+    <h2>NO CONTENT</h2>
   </header>
   <div class="content">
-    <p>HELLO WORLR!</p>
+    <p>HELLO WORLD!</p>
   </div>
-  <input type="text">
   <footer>Copyright 2024</footer>
 </main>
+
+<aside class="aside report"></aside>
   
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
@@ -497,11 +515,6 @@ password = password || "rahasia";
 <script>
 
 const log = (...any) => console.log(any.join(' '));  
-// document.body
-// .addEventListener("keyup", (e) => {
-//   log("key up");
-// })
-// .addEventListener("click", () => console.log("click body"));
 
 
 let data__ = {};
@@ -1340,6 +1353,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       
       else if ( e.target === search_group_order[6] ) {
         data__.pages.order.active = 1;
+        page_active = 1;
         setSearch("order");
         create_table_and_pagination( 2 );
       }
