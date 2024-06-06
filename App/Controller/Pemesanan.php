@@ -158,22 +158,25 @@ class Pemesanan {
   }
   
   
-  public function edit_order($id, $tanggal, $nama, $no_hp, $paket, $harga, $berat, $total_harga) {
+  public function edit_order($id, $kode_pemesanan, $tanggal, $nama, $no_hp, $paket, $harga, $berat, $total_harga, $status) {
     
     $query = "UPDATE {$this->table} SET status = :status WHERE id = :id";
     
     $query = "UPDATE {$this->table} SET
+        kode_pemesanan = :kode_pemesanan,
                tanggal = :tanggal,
                 nama   = :nama,
                 no_hp  = :no_hp,
                  paket = :paket, 
                  harga = :harga,
                  berat = :berat,
-           total_harga = :total_harga
+           total_harga = :total_harga,
+           status = :status
               WHERE id = :id";
     
     $this->db->query($query);
     
+    $this->db->bind('kode_pemesanan', $kode_pemesanan);
     $this->db->bind('tanggal', $tanggal);
     $this->db->bind('nama', $nama);
     $this->db->bind('no_hp', $no_hp);
@@ -181,6 +184,7 @@ class Pemesanan {
     $this->db->bind('harga', $harga);
     $this->db->bind('berat', $berat);
     $this->db->bind('total_harga', $total_harga);
+    $this->db->bind('status', $status);
     
     $this->db->bind('id', $id); // Gunakan 'id' yang diterima sebagai argumen
     $this->db->execute();

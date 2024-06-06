@@ -140,7 +140,7 @@
           </tr>
           <tr>
             <td>
-              <label for="input-add-order-price">Harga : </label>
+              <label for="input-add-order-price">Price : </label>
             </td>
             <td>
               <input type="number" class="harga" id="input-add-order-price" name="harga" readonly value="3000">
@@ -148,7 +148,7 @@
           </tr>
           <tr>
             <td>
-              <label for="input-add-order-weight">Berat : </label>
+              <label for="input-add-order-weight">Weight : </label>
             </td>
             <td>
               <input type="number" class="berat" id="input-add-order-weight" name="berat" value="0" required>
@@ -156,7 +156,7 @@
           </tr>
           <tr>
             <td>
-              <label for="input-add-order-total">Harga Total : </label>
+              <label for="input-add-order-total">Total : </label>
             </td>
             <td>
               <input type="number" class="harga_total" id="input-add-order-total" name="harga_total" value="0" readonly
@@ -278,12 +278,25 @@
     <div class="change-data">
 
       <div class="wrapper">
+        <div class="advance-change-data" data-toshow="true">#</div>
         <div class="close-change-data">X</div>
 
         <div class="paper">
+          <div class="title">
+            <h3>Edit Order <span class="is-advance-setting"></span></h3>
+          </div>
 
           <table>
-            <tr>
+            <tr hidden>
+              <td>
+                <label for="input-change-order-order_code">Order Code : </label>
+              </td>
+              <td>
+                <input type="text" id="input-change-order-order_code" class="order_code" name="order_code" required
+                  readonly>
+              </td>
+            </tr>
+            <tr hidden>
               <td>
                 <label for="input-change-order-date">Date : </label>
               </td>
@@ -299,7 +312,7 @@
                 <input type="text" id="input-change-order-name" class="nama" name="nama" required>
               </td>
             </tr>
-            <tr>
+            <tr hidden>
               <td>
                 <label for="input-change-order-phone-num">Phone Num : </label>
               </td>
@@ -319,7 +332,7 @@
             </tr>
             <tr>
               <td>
-                <label for="input-change-order-price">Harga : </label>
+                <label for="input-change-order-price">Price : </label>
               </td>
               <td>
                 <input type="number" class="harga" id="input-change-order-price" name="harga" readonly value="3000">
@@ -327,7 +340,7 @@
             </tr>
             <tr>
               <td>
-                <label for="input-change-order-weight">Berat : </label>
+                <label for="input-change-order-weight">Weight : </label>
               </td>
               <td>
                 <input type="number" class="berat" id="input-change-order-weight" name="berat" value="0" required>
@@ -335,11 +348,21 @@
             </tr>
             <tr>
               <td>
-                <label for="input-change-order-total">Harga Total : </label>
+                <label for="input-change-order-total">Total : </label>
               </td>
               <td>
                 <input type="number" class="harga_total" id="input-change-order-total" name="harga_total" value="0"
                   readonly required>
+              </td>
+            </tr>
+            <tr hidden>
+              <td>
+                <label for="input-change-order-status">Status : </label>
+              </td>
+              <td>
+                <select class="form-control" id="input-change-order-status" name="status">
+                  <option class="comboB1">Progress</option>
+                </select>
               </td>
             </tr>
           </table>

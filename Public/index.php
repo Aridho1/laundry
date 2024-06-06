@@ -124,13 +124,6 @@ password = password || "rahasia";
   display: flex;
   flex-direction: column;
   
-  /*
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 100px 1fr 80px 80px;
-  place-items: end; 
-  */
-  
   gap: 15px;
   scroll-behavior: smooth;
   position: relative;
@@ -165,6 +158,13 @@ password = password || "rahasia";
 .dashboard tr th {
   /*min-width: 80px;*/
   padding: 5px;
+}
+
+.td-change-data-by-id,
+.td-status {
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
 }
 
 .dashboard .search-costumer tr:nth-child(odd),
@@ -316,7 +316,7 @@ password = password || "rahasia";
   max-width: 500px;
   background-color: #ddd;
   border-radius: 8px;
-  padding: 20px;
+  padding: 30px 25px 35px;
   font-size: 1.2em;
   
   transform: translateY(-500%) scale(0);
@@ -331,18 +331,56 @@ password = password || "rahasia";
   z-index: 10;
 }
 
-.dashboard .change-data .wrapper .close-change-data {
-  width: 20px;
-  height: 20px;
+.dashboard .change-data .wrapper.no-transtion {
+  transition: all 0s;
+}
+.dashboard .change-data .wrapper.go {
+  transform: translateY(-200%) scale(0.5);
+}
+
+.dashboard .change-data .wrapper.down {
+  transform: translateY(+200%) scale(0.5);
+}
+
+.dashboard .change-data .wrapper.come {
+  transform: translateY(0) scale(0.5);
+}
+
+.dashboard .change-data .wrapper.transtion-wrapper-1 {
+  transition: all 0.6s cubic-bezier(0.8, -0.4, 0.3, 1.33);
+}
+
+
+
+.dashboard .change-data .wrapper .close-change-data,
+.dashboard .change-data .wrapper .advance-change-data {
+  width: 25px;
+  height: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: black;
-  background-color: red;
   
   position: absolute;
   top: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.dashboard .change-data .wrapper .advance-change-data {
+  color: #FFFEEC;
+  background-color: #342EAD;
+  left: 0;
+}
+
+.dashboard .change-data .wrapper .close-change-data {
+  color: white;
+  background-color: red;
   right: 0;
+}
+
+.dashboard .change-data .wrapper .title {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .dashboard .change-data .wrapper table {
@@ -369,6 +407,8 @@ password = password || "rahasia";
   width: 40%;
   padding: 5px;
   color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .dashboard .change-data .wrapper .button-group button:first-child {
@@ -381,7 +421,9 @@ password = password || "rahasia";
 }
 
 .dashboard .change-data .wrapper .button-group button:last-child {
-  background-color: red;
+  background-color: #ddd;
+  color: red;
+  border: none;
   
 }
 
@@ -471,6 +513,20 @@ aside.aside.show {
   transform: scale(1) rotate(360deg);
   width: 100vw;
   height: 100vh;
+}
+
+
+/* FOR ALL || TEMPLATE */
+.display-none {
+  display: none;
+}
+
+.transition-1 {
+  transition: all 1s;
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
   </style>
@@ -691,6 +747,10 @@ const fillData = async (
 // const log = (...any) => console.log(any.join(' '));
 const l = (...any) => log(any.join(' '));
 
+const sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms)) ;
+};
+
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
 let nav_links = document.querySelector("nav ul");
 let nav_toggle = document.querySelector("div.menu-toggle");
@@ -897,7 +957,7 @@ function create_table_and_pagination(
         } else if (column[ii] == "status") {
           row += `<td data-change_status_by_id="${
             data[i]["id"]
-          }" class="td-status">${
+          }" class="td-status cursor-pointer">${
             data[i][column[ii]]
           }</td>`;
         
@@ -905,7 +965,7 @@ function create_table_and_pagination(
         } else if (column[ii] == "kode_pemesanan" ) {
           row += `<td data-change_data_by_id="${
             data[i]["id"]
-          }" class="td-change-data-by-id" >${
+          }" class="td-change-data-by-id cursor-pointer" >${
             data[i][column[ii]]
           }</td>`;
 
@@ -957,13 +1017,13 @@ let input_login_password = "";
 
 let id;
 
-function createHargaPackage(
+const createPriceOfPackage = (
   package = input.order.package,
   params = [
     ["Biasa", 3000],
     ["Cepat", 5000],
     ["Kilat", 7000]
-]) 
+]) =>
 {
     let code = ``;
     for (let i = 0; i < params.length; i++) {
@@ -979,7 +1039,27 @@ function createHargaPackage(
     }
     package.innerHTML = code;
     console.log(package);
-}
+};
+
+const createStatusOfOrder = (
+  package = input.order.status,
+  list_status = ["Progress", "Selesai", "DiAmbil"]) =>
+{
+    let code = ``;
+    for (let i = 0; i < list_status.length; i++) {
+        code += `<option class="comboB${
+          i
+        }" data-harga="${
+          list_status[i]
+        }" value="${
+          list_status[i]
+        }">${
+          list_status[i]
+        }</option>`;
+    }
+    package.innerHTML = code;
+    console.log(package);
+};
 
 function calcTotal( type = "order" ) {
   input[type].total.value = input[type].price.value * input[type].weight.value;
@@ -1364,23 +1444,129 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         fillInputChangeData(id);
       }
       
+      //event btn advance edit order
+      if ( e.target.classList.contains("advance-change-data") ) {
+
+        // // animate
+        // e.target.parentElement.classList.add("no-transtion");
+        // e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        // e.target.parentElement.classList.toggle("go");
+        
+        
+        // await setTimeout( async () => {
+        //   e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        //   setTimeout(() => {
+          //     e.target.parentElement.classList.toggle("go");
+          //     e.target.parentElement.classList.toggle("down");
+          //     setTimeout(() => {
+            //       e.target.parentElement.classList.toggle("transtion-wrapper-1");
+            //       e.target.parentElement.classList.toggle("come");
+            
+            //       setTimeout(() => {
+              //         e.target.parentElement.classList.remove("transtion-wrapper-1");
+              //         setTimeout(() => {
+                //           e.target.parentElement.classList.remove("come");
+          //           e.target.parentElement.classList.remove("down");
+          //           e.target.parentElement.classList.remove("no-transtion");
+          
+          //         }, 100);
+          //       }, 600);
+          //     }, 100);
+          
+          //   }, 100);
+          
+          //   // ambil type berdasarkan title
+          //   const type = `edit_${
+            //     e.target //advance btn
+            //       .nextElementSibling //close
+            //       .nextElementSibling //paper
+            //       .firstElementChild //title
+            //       .firstElementChild //h3
+            //       .innerText.toLowerCase().includes("order") ? "order" : "costumer"
+            //   }`;
+            
+            //   log(type);
+            
+            //   const manip_attr = e.target.dataset.toshow == "true" ? "removeAttribue" : "setAttribute";
+            //   // log(
+              
+          //   // `${input[type].order_code.parentElement.parentElement[manip_attr]("hidden", "")}`
+          //   // );
+          //   // input[type].order_code.parentElement.parentElement[manip_attr("hidden", "")];
+          //   // input[type].date.parentElement.parentElement[manip_attr("hidden", "")];
+          //   // input[type].phone_num.parentElement.parentElement[manip_attr("hidden", "")];
+          //   // input[type].status.parentElement.parentElement[manip_attr("hidden", "")];
+          
+          //   if ( e.target.dataset.toshow == "true" ) {
+            //     input[type].order_code.parentElement.parentElement.removeAttribute("hidden");
+            //     input[type].date.parentElement.parentElement.removeAttribute("hidden");
+            //     input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
+            //     input[type].status.parentElement.parentElement.removeAttribute("hidden");
+            
+            //     e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "Advance";
+            //   } else if ( e.target.dataset.toshow == "false" ) {
+              //     input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
+              //     input[type].date.parentElement.parentElement.setAttribute("hidden", "");
+              //     input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
+              //     input[type].status.parentElement.parentElement.setAttribute("hidden", "");
+              
+              //     e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "";
+              //   }
+              
+              //   e.target.dataset.toshow = e.target.dataset.toshow == "true" ? "false" : "true";
+              //   return false;
+              // }, 400);
+              
+
+
+        // fix hell function
+        // animate
+        e.target.parentElement.classList.add("no-transtion");
+        e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        e.target.parentElement.classList.toggle("go");
+        
+        await sleep(400);
+        
+        // ambil type berdasarkan title
+        
+        
+        e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        toggleAdvanceEditData(e);
+        await sleep(100);
+        
+        e.target.parentElement.classList.toggle("go");
+        e.target.parentElement.classList.toggle("down");
+        await sleep(100);
+        
+        e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        e.target.parentElement.classList.toggle("come");
+        await sleep(600);
+        
+        e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        // await sleep(100);
+        
+        e.target.parentElement.classList.remove("come");
+        e.target.parentElement.classList.remove("down");
+        e.target.parentElement.classList.remove("no-transtion");
+
+      // end event advance edit
+      } 
+      
       //event btn close edit order
-      if ( 
+      else if ( 
         e.target.classList
-          .contains("close-change-data") || 
+        .contains("close-change-data") || 
         e.target === document
-          .querySelector("#input-change-order-button-group button:nth-child(2)") ||
+        .querySelector("#input-change-order-button-group button:nth-child(2)") ||
         e.target === document
-          .querySelector("#input-change-order-button-group button:nth-child(3)")
+        .querySelector("#input-change-order-button-group button:nth-child(3)")
       ) {
         log("close change data");
         setTimeout(() => {
           document.querySelector(".dashboard .change-data").classList.remove("slide");
           document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
           setTimeout(() => {
-            
             document.querySelector(".dashboard .change-data").classList.remove("show");
-            
           }, 800);
         }, (e.target === document.querySelector("#input-change-order-button-group:nth-child(2)") || e.target === document.querySelector("#input-change-order-button-group:nth-child(2)")) ? 1000 : 0 );
       } //end event close edit order
@@ -1399,7 +1585,10 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         
         console.error("id nya :", id);
 
-        if ( id == data__.order.all[data__.order.all.length - 1].id ) page_active -= 1;
+        if ( 
+          id == data__.order.all[data__.order.all.length - 1].id && 
+          e.target === document.querySelector("#input-change-order-button-group button:nth-child(3)") 
+        ) page_active -= 1;
 
         setDataOrder( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ? "edit_order" : "delete_order", id );
         
@@ -1695,6 +1884,7 @@ const fillInputChangeData = (id, type = "edit_order") => {
   
   console.log(data.tanggal.split("/").reverse().join("-"));
   
+  input[type].order_code.value = data.kode_pemesanan;
   input[type].date.value = data.tanggal.split("/").reverse().join("-");
   input[type].name.value = data.nama;
   input[type].phone_num.value = data.no_hp;
@@ -1702,6 +1892,7 @@ const fillInputChangeData = (id, type = "edit_order") => {
   input[type].price.value = data.harga;
   input[type].weight.value = data.berat;
   input[type].total.value = data.total_harga;
+  input[type].status.value = data.status;
   
 };
 
@@ -1738,13 +1929,15 @@ const setDataOrder = ( type, id ) => {
   if ( type == "edit_order" || type == "delete_order" ) {
 
     let data = [
+      input.edit_order.order_code.value,
       input.edit_order.date.value,
       input.edit_order.name.value,
       input.edit_order.phone_num.value,
       input.edit_order.package.value,
       input.edit_order.price.value,
       input.edit_order.weight.value,
-      input.edit_order.total.value
+      input.edit_order.total.value,
+      input.edit_order.status.value
     ];
     console.log(data);
     main({
@@ -1923,6 +2116,9 @@ const loadConfigForDashboardMenu = () => {
   };
   
   input.edit_order = {
+    order_code: document.querySelector(
+      "#input-change-order-order_code"
+    ),
     date: document.querySelector(
       "#input-change-order-date"
     ),
@@ -1944,6 +2140,9 @@ const loadConfigForDashboardMenu = () => {
     total:  document.querySelector(
       "#input-change-order-total"
     ),
+    status:  document.querySelector(
+      "#input-change-order-status"
+    ),
     btn_cancel: document.querySelector(
       "#input-change-order-button-group"
     ).firstElementChild,
@@ -1956,8 +2155,10 @@ const loadConfigForDashboardMenu = () => {
   };
   
   
-  createHargaPackage(input.order.package);
-  createHargaPackage(input.edit_order.package);
+  createPriceOfPackage(input.order.package);
+  createPriceOfPackage(input.edit_order.package);
+
+  createStatusOfOrder(input.edit_order.status);
   
   input.order.date.value = today;
   search_group_order = [];
@@ -1992,6 +2193,41 @@ const loadConfigForDashboardMenu = () => {
   create_table_and_pagination(1, data__.costumer.all);
   create_table_and_pagination(2, data__.order.all);
         
+};
+
+// func for advance edit data
+const toggleAdvanceEditData = e => {
+
+  const type = `edit_${
+      e.target //advance btn
+        .nextElementSibling //close
+        .nextElementSibling //paper
+        .firstElementChild //title
+        .firstElementChild //h3
+        .innerText.toLowerCase().includes("order") ? "order" : "costumer"
+    }`;
+
+  log(type);
+
+  const manip_attr = e.target.dataset.toshow == "true" ? "removeAttribue" : "setAttribute";
+
+  if ( e.target.dataset.toshow == "true" ) {
+    input[type].order_code.parentElement.parentElement.removeAttribute("hidden");
+    input[type].date.parentElement.parentElement.removeAttribute("hidden");
+    input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
+    input[type].status.parentElement.parentElement.removeAttribute("hidden");
+
+    e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "Advance";
+  } else if ( e.target.dataset.toshow == "false" ) {
+    input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
+    input[type].date.parentElement.parentElement.setAttribute("hidden", "");
+    input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
+    input[type].status.parentElement.parentElement.setAttribute("hidden", "");
+
+    e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "";
+  }
+
+  e.target.dataset.toshow = e.target.dataset.toshow == "true" ? "false" : "true";
 };
 
 
