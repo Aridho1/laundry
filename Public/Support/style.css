@@ -1,7 +1,7 @@
 :root {
   --nav-bg-color: #002dff;
-  --nav-color: #bfbfff;
-  --nav-color-hover: ##dfd5ff;
+  --nav-color: #dfd5ff;
+  --nav-color-hover: #0E9FE3;
 }
 
 * {
@@ -38,6 +38,7 @@ nav ul {
 nav ul li a {
   color: var(--nav-color);
   text-decoration: none;
+  transition: all 0.3s;
 }
 
 nav ul li a:hover {
@@ -208,5 +209,25 @@ main .content {
   /* Dashboard */
   .dashboard table {
     font-size: 0.2em;
+  }
+}
+
+
+/* Media Print */
+
+@media print {
+  .dashboard .change-data .advance-change-data,
+  .dashboard .change-data .close-change-data,
+  .dashboard .change-data .button-group,
+  .dashboard .change-data .title
+  {
+    display: none !important;
+  }
+  
+  .dashboard .change-data .title::after {
+    display: block;
+    content: "Laundry.Moboid";
+    text-decoration: underline;
+    color: red;
   }
 }

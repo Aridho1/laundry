@@ -92,6 +92,14 @@ password = password || "rahasia";
   border-bottom: 1px solid black;
 }
 
+.dashboard .content-type h4 {
+  
+    transition: all 0.3s;
+}
+
+.dashboard .content-type h4:hover {
+  opacity: 0.7;
+}
 
 /*** Dasboard - add ***/
 .dasboard .add-costumer,
@@ -165,6 +173,12 @@ password = password || "rahasia";
   cursor: pointer;
   user-select: none;
   box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+.td-change-data-by-id:hover,
+.td-status:hover {
+  opacity: 0.6;
 }
 
 .dashboard .search-costumer tr:nth-child(odd),
@@ -353,12 +367,14 @@ password = password || "rahasia";
 
 
 .dashboard .change-data .wrapper .close-change-data,
+.dashboard .change-data .wrapper .print-change-data,
 .dashboard .change-data .wrapper .advance-change-data {
   width: 25px;
   height: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.3s;
   
   position: absolute;
   top: 0;
@@ -366,14 +382,26 @@ password = password || "rahasia";
   cursor: pointer;
 }
 
+.dashboard .change-data .wrapper .close-change-data:hover,
+.dashboard .change-data .wrapper .print-change-data:hover,
+.dashboard .change-data .wrapper .advance-change-data:hover {
+  color: #fff;
+}
+
 .dashboard .change-data .wrapper .advance-change-data {
-  color: #FFFEEC;
-  background-color: #342EAD;
+  color: #000;
+  background-color: #0EE337;
   left: 0;
 }
 
+.dashboard .change-data .wrapper .print-change-data {
+  color: #000;
+  background-color: #E3E20E;
+  left: 25px;
+}
+
 .dashboard .change-data .wrapper .close-change-data {
-  color: white;
+  color: #000;
   background-color: red;
   right: 0;
 }
@@ -529,6 +557,17 @@ aside.aside.show {
   cursor: pointer;
 }
 
+label {
+  transition: all 0.3s;
+}
+
+label:hover {
+  opacity: 0.7;
+}
+
+.line-through {
+  text-decoration: line-through;
+}
   </style>
 </head>
 <body>
@@ -1438,6 +1477,12 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         create_table_and_pagination( 2 );
       }
       //end event search order
+
+      // event disable button edit-order
+      if ( user__.level < 2 ) {
+        document.querySelector(".dashboard .change-data .button-group")
+          .classList.add("line-through");
+      }
       
       //event btn cancel edit order
       if ( e.target == document.querySelector("#input-change-order-button-group button:nth-child(1)") ){
@@ -1446,78 +1491,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       
       //event btn advance edit order
       if ( e.target.classList.contains("advance-change-data") ) {
-
-        // // animate
-        // e.target.parentElement.classList.add("no-transtion");
-        // e.target.parentElement.classList.toggle("transtion-wrapper-1");
-        // e.target.parentElement.classList.toggle("go");
-        
-        
-        // await setTimeout( async () => {
-        //   e.target.parentElement.classList.toggle("transtion-wrapper-1");
-        //   setTimeout(() => {
-          //     e.target.parentElement.classList.toggle("go");
-          //     e.target.parentElement.classList.toggle("down");
-          //     setTimeout(() => {
-            //       e.target.parentElement.classList.toggle("transtion-wrapper-1");
-            //       e.target.parentElement.classList.toggle("come");
-            
-            //       setTimeout(() => {
-              //         e.target.parentElement.classList.remove("transtion-wrapper-1");
-              //         setTimeout(() => {
-                //           e.target.parentElement.classList.remove("come");
-          //           e.target.parentElement.classList.remove("down");
-          //           e.target.parentElement.classList.remove("no-transtion");
-          
-          //         }, 100);
-          //       }, 600);
-          //     }, 100);
-          
-          //   }, 100);
-          
-          //   // ambil type berdasarkan title
-          //   const type = `edit_${
-            //     e.target //advance btn
-            //       .nextElementSibling //close
-            //       .nextElementSibling //paper
-            //       .firstElementChild //title
-            //       .firstElementChild //h3
-            //       .innerText.toLowerCase().includes("order") ? "order" : "costumer"
-            //   }`;
-            
-            //   log(type);
-            
-            //   const manip_attr = e.target.dataset.toshow == "true" ? "removeAttribue" : "setAttribute";
-            //   // log(
-              
-          //   // `${input[type].order_code.parentElement.parentElement[manip_attr]("hidden", "")}`
-          //   // );
-          //   // input[type].order_code.parentElement.parentElement[manip_attr("hidden", "")];
-          //   // input[type].date.parentElement.parentElement[manip_attr("hidden", "")];
-          //   // input[type].phone_num.parentElement.parentElement[manip_attr("hidden", "")];
-          //   // input[type].status.parentElement.parentElement[manip_attr("hidden", "")];
-          
-          //   if ( e.target.dataset.toshow == "true" ) {
-            //     input[type].order_code.parentElement.parentElement.removeAttribute("hidden");
-            //     input[type].date.parentElement.parentElement.removeAttribute("hidden");
-            //     input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
-            //     input[type].status.parentElement.parentElement.removeAttribute("hidden");
-            
-            //     e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "Advance";
-            //   } else if ( e.target.dataset.toshow == "false" ) {
-              //     input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
-              //     input[type].date.parentElement.parentElement.setAttribute("hidden", "");
-              //     input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
-              //     input[type].status.parentElement.parentElement.setAttribute("hidden", "");
-              
-              //     e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "";
-              //   }
-              
-              //   e.target.dataset.toshow = e.target.dataset.toshow == "true" ? "false" : "true";
-              //   return false;
-              // }, 400);
-              
-
 
         // fix hell function
         // animate
@@ -2217,7 +2190,7 @@ const toggleAdvanceEditData = e => {
     input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
     input[type].status.parentElement.parentElement.removeAttribute("hidden");
 
-    e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "Advance";
+    e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "Advanced";
   } else if ( e.target.dataset.toshow == "false" ) {
     input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
     input[type].date.parentElement.parentElement.setAttribute("hidden", "");
