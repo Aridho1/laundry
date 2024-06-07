@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 05, 2024 at 10:27 AM
+-- Generation Time: Jun 07, 2024 at 10:00 AM
 -- Server version: 10.4.25-MariaDB
 -- PHP Version: 8.1.10
 
@@ -87,7 +87,6 @@ CREATE TABLE `pemesanan` (
 INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `paket`, `harga`, `berat`, `total_harga`, `status`) VALUES
 (1, '00AOqJab01', '2024-05-16', 'Budi', '6200000000001', 'Biasa', '3000', '10', '30000', 'DiAmbil'),
 (2, 'JJShUE0002', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '4', '28000', 'Selesai'),
-(3, 'dFXNlz0002', '2024-05-16', 'Yasir', '6200000000002', 'Kilat', '7000', '3', '21000', 'DiAmbil'),
 (5, 'PRIAQj0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
 (6, 'fYuUeH0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'DiAmbil'),
 (7, 'PcNHUx0002', '2024-05-16', 'Yasir', '6200000000002', 'Cepat', '5000', '3', '15000', 'Selesai'),
@@ -144,7 +143,9 @@ INSERT INTO `pemesanan` (`id`, `kode_pemesanan`, `tanggal`, `nama`, `no_hp`, `pa
 (72, '2024-06-fpbCYb-64', '2024-06-05', 'Mia', '6283800000020', 'Biasa', '3000', '1', '3000', 'Selesai'),
 (73, '2024-06-kuiUEf-65', '2024-06-05', 'Rossy', '6200000000003', 'Biasa', '3000', '1', '3000', 'DiAmbil'),
 (74, '2024-06-jXfDfL-66', '2024-06-05', 'Budi', '6200000000001', 'Biasa', '3000', '1', '3000', 'Progress'),
-(75, '2024-06-AYTkky-67', '2024-06-05', 'Faazaa', '6200000000009', 'Biasa', '3000', '2', '6000', 'Selesai');
+(75, '2024-06-AYTkky-67', '2024-06-05', 'Faazaa', '6200000000009', 'Biasa', '3000', '2', '6000', 'DiAmbil'),
+(81, '2024-06-dAOqxy-73', '2024-06-07', 'Oci', '6200000000007', 'Biasa', '3000', '1', '3000', 'Selesai'),
+(82, '2024-06-unoVrx-74', '2024-06-07', 'Firzi', '6200000000004', 'Cepat', '5000', '8', '40000', 'Progress');
 
 -- --------------------------------------------------------
 
@@ -182,7 +183,7 @@ CREATE TABLE `total_pemesanan` (
 --
 
 INSERT INTO `total_pemesanan` (`id`, `angka`) VALUES
-(1, 70);
+(1, 75);
 
 --
 -- Indexes for dumped tables
@@ -226,7 +227,7 @@ ALTER TABLE `pelanggan`
 -- AUTO_INCREMENT for table `pemesanan`
 --
 ALTER TABLE `pemesanan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT for table `total_pemesanan`

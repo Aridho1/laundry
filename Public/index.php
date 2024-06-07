@@ -312,6 +312,7 @@ password = password || "rahasia";
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
   transition: all 0.5s;
   transform: scale(0);
 }
@@ -337,11 +338,12 @@ password = password || "rahasia";
   transition: all 1s;
   
   position: relative;
-  overflow: hidden;
+  /* overflow-y: hidden; */
+  order: 2;
 }
 
 .dashboard .change-data .wrapper.slide {
-  transform: translateY(0) scale(0.5);
+  transform: translateY(0) scale(0.6);
   z-index: 10;
 }
 
@@ -349,20 +351,71 @@ password = password || "rahasia";
   transition: all 0s;
 }
 .dashboard .change-data .wrapper.go {
-  transform: translateY(-200%) scale(0.5);
+  transform: translateY(-200%) scale(0.6);
 }
 
 .dashboard .change-data .wrapper.down {
-  transform: translateY(+200%) scale(0.5);
+  transform: translateY(+200%) scale(0.6);
 }
 
 .dashboard .change-data .wrapper.come {
-  transform: translateY(0) scale(0.5);
+  transform: translateY(0) scale(0.6);
 }
 
 .dashboard .change-data .wrapper.transtion-wrapper-1 {
   transition: all 0.6s cubic-bezier(0.8, -0.4, 0.3, 1.33);
 }
+
+.dashboard .change-data aside {
+  position: absolute;
+  transform: translateY(-200%) scale(1);
+  width: 100%;
+  height: 40px;
+  background-color: transparent;
+}
+
+.dashboard .change-data aside ul {
+  list-style: none;
+  width: 100%;
+  
+  display: flex;
+  justify-content: space-between;
+}
+
+.dashboard .change-data aside ul li {
+  position: relative;
+  width: 50px;
+  height: 20px;
+  background-color: #5558ff;
+  display: flex;
+  padding: 5px 5px 5px 20px;
+  text-align: center;
+}
+
+.dashboard .change-data aside ul li span:nth-child(1) {
+  position: absolute;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+  color: red;
+  transform: rotate(45deg) translate(-30%, 20%);
+  padding: 1px;
+}
+
+.dashboard .change-data aside ul li span:nth-child(2) {
+  display: none;
+  margin: end;
+  text-align: center;
+  padding: 15px;
+}
+
+.dashboard .change-data aside ul li span:nth-child(3) {
+  display: none;
+}
+
+
+
 
 
 
