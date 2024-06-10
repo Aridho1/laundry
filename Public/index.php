@@ -419,7 +419,7 @@ password = password || "rahasia";
 
 
 
-.dashboard .change-data .wrapper .close-change-data,
+/* .dashboard .change-data .wrapper .close-change-data,
 .dashboard .change-data .wrapper .print-change-data,
 .dashboard .change-data .wrapper .advance-change-data {
   width: 25px;
@@ -455,9 +455,9 @@ password = password || "rahasia";
 
 .dashboard .change-data .wrapper .close-change-data {
   color: #000;
-  background-color: red;
+  background-color: transparent;
   right: 0;
-}
+} */
 
 .dashboard .change-data .wrapper .title {
   text-align: center;
@@ -506,6 +506,74 @@ password = password || "rahasia";
   color: red;
   border: none;
   
+}
+
+.action-button-group {
+  /* background-color:red; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateY(-100%);
+  width: 100%;
+  height: 50px;
+  z-index: 101;
+}
+
+.action-button-group ul {
+  display: flex;
+  list-style: none;
+  justify-content: space-between;
+}
+
+.action-button-group ul li {
+  width: 30%;
+  height: var(--action-button-icon-size);
+  /* background-color: #fff; */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+  
+  box-sizing: border-box;
+}
+
+.action-button-group ul li .logo-action {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--action-button-icon-size);
+  height: var(--action-button-icon-size);
+  line-height: var(--action-button-icon-size);
+  text-align: center;
+  
+  background-color: #ccc;
+  z-index: 10000000;
+  border-radius: 10px;
+  font-size: 0.85em;
+}
+
+.action-button-group ul li button {
+  border: none;
+  width: calc(100% - var(--action-button-icon-size) + 15px);
+  height: 100%;
+  transform: translateX(-110%);
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  align-self: end;
+  margin-left: calc(var(--action-button-icon-size) - 15px);
+  background-color: #fff;
+  text-align: center;
+  font-size: 0.6em;
+  transition: all 0.5s;
+}
+
+.action-button-group ul li .logo-action:hover ~ button,
+.action-button-group ul li button:hover {
+transform: translateX(0);
 }
 
 /*** Login ***/
@@ -1379,6 +1447,8 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       } 
 
       log("main click");
+      console.log(e.target);
+      // console.log(e.target.closest())
       
       //event add costumer
       if ( e.target == document.querySelector("#input-add-costumer-submit") ) {
@@ -1543,45 +1613,58 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       }
       
       //event btn advance edit order
-      if ( e.target.classList.contains("advance-change-data") ) {
+      if ( e.target.classList.contains("advance-change-data") || e.target.closest(".advance-change-data") ) {
 
+        // alert("advance");
         // fix hell function
         // animate
-        e.target.parentElement.classList.add("no-transtion");
-        e.target.parentElement.classList.toggle("transtion-wrapper-1");
-        e.target.parentElement.classList.toggle("go");
+
+        const wrapper = document.querySelector(".dashboard .change-data .wrapper");
+
+        wrapper.classList.add("no-transtion");
+        wrapper.classList.toggle("transtion-wrapper-1");
+        wrapper.classList.toggle("go");
         
         await sleep(400);
         
         // ambil type berdasarkan title
         
         
-        e.target.parentElement.classList.toggle("transtion-wrapper-1");
-        toggleAdvanceEditData(e);
+        wrapper.classList.toggle("transtion-wrapper-1");
+        toggleAdvanceEditData(e, wrapper);
         await sleep(100);
         
-        e.target.parentElement.classList.toggle("go");
-        e.target.parentElement.classList.toggle("down");
+        wrapper.classList.toggle("go");
+        wrapper.classList.toggle("down");
         await sleep(100);
         
-        e.target.parentElement.classList.toggle("transtion-wrapper-1");
-        e.target.parentElement.classList.toggle("come");
+        wrapper.classList.toggle("transtion-wrapper-1");
+        wrapper.classList.toggle("come");
         await sleep(600);
         
-        e.target.parentElement.classList.toggle("transtion-wrapper-1");
+        wrapper.classList.toggle("transtion-wrapper-1");
         // await sleep(100);
         
-        e.target.parentElement.classList.remove("come");
-        e.target.parentElement.classList.remove("down");
-        e.target.parentElement.classList.remove("no-transtion");
+        wrapper.classList.remove("come");
+        wrapper.classList.remove("down");
+        wrapper.classList.remove("no-transtion");
 
       // end event advance edit
       } 
+
+      
+      //event btn print edit order
+      else if ( e.target.classList.contains("print-change-data") || e.target.closest(".print-change-data") ) {
+
+        window.print();
+      // end event print edit order
+      }
       
       //event btn close edit order
       else if ( 
         e.target.classList
-        .contains("close-change-data") || 
+        .contains("close-change-data") ||
+        e.target.closest(".close-change-data") || 
         e.target === document
         .querySelector("#input-change-order-button-group button:nth-child(2)") ||
         e.target === document
@@ -2222,13 +2305,14 @@ const loadConfigForDashboardMenu = () => {
 };
 
 // func for advance edit data
-const toggleAdvanceEditData = e => {
+const toggleAdvanceEditData = (e, wrapper) => {
 
   const type = `edit_${
-      e.target //advance btn
-        .nextElementSibling //close
-        .nextElementSibling //paper
-        .firstElementChild //title
+      // e.target //advance btn
+      //   .nextElementSibling //close
+      //   .nextElementSibling //paper
+      //   .firstElementChild //title
+      wrapper.querySelector(".paper .title")
         .firstElementChild //h3
         .innerText.toLowerCase().includes("order") ? "order" : "costumer"
     }`;
@@ -2243,14 +2327,14 @@ const toggleAdvanceEditData = e => {
     input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
     input[type].status.parentElement.parentElement.removeAttribute("hidden");
 
-    e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "Advanced";
+    wrapper.querySelector("span.is-advance-setting").innerHTML = "Advanced";
   } else if ( e.target.dataset.toshow == "false" ) {
     input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
     input[type].date.parentElement.parentElement.setAttribute("hidden", "");
     input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
     input[type].status.parentElement.parentElement.setAttribute("hidden", "");
 
-    e.target.nextElementSibling.nextElementSibling.querySelector("span.is-advance-setting").innerHTML = "";
+    wrapper.querySelector("span.is-advance-setting").innerHTML = "";
   }
 
   e.target.dataset.toshow = e.target.dataset.toshow == "true" ? "false" : "true";

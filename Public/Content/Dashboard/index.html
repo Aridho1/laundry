@@ -280,9 +280,9 @@
       <div class="wrapper">
 
 
-        <div class="advance-change-data" data-toshow="true">#</div>
+        <div hidden class="advance-change-data" data-toshow="true">#</div>
         <!-- <div class="print-change-data">P</div> -->
-        <div class="close-change-data">X</div>
+        <div hidden class="close-change-data">X</div>
 
         <div class="paper">
           <div class="title">
@@ -377,14 +377,26 @@
           </div>
 
         </div>
-        <!-- 
-        <aside>
-          <ul class="list-menu-change-data">
-            <li><span>1</span>#<span class="list-menu--content">#</span><span>3</span></li>
-            <li><span>1</span>P<span class="list-menu--content">P</span><span>3</span></li>
-            <li><span>1</span>X<span class="list-menu--content">X</span><span>3</span></li>
+
+        <div class="action-button-group">
+          <ul>
+            <li>
+              <a href="#" class="advance-change-data" data-toshow="true">
+                <span class="logo-action">#</span>
+                <button class="button-advance">Advance</button>
+              </a>
+            </li>
+            <li class="print-change-data">
+              <span class="logo-action">P</span>
+              <button class="button-print">Print</button>
+            </li>
+            <li class="close-change-data">
+              <span class="logo-action">X</span>
+              <button class="button-close">Close</button>
+            </li>
           </ul>
-        </aside> -->
+        </div>
+
       </div>
 
 

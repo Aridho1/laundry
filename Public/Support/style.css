@@ -2,6 +2,11 @@
   --nav-bg-color: #002dff;
   --nav-color: #dfd5ff;
   --nav-color-hover: #0E9FE3;
+  
+  --action-button-icon-size: 25px;
+  --action-button-group-background-color: #fff;
+  --action-button-icon-background-color: #ccc;
+  --action-button-color: black;
 }
 
 * {
@@ -230,4 +235,9 @@ main .content {
     text-decoration: underline;
     color: red;
   }
+
+  
+.action-button-group ul li button {
+  transform: translateX(0);
+}
 }
