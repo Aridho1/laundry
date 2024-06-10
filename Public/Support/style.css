@@ -224,7 +224,8 @@ main .content {
   .dashboard .change-data .advance-change-data,
   .dashboard .change-data .close-change-data,
   .dashboard .change-data .button-group,
-  .dashboard .change-data .title
+  .dashboard .change-data .title,
+  .dashboard .change-data .action-button-group
   {
     display: none !important;
   }
@@ -236,8 +237,12 @@ main .content {
     color: red;
   }
 
-  
-.action-button-group ul li button {
-  transform: translateX(0);
-}
+  .dashboard .change-data .title-print[hidden] {
+    display: block;
+    margin-bottom: 20px;
+  }
+
+  .action-button-group ul li button {
+    transform: translateX(0);
+  }
 }
