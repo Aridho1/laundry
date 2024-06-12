@@ -279,11 +279,6 @@
 
       <div class="wrapper">
 
-
-        <div hidden class="advance-change-data" data-toshow="true">#</div>
-        <!-- <div class="print-change-data">P</div> -->
-        <div hidden class="close-change-data">X</div>
-
         <div class="paper">
           <div class="title">
             <h3>Edit Order <span class="is-advance-setting"></span></h3>
@@ -314,7 +309,7 @@
                 <label for="input-change-order-name">Name : </label>
               </td>
               <td>
-                <input type="text" id="input-change-order-name" class="nama" name="nama" required>
+                <input type="text" id="input-change-order-name" class="nama" name="nama" required readonly>
               </td>
             </tr>
             <tr hidden>
@@ -322,7 +317,7 @@
                 <label for="input-change-order-phone-num">Phone Num : </label>
               </td>
               <td>
-                <input type="number" id="input-change-order-phone-num" class="no_hp" name="no_hp" required>
+                <input type="number" id="input-change-order-phone-num" class="no_hp" name="no_hp" required readonly>
               </td>
             </tr>
             <tr>
@@ -373,9 +368,9 @@
           </table>
 
           <div class="button-group" id="input-change-order-button-group">
-            <button>Default</button>
-            <button>Edit</button>
-            <button>Delete</button>
+            <button class="button-default">Default</button>
+            <button class="button-edit">Edit</button>
+            <button class="button-delete">Delete</button>
           </div>
 
         </div>
@@ -388,13 +383,17 @@
                 <button class="button-advance">Advance</button>
               </a>
             </li>
-            <li class="print-change-data">
-              <span class="logo-action">P</span>
-              <button class="button-print">Print</button>
+            <li>
+              <a href="#" class="print-change-data">
+                <span class="logo-action">P</span>
+                <button class="button-print">Print</button>
+              </a>
             </li>
-            <li class="close-change-data">
-              <span class="logo-action">X</span>
-              <button class="button-close">Close</button>
+            <li>
+              <a href="#" class="close-change-data">
+                <span class="logo-action">X</span>
+                <button class="button-close">Close</button>
+              </a>
             </li>
           </ul>
         </div>

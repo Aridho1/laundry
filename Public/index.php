@@ -1,7 +1,7 @@
 <p>
 <?php
 if (!session_id()) session_start();
-var_dump($_SESSION);
+// var_dump($_SESSION);
 // $_SESSION=[];
 ?>
 <script>
@@ -30,10 +30,8 @@ if ( isset($_SESSION["laundry-rido"]["is-login"]) && isset($_SESSION["laundry-ri
 ?>
 
 <script>
-  console.log(user__);
   user__.is_login = !user__.is_login ? false : user__.is_login;
   user__.level = user__.level || false;
-  console.log(user__);
 
   //** Binding empty | undefined variable
 
@@ -147,7 +145,7 @@ password = password || "rahasia";
 .dashboard .search-costumer .data-table,
 .dashboard .search-order .data-table {
   display: block;
-  
+  width: 100%;
   margin: 15px auto;
   text-align: center;
   font-size: 0.8em;
@@ -366,58 +364,6 @@ password = password || "rahasia";
   transition: all 0.6s cubic-bezier(0.8, -0.4, 0.3, 1.33);
 }
 
-.dashboard .change-data aside {
-  position: absolute;
-  transform: translateY(-200%) scale(1);
-  width: 100%;
-  height: 40px;
-  background-color: transparent;
-}
-
-.dashboard .change-data aside ul {
-  list-style: none;
-  width: 100%;
-  
-  display: flex;
-  justify-content: space-between;
-}
-
-.dashboard .change-data aside ul li {
-  position: relative;
-  width: 50px;
-  height: 20px;
-  background-color: #5558ff;
-  display: flex;
-  padding: 5px 5px 5px 20px;
-  text-align: center;
-}
-
-.dashboard .change-data aside ul li span:nth-child(1) {
-  position: absolute;
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  background-color: #ccc;
-  color: red;
-  transform: rotate(45deg) translate(-30%, 20%);
-  padding: 1px;
-}
-
-.dashboard .change-data aside ul li span:nth-child(2) {
-  display: none;
-  margin: end;
-  text-align: center;
-  padding: 15px;
-}
-
-.dashboard .change-data aside ul li span:nth-child(3) {
-  display: none;
-}
-
-
-
-
-
 
 /* .dashboard .change-data .wrapper .close-change-data,
 .dashboard .change-data .wrapper .print-change-data,
@@ -549,7 +495,7 @@ password = password || "rahasia";
   text-align: center;
   
   background-color: #ccc;
-  z-index: 10000000;
+  z-index: 110;
   border-radius: 10px;
   font-size: 0.85em;
 }
@@ -565,6 +511,7 @@ password = password || "rahasia";
   display: block;
   align-self: end;
   margin-left: calc(var(--action-button-icon-size) - 15px);
+  padding-left: 8px;
   background-color: #fff;
   text-align: center;
   font-size: 0.6em;
@@ -720,6 +667,7 @@ label:hover {
     <p>HELLO WORLD!</p>
   </div>
   <footer>Copyright 2024</footer>
+  <input type="number" id="set-size-body" min="0"><button onclick="setSizeOfBody(parseInt(document.querySelector('#set-size-body').value));">Aply</button>
 </main>
 
 <aside class="aside report"></aside>
@@ -795,7 +743,6 @@ const main = async (params = {
   type: "GET"
 }, callback = null) => {
   try {
-    console.error(params.url);
     let result = await fetchData(params.url, params.type || "GET");
 
     
@@ -823,16 +770,16 @@ const fillData = async (
       url: `../App/index.php?url=${
           (data__type == "costumer") ? "Pelanggan" : "Pemesanan" 
         }/liveSearch`
-    }, result => {
+    }, resultStr => {
       
-      result = JSON.parse(result);
+      const result = JSON.parse(resultStr);
       
       if (typeof result.status === "boolean") {
         data__[data__type].all = result.result;
         data__[data__type].search.result = result.result;
         data__[data__type].search.keyword = "__all__";
         data__.pages[data__type].active = 1;
-      } else console.log(result);
+      } else console.log(resultStr);
     });
   } 
   
@@ -903,8 +850,6 @@ const fillData = async (
 
 // Event fill var data
 
-
-// const log = (...any) => console.log(any.join(' '));
 const l = (...any) => log(any.join(' '));
 
 const sleep = ms => {
@@ -1134,8 +1079,6 @@ function create_table_and_pagination(
         
       }
       
-      console.error(i, "!==", data.length);
-      
       row = `<tr ${
         // event last data
         (i == data.length - 1) 
@@ -1198,7 +1141,6 @@ const createPriceOfPackage = (
         }</option>`;
     }
     package.innerHTML = code;
-    console.log(package);
 };
 
 const createStatusOfOrder = (
@@ -1218,7 +1160,6 @@ const createStatusOfOrder = (
         }</option>`;
     }
     package.innerHTML = code;
-    console.log(package);
 };
 
 function calcTotal( type = "order" ) {
@@ -1445,10 +1386,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
     
       //end event search costumer
       } 
-
-      log("main click");
-      console.log(e.target);
-      // console.log(e.target.closest())
       
       //event add costumer
       if ( e.target == document.querySelector("#input-add-costumer-submit") ) {
@@ -1606,6 +1543,8 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         document.querySelector(".dashboard .change-data .button-group")
           .classList.add("line-through");
       }
+
+      console.log(e.target);
       
       //event btn cancel edit order
       if ( e.target == document.querySelector("#input-change-order-button-group button:nth-child(1)") ){
@@ -1613,7 +1552,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       }
       
       //event btn advance edit order
-      if ( e.target.classList.contains("advance-change-data") || e.target.closest(".advance-change-data") ) {
+      if ( e.target.closest(".advance-change-data") ) {
 
         // alert("advance");
         // fix hell function
@@ -1631,7 +1570,9 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         
         
         wrapper.classList.toggle("transtion-wrapper-1");
-        toggleAdvanceEditData(e, wrapper);
+
+        const el = document.querySelector(".advance-change-data");
+        toggleAdvanceEditData(el, wrapper);
         await sleep(100);
         
         wrapper.classList.toggle("go");
@@ -1654,31 +1595,25 @@ document.addEventListener("DOMContentLoaded", async (el) => {
 
       
       //event btn print edit order
-      else if ( e.target.classList.contains("print-change-data") || e.target.closest(".print-change-data") ) {
+      else if ( e.target.closest(".print-change-data") ) {
 
-        window.print();
+        stylePrint ( true );
+        
+        await window.print();
+        
+        stylePrint ( false );
+
       // end event print edit order
       }
       
       //event btn close edit order
       else if ( 
-        e.target.classList
-        .contains("close-change-data") ||
-        e.target.closest(".close-change-data") || 
-        e.target === document
-        .querySelector("#input-change-order-button-group button:nth-child(2)") ||
-        e.target === document
-        .querySelector("#input-change-order-button-group button:nth-child(3)")
-      ) {
-        log("close change data");
-        setTimeout(() => {
-          document.querySelector(".dashboard .change-data").classList.remove("slide");
-          document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
-          setTimeout(() => {
-            document.querySelector(".dashboard .change-data").classList.remove("show");
-          }, 800);
-        }, (e.target === document.querySelector("#input-change-order-button-group:nth-child(2)") || e.target === document.querySelector("#input-change-order-button-group:nth-child(2)")) ? 1000 : 0 );
-      } //end event close edit order
+        e.target.closest(".close-change-data") //|| 
+        // e.target === document
+        // .querySelector("#input-change-order-button-group button:nth-child(2)") ||
+        // e.target === document
+        // .querySelector("#input-change-order-button-group button:nth-child(3)")
+      ) closeEditOrder(e); //end event close edit order
       
       //event submit edit / delete order
       if ( 
@@ -1691,15 +1626,13 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           console.error("User Level Kamu Tidak Mencukupi");
           return false;
         }
-        
-        console.error("id nya :", id);
 
         if ( 
           id == data__.order.all[data__.order.all.length - 1].id && 
           e.target === document.querySelector("#input-change-order-button-group button:nth-child(3)") 
         ) page_active -= 1;
 
-        setDataOrder( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ? "edit_order" : "delete_order", id );
+        setDataOrder( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ? "edit_order" : "delete_order", id, e );
         
       } //end event submit edit / delete order
     // end event main content adalah dashboard
@@ -1781,23 +1714,21 @@ document.addEventListener("DOMContentLoaded", async (el) => {
               e.target.dataset.change_status_by_id
             }/${change_to}`,
           type: "GET",
-          }, async (result) => {
+          }, async (resultStr) => {
             
-            result = JSON.parse(result);
+            const result = JSON.parse(resultStr);
             
             if ( result.status == true ) {
               
               await fillData(  "order_all"  );
               await fillData( "order_status" );
-
-              console.log("page active status :", page_active);
               data__.pages.order.active = page_active;
               create_table_and_pagination(
                 2,
                 data__.order.all
               );
               
-            } else console.log(result);
+            } else console.log(resultStr);
         }); // end fetch main
       //end event confirm
       } else return false;
@@ -1846,18 +1777,16 @@ document.addEventListener("DOMContentLoaded", async (el) => {
   );
 
   document.querySelector("#login").addEventListener('click', e => {
-    console.log(e.target);
     if ( e.target === btn_login ) {
       main({
         url: `../App/index.php?url=Pengguna/liveSearch`,
         type: "GET",
-      }, result => {
+      }, resultStr => {
         
-        result = JSON.parse(result);
+        const result = JSON.parse(resultStr);
         
         if (typeof result.status==="boolean") {
           const user = result.result.filter(user => user.username == input_login_username.value).filter(user => user.password == input_login_password.value);
-          console.log(user);
           if (user.length > 0) {
             
             contentToLogin(false);
@@ -1867,7 +1796,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
             }, 500);
             
           } else console.error("User Tidak Ditemukan");
-        } else console.log(result);
+        } else console.log(resultStr);
 
         input_login_username.value = "";
         input_login_password.value = "";
@@ -1944,10 +1873,12 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
   //   if ( month.first <= month.last || year.first < year.last ) {
   //     if ( day.first <= day.last || month.first < month.last || year.first < year.last ) {
 
-      if ( year.first < year.last || 
-      (month.first < month.last && year.first <= year.last) || 
-      (day.first < day.last && month.first <= month.last && year.first <= year.last) ) {
-        
+      if ( 
+        year.first < year.last || 
+        (month.first < month.last && year.first <= year.last) || 
+        (day.first <= day.last && month.first <= month.last && year.first <= year.last) 
+      ) {
+
         i.start = year.first;
         i.end = year.last;
         
@@ -1983,15 +1914,14 @@ const getListDate = (date_first, date_last, char_split = "/", result_split = "/"
   //     }
   //   }
   // }
-  
+
+  if ( result.length === 0 ) console.error("Reject By Filter Next Day.");
   return result;
 };
 
 const fillInputChangeData = (id, type = "edit_order") => {
 
   let data = data__[type.split("_")[1]].all.filter(d => d.id == id)[0];
-  
-  console.log(data.tanggal.split("/").reverse().join("-"));
   
   input[type].order_code.value = data.kode_pemesanan;
   input[type].date.value = data.tanggal.split("/").reverse().join("-");
@@ -2032,10 +1962,16 @@ const contentToLogin = (show = true) => {
 };
 
 
-const setDataOrder = ( type, id ) => {
+const setDataOrder = ( type, id, e ) => {
   type = type.toLowerCase();
 
   if ( type == "edit_order" || type == "delete_order" ) {
+
+    // event check waight
+    if ( parseInt(input.edit_order.weight.value) < 1 ) {
+      console.error("Weight Is Invalid!");
+      return false;
+    }
 
     let data = [
       input.edit_order.order_code.value,
@@ -2048,19 +1984,16 @@ const setDataOrder = ( type, id ) => {
       input.edit_order.total.value,
       input.edit_order.status.value
     ];
-    console.log(data);
     main({
       url: `../App/index.php?url=Pemesanan/${type}/${id}/${type == "edit_order" ? data.join("/") : ""}`,
       type: "GET"
     }, async (resultStr) => {
 
       result = JSON.parse(resultStr);
-      log("page actat :", page_active);
       if ( typeof result.status === "boolean" ) {
         await fillData (  "order_all"  );
         await fillData( "order_status" );
         data__.pages.order.active = page_active;
-        console.log("edit Order, page :", page_active);
         create_table_and_pagination(
           2,
           data__.order.all,
@@ -2070,6 +2003,10 @@ const setDataOrder = ( type, id ) => {
       } else console.error(resultStr);
 
     });
+
+    // hanlde --close wrapper change data
+    closeEditOrder(e);
+
   } // end edit || delete order
 
 };
@@ -2305,7 +2242,7 @@ const loadConfigForDashboardMenu = () => {
 };
 
 // func for advance edit data
-const toggleAdvanceEditData = (e, wrapper) => {
+const toggleAdvanceEditData = (el, wrapper) => {
 
   const type = `edit_${
       // e.target //advance btn
@@ -2318,17 +2255,18 @@ const toggleAdvanceEditData = (e, wrapper) => {
     }`;
 
   log(type);
+  log(el.dataset.toshow);
 
-  const manip_attr = e.target.dataset.toshow == "true" ? "removeAttribue" : "setAttribute";
+  const manip_attr = el.dataset.toshow == "true" ? "removeAttribue" : "setAttribute";
 
-  if ( e.target.dataset.toshow == "true" ) {
+  if ( el.dataset.toshow == "true" ) {
     input[type].order_code.parentElement.parentElement.removeAttribute("hidden");
     input[type].date.parentElement.parentElement.removeAttribute("hidden");
     input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
     input[type].status.parentElement.parentElement.removeAttribute("hidden");
 
     wrapper.querySelector("span.is-advance-setting").innerHTML = "Advanced";
-  } else if ( e.target.dataset.toshow == "false" ) {
+  } else if ( el.dataset.toshow == "false" ) {
     input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
     input[type].date.parentElement.parentElement.setAttribute("hidden", "");
     input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
@@ -2337,9 +2275,48 @@ const toggleAdvanceEditData = (e, wrapper) => {
     wrapper.querySelector("span.is-advance-setting").innerHTML = "";
   }
 
-  e.target.dataset.toshow = e.target.dataset.toshow == "true" ? "false" : "true";
+  el.dataset.toshow = el.dataset.toshow == "true" ? "false" : "true";
 };
 
+const stylePrint = print => {
+
+  const type = "edit_order";
+  
+  if ( print === true ) {
+    input[type].date.type = "text";
+  } else if ( print === false ) {
+  input[type].date.type = "date";
+  }
+};
+
+const closeEditOrder = async (e) => {
+
+  // handle reject close
+  if ( !e.target.closest(".close-change-data") && user__.level < 2 ) return false;
+
+  // setTimeout(() => {
+  //   document.querySelector(".dashboard .change-data").classList.remove("slide");
+  //   document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
+  //   setTimeout(() => {
+  //     document.querySelector(".dashboard .change-data").classList.remove("show");
+  //   }, 800);
+  // }, (e.target === document.querySelector("#input-change-order-button-group:nth-child(2)") || e.target === document.querySelector("#input-change-order-button-group:nth-child(2)")) ? 1000 : 0 );
+
+  const wait = (e.target === document.querySelector(".button-edit") || e.target === document.querySelector(".button-delete")) ? 200 : 0;
+
+  console.error(wait);
+  console.error(e.target);
+  
+  await sleep( wait );
+
+  document.querySelector(".dashboard .change-data").classList.remove("slide");
+  document.querySelector(".dashboard .change-data").firstElementChild.classList.remove("slide");
+
+  await sleep(800);
+
+  document.querySelector(".dashboard .change-data").classList.remove("show");
+
+};
 
 </script>
 </body>
