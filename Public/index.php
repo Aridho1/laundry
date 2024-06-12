@@ -779,7 +779,7 @@ const fillData = async (
         data__[data__type].search.result = result.result;
         data__[data__type].search.keyword = "__all__";
         data__.pages[data__type].active = 1;
-      } else console.log(resultStr);
+      } else console.error(resultStr);
     });
   } 
   
@@ -859,9 +859,6 @@ const sleep = ms => {
 let checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
 let nav_links = document.querySelector("nav ul");
 let nav_toggle = document.querySelector("div.menu-toggle");
-nav_toggle.addEventListener("click", function() {
-  nav_links.classList.toggle("slide");
-});
 
 photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 
@@ -1184,12 +1181,12 @@ document.addEventListener("DOMContentLoaded", async (el) => {
   await fillData("all");
 
   // set default menu
-  const default_menu = "home";
+  const default_menu = "homE" . toLowerCase();
 
   document.querySelector(".content")
     .previousElementSibling.firstElementChild.innerHTML = 
       default_menu.split("")
-        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter)
+        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter.toLowerCase())
           .join("");
 
   document.querySelector(".content")
@@ -1197,13 +1194,47 @@ document.addEventListener("DOMContentLoaded", async (el) => {
 
   document.querySelector(".content")
     .classList.add(default_menu);
+  
+  // exec handle request
+  __handleRequest__[default_menu.split("")
+        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter.toLowerCase())
+          .join("")]();
+
+
+
+    // event handle nav for mobile
+    // checkbox = document.querySelector(".menu-toggle input[type=checkbox]");
+    // nav_links = document.querySelector("nav ul");
+    // nav_toggle = document.querySelector("div.menu-toggle");
+    // nav_toggle.addEventListener("click", () => {
+    //   nav_links.classList.toggle("slide");
+    // });
+
+
+
 
 
   // event big delegation for tempplating engine, pagination, search, and CRUD
   document.body.addEventListener("click", async (e) => {
+
     const main_content = document.querySelector(
       "main .content"
     );
+
+
+    // handle nav mobile
+    if ( e.target.closest("div.menu-toggle") ) {
+      document.querySelector("nav ul").classList.toggle("slide");
+    }
+    
+    //event close nav pada navlinks
+    if (
+      e.target !== document.querySelector(".menu-toggle input[type=checkbox]") && 
+      e.target !== document.querySelector("nav ul") 
+    ) {
+      document.querySelector(".menu-toggle input[type=checkbox]").checked = false; 
+      document.querySelector("nav ul").classList.remove("slide");
+    }
 
     //event request contents
     if ( 
@@ -1214,7 +1245,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       e.preventDefault();
       
       checkbox.checked = false;
-      nav_links.classList.remove("slide");
+      document.querySelector("nav ul").classList.remove("slide");
       
       
       if ( e.target.innerText == "Logout") {
@@ -1239,8 +1270,11 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         data__["contents"][e
           .target.innerText.toLowerCase()];
       
+      //event home
+      if ( e.target.innerText === "Home" ) __handleRequest__.Home();
+      
       //event dashboard
-      if ( e.target.innerText === "Dashboard" ) {
+      else if ( e.target.innerText === "Dashboard" ) {
         
         loadConfigForDashboardMenu();
         
@@ -1250,14 +1284,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
     //end event request contents
     }
     
-    //event close nav pada navlinks
-    if (
-      e.target !== checkbox && 
-      e.target !== nav_links 
-    ) {
-      checkbox.checked = false; 
-      nav_links.classList.remove("slide");
-    }
     
     //** event dashboard
     //switch content type
@@ -1544,7 +1570,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
           .classList.add("line-through");
       }
 
-      console.log(e.target);
       
       //event btn cancel edit order
       if ( e.target == document.querySelector("#input-change-order-button-group button:nth-child(1)") ){
@@ -1670,13 +1695,13 @@ document.addEventListener("DOMContentLoaded", async (el) => {
     }
 
     //change berat for add order
-    else if ( e.target === input.order.weight ) {
+    else if ( e.target === document.querySelector("#input-add-order-weight") ) {
       calcTotal();
     //end change berat
     }
 
     //change berat for change data
-    else if ( e.target === input.edit_order.weight ) {
+    else if ( e.target === document.querySelector("#input-change-order-weight") ) {
       calcTotal("edit_order");
     //end change berat
     }
@@ -1728,7 +1753,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
                 data__.order.all
               );
               
-            } else console.log(resultStr);
+            } else console.error(resultStr);
         }); // end fetch main
       //end event confirm
       } else return false;
@@ -1796,7 +1821,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
             }, 500);
             
           } else console.error("User Tidak Ditemukan");
-        } else console.log(resultStr);
+        } else console.error(resultStr);
 
         input_login_username.value = "";
         input_login_password.value = "";
@@ -2116,6 +2141,7 @@ const loadConfigForDashboardMenu = () => {
   log("LOAD DASHBOARD CONFIG...");
   
   // event deklarasi var input
+
   input.costumer = {
     name: document.querySelector(
       "#input-add-costumer-name"
@@ -2254,26 +2280,30 @@ const toggleAdvanceEditData = (el, wrapper) => {
         .innerText.toLowerCase().includes("order") ? "order" : "costumer"
     }`;
 
-  log(type);
-  log(el.dataset.toshow);
+  const manip_attr = el.dataset.toshow == "true" ? "removeAttribute" : "setAttribute";
 
-  const manip_attr = el.dataset.toshow == "true" ? "removeAttribue" : "setAttribute";
+  // if ( el.dataset.toshow == "true" ) {
+  //   input[type].order_code.parentElement.parentElement.removeAttribute("hidden");
+  //   input[type].date.parentElement.parentElement.removeAttribute("hidden");
+  //   input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
+  //   input[type].status.parentElement.parentElement.removeAttribute("hidden");
 
-  if ( el.dataset.toshow == "true" ) {
-    input[type].order_code.parentElement.parentElement.removeAttribute("hidden");
-    input[type].date.parentElement.parentElement.removeAttribute("hidden");
-    input[type].phone_num.parentElement.parentElement.removeAttribute("hidden");
-    input[type].status.parentElement.parentElement.removeAttribute("hidden");
+  //   wrapper.querySelector("span.is-advance-setting").innerHTML = "Advanced";
+  // } else if ( el.dataset.toshow == "false" ) {
+  //   input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
+  //   input[type].date.parentElement.parentElement.setAttribute("hidden", "");
+  //   input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
+  //   input[type].status.parentElement.parentElement.setAttribute("hidden", "");
 
-    wrapper.querySelector("span.is-advance-setting").innerHTML = "Advanced";
-  } else if ( el.dataset.toshow == "false" ) {
-    input[type].order_code.parentElement.parentElement.setAttribute("hidden", "");
-    input[type].date.parentElement.parentElement.setAttribute("hidden", "");
-    input[type].phone_num.parentElement.parentElement.setAttribute("hidden", "");
-    input[type].status.parentElement.parentElement.setAttribute("hidden", "");
+  //   wrapper.querySelector("span.is-advance-setting").innerHTML = "";
+  // }
+  
+    input[type].order_code.parentElement.parentElement[manip_attr]("hidden", "");
+    input[type].date.parentElement.parentElement[manip_attr]("hidden", "");
+    input[type].phone_num.parentElement.parentElement[manip_attr]("hidden", "");
+    input[type].status.parentElement.parentElement[manip_attr]("hidden", "");
 
-    wrapper.querySelector("span.is-advance-setting").innerHTML = "";
-  }
+    wrapper.querySelector("span.is-advance-setting").innerHTML = manip_attr == "setAttribute" ? "" : "Advenced";
 
   el.dataset.toshow = el.dataset.toshow == "true" ? "false" : "true";
 };
@@ -2316,6 +2346,36 @@ const closeEditOrder = async (e) => {
 
   document.querySelector(".dashboard .change-data").classList.remove("show");
 
+};
+
+const __handleRequestHome__ = async () => {
+
+  if ( user__.level > 1 ) {
+    document.querySelector(".home strong").innerHTML = `${
+      user__.level === 2 ? "Owner" : "-- UNDEFINED USER --"
+    }`;
+  }
+  
+};
+
+const __handleRequest__ = {
+  Home: function() {
+
+    // handle greeting
+    if ( user__.level > 1 ) {
+      document.querySelector(".home strong").innerHTML = `${
+        user__.level === 2 ? "Owner" : "-- UNDEFINED USER --"
+      }`;
+    // end handle greeting`
+    }
+
+  },
+  Dashboard() {
+
+  },
+  Logout: function() {
+
+  }
 };
 
 </script>
