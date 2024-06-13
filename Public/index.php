@@ -648,6 +648,7 @@ label:hover {
   <ul>
     <li><a href="">Home</a></li>
     <li><a href="">Dashboard</a></li>
+    <li><a href="">Laporan</a></li>
     <li><a href="">Logout</a></li>
   </ul>
   
@@ -1249,13 +1250,16 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       
       
       if ( e.target.innerText == "Logout") {
-        
+
         const sure = confirm("Are You Sure To Logout?");
         if ( sure ) window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false"
         else return false;
-        //end event logout
+      //end event logout
+      } else if ( e.target.innerText == "Laporan") {
+
+        return false;
       }
-      
+        
       main_content.classList.remove("home");
       main_content.classList.remove("dashboard");
       main_content.classList.remove("laporan");
