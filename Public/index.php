@@ -187,7 +187,7 @@ password = password || "rahasia";
   
 }
 
-.dashboard div.no-result {
+.dashboard div.no-result, .report-no-result {
   position: absolute;
   margin: 100px 0 0 0;
   padding: 0 40px;
@@ -236,8 +236,9 @@ password = password || "rahasia";
 
 .dashboard .search-order .search-group .search-order-by-date {
   display: none;
-  justify-content: space-between;
+  justify-content: space-evenly;
   margin: 10px 0 0 0;
+  width: 100%;
 }
 
 /* STYLE PAGES */
@@ -602,6 +603,14 @@ aside {
   background-color: #eee;
   transform: scale(0);
   transition: all 0.6s;
+
+  
+  /* justify-content: center; */
+}
+
+aside table {
+  padding-top: 20px;
+  margin: auto;
 }
 
 aside.aside.show {
@@ -671,7 +680,13 @@ label:hover {
   <input type="number" id="set-size-body" min="0"><button onclick="setSizeOfBody(parseInt(document.querySelector('#set-size-body').value));">Aply</button>
 </main>
 
-<aside class="aside report"></aside>
+<aside class="aside report">
+<table class="data-table" border="0.2" id="table-report"></table>
+<div class="no-result report-no-result">
+  <p>NO RESULT!</p>
+  <p>PLEASE RETRY SEARCH FOR ANOTHER KEYWORD.</p>
+</div>
+</aside>
   
 <script src="//cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
@@ -914,32 +929,66 @@ function create_table_and_pagination(
   // Konfigurasi
   let pages, data_table, column, div_no_result, page_active;
   
-  
+  // handle report 
+  if ( type == 3 ) {
+    is_create_pagination = false;
+  }
 
   if (type === 1) {
     data = data__.costumer.search.result;
+
     pages = document
       .querySelector(".pages-search-costumer");
+
     data_table = document
       .querySelector("#table-costumer");
+
     column = ["nama", "no_hp", "action"];
+
     div_no_result = document
       .querySelector(".costumer-no-result");
+
     page_active = data__.pages.costumer.active;
+
     data__.pages.costumer.content = [];
+
   } else if (type === 2) {
     setSearch("order");
-    data = data__.order.search.result;
+
     pages = document
-    .querySelector(".pages-search-order");
+      .querySelector(".pages-search-order");
+
+    data = data__.order.search.result;
+
     data_table = document
     .querySelector("#table-order");
+
     column = ["tanggal", "kode_pemesanan", "status"];
+
     div_no_result = document
     .querySelector(".order-no-result");
+
     page_active = data__.pages.order.active;
+
     data__.pages.order.content = [];
+
+  } else if ( type == 3 ) {
+    setSearch("order");
+
+    data = data__.order.search.result;
+
+    data_table = document
+      .querySelector("#table-report");
+
+    column = ["nama", "tanggal"];
+
+    div_no_result = document
+      .querySelector(".report-no-result");
+
+    page_active = data__.pages.order.active;
+    
   }
+
   page_active = parseInt(page_active);
   
 
@@ -1191,25 +1240,12 @@ document.addEventListener("DOMContentLoaded", async (el) => {
   // fill fata and wait
   await fillData("all");
 
+  // handle bug print
+  // __handleRequest__.Dashboard();
+
   // set default menu
-  const default_menu = "homE" . toLowerCase();
-
-  document.querySelector(".content")
-    .previousElementSibling.firstElementChild.innerHTML = 
-      default_menu.split("")
-        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter.toLowerCase())
-          .join("");
-
-  document.querySelector(".content")
-    .innerHTML = data__.contents[default_menu];
-
-  document.querySelector(".content")
-    .classList.add(default_menu);
-  
-  // exec handle request
-  __handleRequest__[default_menu.split("")
-        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter.toLowerCase())
-          .join("")]();
+  // await loadConfigForDashboardMenu();
+  await execDefaultMenu("HomE");
 
 
 
@@ -1267,12 +1303,13 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       //end event logout
       } else if ( e.target.innerText == "Laporan") {
 
+        __handleRequest__.Laporan();
+
         return false;
       }
         
       main_content.classList.remove("home");
       main_content.classList.remove("dashboard");
-      main_content.classList.remove("laporan");
       
       document.querySelector("main header h2")
         .innerText = e.target.innerText;
@@ -1560,9 +1597,19 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         ).value = data.no_hp;
       //end event button to-order
       }
+
+      
+      // event checkbox search order
+      else if ( e.target.tagName === "LABEL" && e.target.closest(".search-group-order") ) {
+
+        const checkbox = e.target.previousElementSibling;
+
+        checkbox.checked = checkbox.checked == true ? false : true;
+
+      } // end event checkbox search order
       
       //event search-order 
-      else if ( e.target === search_group_order[1] ) {
+      if ( e.target === search_group_order[1] || e.target === search_group_order[1].nextElementSibling ) {
         if ( !search_group_order[1].checked ) {
           button_search_order_by_date[1].parentElement.style.display = "none";
         } else {
@@ -1577,15 +1624,6 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         create_table_and_pagination( 2 );
       }
       //end event search order
-
-      // event checkbox search order
-      if ( e.target.tagName === "LABEL" && e.target.closest(".search-group-order") ) {
-
-        const checkbox = e.target.previousElementSibling;
-
-        checkbox.checked = checkbox.checked == true ? false : true;
-
-      }
 
       // event disable button edit-order
       if ( user__.level < 2 ) {
@@ -2402,7 +2440,41 @@ const __handleRequest__ = {
   },
   Logout: function() {
 
+  },
+  Laporan() {
+
+    const aside = document.querySelector("aside.aside");
+    aside.classList.add("show");
+
+    create_table_and_pagination(3);
+
+    window.print();
+
+    aside.classList.remove("show");
+
   }
+};
+
+const execDefaultMenu = menu => {
+
+  const default_menu = menu . toLowerCase();
+
+  document.querySelector(".content")
+    .previousElementSibling.firstElementChild.innerHTML = 
+      default_menu.split("")
+        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter.toLowerCase())
+          .join("");
+
+  document.querySelector(".content")
+    .innerHTML = data__.contents[default_menu];
+
+  document.querySelector(".content")
+    .classList.add(default_menu);
+  
+  // exec handle request
+  __handleRequest__[default_menu.split("")
+        .map((letter, i) =>  i == 0 ? letter.toUpperCase() : letter.toLowerCase())
+          .join("")]();
 };
 
 </script>
