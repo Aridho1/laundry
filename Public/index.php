@@ -1301,7 +1301,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
     
     //** event dashboard
     //switch content type
-    if ( 
+    else if ( 
       e.target.classList
         .contains("switch-content") 
     ) {
@@ -1347,7 +1347,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
     //event saat main content adalah dashboard
     if ( 
       document.querySelector("main .content").classList
-      .contains("dashboard") 
+        .contains("dashboard") 
     ) {
       
       //**event button pagination
@@ -1412,7 +1412,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       }
       
       // event search costumer
-      else if ( 
+      if ( 
         e.target === document.querySelector( 
           ".search-costumer .search-group button" 
         ) 
@@ -1527,7 +1527,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       }
 
       //event to-order
-      if ( 
+      else if ( 
         e.target.classList.contains("to-order") 
       ) {
       
@@ -1562,7 +1562,7 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       }
       
       //event search-order 
-      if ( e.target === search_group_order[1] ) {
+      else if ( e.target === search_group_order[1] ) {
         if ( !search_group_order[1].checked ) {
           button_search_order_by_date[1].parentElement.style.display = "none";
         } else {
@@ -1577,6 +1577,15 @@ document.addEventListener("DOMContentLoaded", async (el) => {
         create_table_and_pagination( 2 );
       }
       //end event search order
+
+      // event checkbox search order
+      if ( e.target.tagName === "LABEL" && e.target.closest(".search-group-order") ) {
+
+        const checkbox = e.target.previousElementSibling;
+
+        checkbox.checked = checkbox.checked == true ? false : true;
+
+      }
 
       // event disable button edit-order
       if ( user__.level < 2 ) {
