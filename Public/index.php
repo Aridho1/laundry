@@ -711,10 +711,12 @@ data__ = {
   },
   pages: {
     costumer: {
-      active: 1
+      active: 1,
+      content: []
     }, 
     order: {
-      active: 1
+      active: 1,
+      content: []
     }
   }
 };
@@ -924,18 +926,19 @@ function create_table_and_pagination(
     div_no_result = document
       .querySelector(".costumer-no-result");
     page_active = data__.pages.costumer.active;
+    data__.pages.costumer.content = [];
   } else if (type === 2) {
     setSearch("order");
     data = data__.order.search.result;
     pages = document
-      .querySelector(".pages-search-order");
+    .querySelector(".pages-search-order");
     data_table = document
-      .querySelector("#table-order");
+    .querySelector("#table-order");
     column = ["tanggal", "kode_pemesanan", "status"];
     div_no_result = document
-      .querySelector(".order-no-result");
+    .querySelector(".order-no-result");
     page_active = data__.pages.order.active;
-    
+    data__.pages.order.content = [];
   }
   page_active = parseInt(page_active);
   
@@ -1047,6 +1050,13 @@ function create_table_and_pagination(
     let end_for = Math.min(max_data * page_active, data.length);
 
     for (let i = first_data_number; i < end_for; i++) {
+
+      if ( type == 1) {
+        data__.pages.costumer.content.push(data[i]);
+      } else if ( type == 2 ) {
+        data__.pages.order.content.push(data[i]);
+      }
+
       let row = "";
       for (let ii = 0; ii < column.length; ii++) {
         //event for column action
@@ -1658,8 +1668,12 @@ document.addEventListener("DOMContentLoaded", async (el) => {
 
         if ( 
           id == data__.order.all[data__.order.all.length - 1].id && 
-          e.target === document.querySelector("#input-change-order-button-group button:nth-child(3)") 
-        ) page_active -= 1;
+          e.target === document.querySelector("#input-change-order-button-group button:nth-child(3)") &&
+          data__.pages.order.content.length === 1
+        ) {
+          page_active -= 1;
+          data__.pages.order.active -= 1;
+        }
 
         setDataOrder( e.target === document.querySelector("#input-change-order-button-group button:nth-child(2)") ? "edit_order" : "delete_order", id, e );
         
