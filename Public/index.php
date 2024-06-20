@@ -677,7 +677,7 @@ label:hover {
     <p>HELLO WORLD!</p>
   </div>
   <footer>Copyright 2024</footer>
-  <input type="number" id="set-size-body" min="0"><button onclick="setSizeOfBody(parseInt(document.querySelector('#set-size-body').value));">Aply</button>
+  <!-- <input type="number" id="set-size-body" min="0"><button onclick="setSizeOfBody(parseInt(document.querySelector('#set-size-body').value));">Aply</button> -->
 </main>
 
 <aside class="aside report">
@@ -888,7 +888,7 @@ photo_profile_web.setAttribute("href", "Support/Img/logo-02.png");
 let goto, max_data, max_button, page_active, first_link_page, first_data_number, page_total;
 
 
-
+let total_data_print = 20;
 let data_tabel, data_js;
 
 let listContent = [
@@ -901,6 +901,8 @@ let switch_class = [];
 
 const today = new Date().toISOString().split('T')[0];
 let day = new Date();
+console.log("day", day);
+console.log("today", today);
 
 
 
@@ -1098,7 +1100,11 @@ function create_table_and_pagination(
 
     let end_for = Math.min(max_data * page_active, data.length);
 
+    if ( type == 3 ) end_for += total_data_print - max_data;
+
     for (let i = first_data_number; i < end_for; i++) {
+
+      if ( i > data.length ) break;
 
       if ( type == 1) {
         data__.pages.costumer.content.push(data[i]);
@@ -1298,7 +1304,12 @@ document.addEventListener("DOMContentLoaded", async (el) => {
       if ( e.target.innerText == "Logout") {
 
         const sure = confirm("Are You Sure To Logout?");
-        if ( sure ) window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false"
+        if ( sure ) {
+          main({ url: `../App/index.php?url=Pengguna/setSessionLogin/false`}, result => {
+            if ( result === "false" ) window.location.reload();
+          })
+        }
+        // window.location.href = "../App/index.php?url=Pengguna/setSessionLogin/false"
         else return false;
       //end event logout
       } else if ( e.target.innerText == "Laporan") {
@@ -1881,9 +1892,13 @@ document.addEventListener("DOMContentLoaded", async (el) => {
             
             contentToLogin(false);
 
-            setTimeout(() => {
-              window.location.href = `../App/index.php?url=Pengguna/setSessionLogin/true/${user[0].user_level}`;
-            }, 500);
+            main({ url: `../App/index.php?url=Pengguna/setSessionLogin/true/${user[0].user_level}`}, result => {
+              console.error("set login to", result);
+            });
+
+            // setTimeout(() => {
+            //   window.location.href = `../App/index.php?url=Pengguna/setSessionLogin/true/${user[0].user_level}`;
+            // }, 500);
             
           } else console.error("User Tidak Ditemukan");
         } else console.error(resultStr);

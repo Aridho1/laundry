@@ -51,11 +51,17 @@ class Pengguna {
 
 
     $_SESSION["laundry-rido"]["user-level"] = $getSession == "true" ? $user_level : 0;
-    if ( $getSession == "true" ) $_SESSION["laundry-rido"]["is-login"] = true;
-    else if ( $getSession == "false" ) $_SESSION["laundry-rido"]["is-login"] = false;
+    if ( $getSession == "true" ) {
+      $_SESSION["laundry-rido"]["is-login"] = true;
+      echo "true";
+    }
+    else if ( $getSession == "false" ) {
+      $_SESSION["laundry-rido"]["is-login"] = false;
+      echo "false";
+    }
 
-    echo "<script>
-      window.location.href = '../Public/index.php';
-    </script>";
+    // echo "<script>
+    //   window.location.href = '../Public/index.php';
+    // </script>";
   }
 }
